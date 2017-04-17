@@ -114,10 +114,10 @@ public:
    }
 };
 
-typedef std::map<float,float>           sw_map_type ;
-typedef std::map<float,float>::iterator sw_map_iterator_type;
+typedef std::map<float,float>           sw_map_t ;
+typedef std::map<float,float>::iterator sw_map_iterator_t;
 
-void write_to_samples_map(sw_map_type * vals, float hash, float sample_weight) {
+void write_to_samples_map(sw_map_t * vals, float hash, float sample_weight) {
    (*vals)[hash] += sample_weight;
 }
 
@@ -206,7 +206,7 @@ filter_pixel {
    //
    ///////////////////////////////////////////////
 
-   sw_map_type vals;
+   sw_map_t vals;
 
 
    int total_samples = 0;
@@ -286,7 +286,7 @@ filter_pixel {
       return;
    }
 
-   sw_map_iterator_type vals_iter;
+   sw_map_iterator_t vals_iter;
    
    std::vector<std::pair<float, float> > all_vals;
    std::vector<std::pair<float, float> >::iterator all_vals_iter;
