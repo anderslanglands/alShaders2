@@ -18,7 +18,7 @@ enum cryptomatte_aovParams
 
 node_parameters
 {
-   AiParameterRGB("passthrough", 0.0f, 0.0f, 0.0f);
+   AiParameterClosure("passthrough");
    
    AiParameterStr("crypto_asset_override", "");
    AiParameterStr("crypto_object_override", "");
@@ -52,12 +52,19 @@ shader_evaluate
 {
    CryptomatteData *cryptomatte = (CryptomatteData*) AiNodeGetLocalData(node);
    
-   sg->out.RGB = AiShaderEvalParamRGB(p_passthrough);
-   
-   cryptomatte->do_cryptomattes(sg, node,
-                                p_crypto_asset_override,
-                                p_crypto_object_override,
-                                p_crypto_material_override);
+   AtClosureList closures = AiShaderEvalParamClosure(p_passthrough);
+   if (sg->Rt & AI_RAY_CAMERA) {
+      AtRGB opacity = AI_RGB_WHITE;
+      for (AtClosure closure = closures.front(); closure; closure = closure.next())
+         if (closure.type() == AI_CLOSURE_TRANSPARENT)
+            opacity -= closure.weight();
+      float flt_opacity = AiClamp(AiColorToGrey(opacity), 0.0f, 1.0f);
+      cryptomatte->do_cryptomattes(sg, node, p_crypto_asset_override, 
+                                   p_crypto_object_override, 
+                                   p_crypto_material_override, 
+                                   flt_opacity);
+   }
+   sg->out.CLOSURE() = closures;
 }
 
 node_loader
@@ -65,7 +72,7 @@ node_loader
    if (i == 0)
    {
       node->methods = cryptomatte_aovMtd;
-      node->output_type = AI_TYPE_RGB;
+      node->output_type = AI_TYPE_CLOSURE;
       node->name = "cryptomatte_aov";
       node->node_type = AI_NODE_SHADER;
       strcpy(node->version, AI_VERSION);
