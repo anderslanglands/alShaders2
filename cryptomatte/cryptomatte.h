@@ -5,6 +5,7 @@
 #include <ctime>
 #include "MurmurHash3.h"
 #include <cstdio>
+#include <algorithm>
 #include <limits>
 
 #define NOMINMAX // lets you keep using std::min
