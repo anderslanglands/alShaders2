@@ -870,10 +870,10 @@ public:
         init_cryptomatte_cache();
     }
 
-    void setup_all(const char* aov_cryptoasset, const char* aov_cryptoobject, const char* aov_cryptomaterial) {
-        this->aov_cryptoasset = AtString(aov_cryptoasset);
-        this->aov_cryptoobject = AtString(aov_cryptoobject);
-        this->aov_cryptomaterial = AtString(aov_cryptomaterial);
+    void setup_all(const AtString aov_cryptoasset, const AtString aov_cryptoobject, const AtString aov_cryptomaterial) {
+        this->aov_cryptoasset = aov_cryptoasset;
+        this->aov_cryptoobject = aov_cryptoobject;
+        this->aov_cryptomaterial = aov_cryptomaterial;
 
         this->destroy_arrays();
 
