@@ -15,6 +15,8 @@
 
 AI_FILTER_NODE_EXPORT_METHODS(cryptomatte_filterMtd)
 
+
+
 enum cryptomatte_filterParams {
 	p_width,
 	p_rank,
@@ -22,6 +24,11 @@ enum cryptomatte_filterParams {
 	p_mode,
 };
 
+struct CryptomatteFilterData {
+    float width;
+    int rank;
+    int filter;
+};
 
 enum modeEnum {
 	p_mode_double_rgba,
@@ -33,9 +40,9 @@ static const char* modeEnumNames[] = {
 };
 
 node_parameters {
-	AiMetaDataSetStr(mds, NULL, "maya.attr_prefix", "filter_");
-	AiMetaDataSetStr(mds, NULL, "maya.translator", "cryptomatteFilter");
-	AiMetaDataSetInt(mds, NULL, "maya.id", 0x00116420);
+	AiMetaDataSetStr(nentry, NULL, "maya.attr_prefix", "filter_");
+	AiMetaDataSetStr(nentry, NULL, "maya.translator", "cryptomatteFilter");
+	AiMetaDataSetInt(nentry, NULL, "maya.id", 0x00116420);
 
 	AiParameterFlt("width", 2.0);
 	AiParameterInt("rank", 0);
@@ -58,23 +65,32 @@ node_initialize {
 	static const char* necessary_aovs[] = {
 		"FLOAT Z", 
 		NULL 
-	}; 
-	AiFilterInitialize(node, true, necessary_aovs, NULL);
+	};
+    CryptomatteFilterData * data = new CryptomatteFilterData();
+    AiNodeSetLocalData(node, data);
+    AiFilterInitialize(node, true, necessary_aovs);
 }
 
 node_finish {
-	AiFilterDestroy(node);
+    CryptomatteFilterData * data = (CryptomatteFilterData*) AiNodeGetLocalData(node);
+    delete data;
+    AiNodeSetLocalData(node, NULL);
 }
 
 node_update {
 	AtShaderGlobals shader_globals;
 	AtShaderGlobals *sg = &shader_globals;
-	if (AiShaderEvalParamEnum(p_filter) == p_filter_box) {
+
+    CryptomatteFilterData * data = (CryptomatteFilterData*) AiNodeGetLocalData(node);
+    data->width = AiNodeGetFlt(node, "width");
+    data->rank = AiNodeGetInt(node, "rank");
+    data->filter = AiNodeGetInt(node, "filter");
+	if (data->filter == p_filter_box) {
 		AiFilterUpdate(node, 1.0f);
-	} else {		
-		float width = AiShaderEvalParamFlt(p_width);
-		AiFilterUpdate(node, width);
+	} else {
+		AiFilterUpdate(node, data->width);
 	}
+    
 }
 
 filter_output_type {
@@ -115,13 +131,18 @@ filter_pixel {
 	AtShaderGlobals shader_globals;
 	AtShaderGlobals *sg = &shader_globals;
 	AtRGBA *out_value = (AtRGBA *)data_out;
-	*out_value = AI_RGBA_BLACK;
+	*out_value = AI_RGBA_ZERO;
+    
+    CryptomatteFilterData * data = (CryptomatteFilterData*)AiNodeGetLocalData(node);
 
-	int rank =        AiShaderEvalParamInt (p_rank);
-	float width =     AiShaderEvalParamFlt (p_width);
-	int main_filter = AiShaderEvalParamEnum(p_filter);
+	AtNode * renderOptions = AiUniverseGetOptions();
+	int auto_transparency_depth = AiNodeGetInt(renderOptions, "auto_transparency_depth");
+
+	AtNode * camera = AiUniverseGetCamera();
+	float camera_far_clip = AiNodeGetFlt(camera, "far_clip");
 	
-	float (*filter)(AtPoint2, float);
+	float (*filter)(AtVector2, float);
+
 
 	///////////////////////////////////////////////
 	//
@@ -141,8 +162,8 @@ filter_pixel {
 	}
 
 	if (early_out) {
-		*out_value = AI_RGBA_BLACK;
-		if (rank == 0) {
+		*out_value = AI_RGBA_ZERO;
+		if (data->rank == 0) {
 			out_value->g = 1.0f;					
 		}
 		return;
@@ -156,7 +177,7 @@ filter_pixel {
 	//
 	///////////////////////////////////////////////
 
-	switch (main_filter) {
+	switch (data->filter) {
 		case p_filter_triangle:
 			filter = &triangle;
 			break;
@@ -187,20 +208,21 @@ filter_pixel {
 
 	sw_map_type vals;
 
+
 	int total_samples = 0;
 	float total_weight = 0.0f;
 	float sample_weight;
-	AtPoint2 offset;
+	AtVector2 offset;
+	static const AtString zAOV("Z");
 
 	///////////////////////////////////////////////
 	//
 	//		Iterate samples
 	//
 	///////////////////////////////////////////////
-
 	while (AiAOVSampleIteratorGetNext(iterator)) {
 		offset = AiAOVSampleIteratorGetOffset(iterator);
-		sample_weight = filter(offset, width);
+		sample_weight = filter(offset, data->width);
 
 		if (sample_weight == 0.0f) {
 			continue;
@@ -213,7 +235,7 @@ filter_pixel {
 		//
 		///////////////////////////////////////////////
 
-		if (!AiAOVSampleIteratorHasValue(iterator))	{
+		if (!AiAOVSampleIteratorHasValue(iterator))	{			
 			total_weight += sample_weight;
 			write_to_samples_map(&vals, 0.0f, sample_weight);
 			continue;
@@ -230,9 +252,6 @@ filter_pixel {
 		float iterative_transparency_weight = 1.0f;
 		int depth = 0;
 		AtVector sample_value = AI_V3_ZERO;
-
-		// getting value here redundantly is a workaround for an issue prior to Arnold 4.14 with volume shaders. 
-		sample_value = AiAOVSampleIteratorGetVec(iterator); 
 
 		total_weight += quota;
 		while (AiAOVSampleIteratorGetNextDepth(iterator)) {
@@ -281,11 +300,11 @@ filter_pixel {
 
 	int iter = 0;
 	for (all_vals_iter = all_vals.begin(); all_vals_iter != all_vals.end(); ++all_vals_iter) {
-		if (iter == rank) {
+		if (iter == data->rank) {
 			out_value->r = all_vals_iter->first;
 			out_value->g = (all_vals_iter->second / total_weight);
 		}
-		else if (iter == rank + 1) {
+		else if (iter == data->rank + 1) {
 			out_value->b = all_vals_iter->first;
 			out_value->a = (all_vals_iter->second / total_weight);
 			return;
