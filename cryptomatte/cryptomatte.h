@@ -38,25 +38,23 @@ How to add cryptomatte to a shader:
 
 4. in node_update:
 
-        data->cryptomatte->setup_all_mutex(AiNodeGetStr(node, "aov_cryptoasset"), 
+        data->cryptomatte->setup_all(AiNodeGetStr(node, "aov_cryptoasset"), 
             AiNodeGetStr(node, "aov_cryptoobject"), AiNodeGetStr(node, "aov_cryptomaterial"));
 
     The three arguments are the names of the cryptomatte AOVs. If the AOVs are activ (connected to EXR drivers), 
     this does all the complicated setup work of creating multiple AOVs if necessary, writing metadata, etc. 
-    data->cryptomatte->setup_all() will do the same thing, but without the mutex. 
 
 5. in shader_evaluate:
 
-        data->cryptomatte->do_cryptomattes(sg, node, p_override_asset, p_override_object, p_override_material);
+        data->cryptomatte->do_cryptomattes(sg, node, p_override_asset, p_override_object, p_override_material, opacity);
 
     This does all the hashing and writing values to AOVs, including user-defined cryptomattes. 
     You pass in your AtShaderGlobals, node, as well as the enum values for the parameters 
     for the cryptomatte string overrides. If you don't provide string overrides to your users, 
     you can set those to -1. 
 
-    One gotcha here is that if AiShaderGlobalsApplyOpacity() is going to be called, 
-    it should be called before doing cryptomattes, and if there is an early out for
-    full transparency, do_cryptomattes should be called anyway. 
+    Opacity must also be supplied as a float (rgb opacity is not supported). Opacity can be 
+    computed from closures.  
 
 */
 
@@ -847,10 +845,6 @@ struct CryptomatteGlobals {
 };
 
 
-// #include <windows.h>
-// HANDLE g_hIOMutex= CreateMutex(NULL, FALSE, NULL);
-
-
 struct CryptomatteData {
     AtString aov_cryptoasset;
     AtString aov_cryptoobject;
@@ -880,12 +874,6 @@ public:
         this->user_cryptomatte_info = init_user_cryptomatte_data();
         this->setup_cryptomatte_nodes();
     }
-
-    // void setup_all_mutex(const char* aov_cryptoasset, const char* aov_cryptoobject, const char* aov_cryptomaterial) {
-    //     WaitForSingleObject( g_hIOMutex, INFINITE );
-    //     this->setup_all(aov_cryptoasset, aov_cryptoobject, aov_cryptomaterial);
-    //     ReleaseMutex( g_hIOMutex);
-    // }
 
     void do_cryptomattes(AtShaderGlobals *sg, AtNode * node, int p_override_asset, int p_override_object, int p_override_material, float opacity ) {
         if (sg->Rt & AI_RAY_CAMERA) {
