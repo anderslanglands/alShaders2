@@ -1,11 +1,13 @@
 #include <ai.h>
 #include <string>
+#include <unordered_set>
 #include <cstring>
 #include <map>
 #include <ctime>
 #include "MurmurHash3.h"
 #include <cstdio>
 #include <limits>
+#include <algorithm>
 
 #define NOMINMAX // lets you keep using std::min
 
@@ -36,25 +38,23 @@ How to add cryptomatte to a shader:
 
 4. in node_update:
 
-        data->cryptomatte->setup_all_mutex(AiNodeGetStr(node, "aov_cryptoasset"), 
+        data->cryptomatte->setup_all(AiNodeGetStr(node, "aov_cryptoasset"), 
             AiNodeGetStr(node, "aov_cryptoobject"), AiNodeGetStr(node, "aov_cryptomaterial"));
 
     The three arguments are the names of the cryptomatte AOVs. If the AOVs are activ (connected to EXR drivers), 
     this does all the complicated setup work of creating multiple AOVs if necessary, writing metadata, etc. 
-    data->cryptomatte->setup_all() will do the same thing, but without the mutex. 
 
 5. in shader_evaluate:
 
-        data->cryptomatte->do_cryptomattes(sg, node, p_override_asset, p_override_object, p_override_material);
+        data->cryptomatte->do_cryptomattes(sg, node, p_override_asset, p_override_object, p_override_material, opacity);
 
     This does all the hashing and writing values to AOVs, including user-defined cryptomattes. 
     You pass in your AtShaderGlobals, node, as well as the enum values for the parameters 
     for the cryptomatte string overrides. If you don't provide string overrides to your users, 
     you can set those to -1. 
 
-    One gotcha here is that if AiShaderGlobalsApplyOpacity() is going to be called, 
-    it should be called before doing cryptomattes, and if there is an early out for
-    full transparency, do_cryptomattes should be called anyway. 
+    Opacity must also be supplied as a float (rgb opacity is not supported). Opacity can be 
+    computed from closures.  
 
 */
 
@@ -98,9 +98,9 @@ Declaring user-data driven Cryptomattes:
 #define MAX_USER_CRYPTOMATTES 16
 
 // User data names
-#define CRYPTO_ASSET_UDATA "crypto_asset"
-#define CRYPTO_OBJECT_UDATA "crypto_object"
-#define CRYPTO_MATERIAL_UDATA "crypto_material"
+static const AtString CRYPTO_ASSET_UDATA("crypto_asset");
+static const AtString CRYPTO_OBJECT_UDATA("crypto_object");
+static const AtString CRYPTO_MATERIAL_UDATA("crypto_material");
 
 // Arnold options parameters
 //      For user cryptomattes
@@ -136,13 +136,13 @@ unsigned char g_pointcloud_instance_verbosity = 0;  // to do: remove this.
 #endif
 
 struct CACHE_ALIGN CryptomatteCache {
-    AtNode * object;        //       8 bytes
-    AtColor nsp_hash_clr;   //      16 bytes
-    AtColor obj_hash_clr;   //      16 bytes
-    AtNode * shader_object; //       8 bytes
-    AtColor mat_hash_clr;   //      16 bytes
-                            //  +_______
-                            //      64 bytes
+    AtNode * object;        
+    AtRGB nsp_hash_clr;   
+    AtRGB obj_hash_clr;   
+    AtNode * shader_object; 
+    AtRGB mat_hash_clr;   
+
+
     CryptomatteCache() {
         this->object = NULL;
         this->nsp_hash_clr = AI_RGB_BLACK;
@@ -337,7 +337,7 @@ float hash_to_float(uint32_t hash) {
 }
 
 
-void hash_name_rgb(const char * name, AtColor* out_color) {
+void hash_name_rgb(const char * name, AtRGB* out_color) {
     // This puts the float ID into the red channel, and the human-readable
     // versions into the G and B channels. 
     uint32_t m3hash = 0;
@@ -348,7 +348,7 @@ void hash_name_rgb(const char * name, AtColor* out_color) {
 }
 
 
-const char* get_user_data(AtShaderGlobals * sg, AtNode * node, const char* user_data_name, bool *cachable) {
+AtString get_user_data(AtShaderGlobals * sg, AtNode * node, AtString user_data_name, bool *cachable) {
     // returns the string if the parameter is usable, modifies cachable
     const AtUserParamEntry* pentry = AiNodeLookUpUserParameter(node, user_data_name);
     if (pentry) {
@@ -360,13 +360,13 @@ const char* get_user_data(AtShaderGlobals * sg, AtNode * node, const char* user_
         // this is intentionally outside the if (pentry) block. 
         // With user data declared on ginstances and such, no pentry
         // is aquirable but AiUDataGetStr still works. 
-        const char * udata_value = NULL;
-        if (AiUDataGetStr(user_data_name, &udata_value)) {
+        AtString udata_value;
+        if (AiUDataGetStr(user_data_name, udata_value)) {
             *cachable = false;
             return udata_value;
         }
     }
-    return NULL;
+    return AtString();
 }
 
 
@@ -378,8 +378,8 @@ bool get_object_names(AtShaderGlobals *sg, AtNode *node, bool strip_obj_ns,
     bool obj_has_override = string_has_content(obj_override);
     bool cachable = !obj_has_override && !nsp_has_override;
 
-    const char *nsp_user_data = nsp_has_override ? NULL : get_user_data(sg, node, CRYPTO_ASSET_UDATA, &cachable);
-    const char *obj_user_data = obj_has_override ? NULL : get_user_data(sg, node, CRYPTO_OBJECT_UDATA, &cachable);
+    AtString nsp_user_data = nsp_has_override ? AtString() : get_user_data(sg, node, CRYPTO_ASSET_UDATA, &cachable);
+    AtString obj_user_data = obj_has_override ? AtString() : get_user_data(sg, node, CRYPTO_OBJECT_UDATA, &cachable);
 
     bool need_nsp_name = !nsp_has_override && !nsp_user_data;        
     bool need_obj_name = !obj_has_override && !obj_user_data;
@@ -408,7 +408,7 @@ bool get_material_name(AtShaderGlobals *sg, AtNode *node, AtNode *shader, bool s
 {
     bool mat_has_override = string_has_content(mat_override);
     bool cachable = !mat_has_override; 
-    const char * mat_user_data = mat_has_override ? NULL : get_user_data(sg, node, CRYPTO_MATERIAL_UDATA, &cachable);
+    AtString mat_user_data = mat_has_override ? AtString() : get_user_data(sg, node, CRYPTO_MATERIAL_UDATA, &cachable);
 
     if (!mat_has_override)
         get_clean_material_name(AiNodeGetName(shader), mat_name_out, strip_mat_ns);
@@ -430,15 +430,15 @@ bool get_material_name(AtShaderGlobals *sg, AtNode *node, AtNode *shader, bool s
 ///////////////////////////////////////////////
 
 
-void write_array_of_AOVs(AtShaderGlobals * sg, AtArray * names, float id) {
+void write_array_of_AOVs(AtShaderGlobals * sg, AtArray * names, float id, float opacity) {
     AtVector val;
     val.x = id; 
     val.y = 0.0f;
-    val.z = AiColorToGrey(sg->out_opacity);
+    val.z = opacity;
 
-    for (AtUInt32 i=0; i < names->nelements; i++) {
-        const char * aovName = AiArrayGetStr( names, i);
-        if (!string_has_content(aovName))
+    for (uint32_t i=0; i < AiArrayGetNumElements(names); i++) {
+        AtString aovName = AiArrayGetStr( names, i);
+        if (!string_has_content(aovName)) // to do: necessary? empty atstring may be fine.. 
             return;
         AiAOVSetVec(sg, aovName, val);
     }
@@ -455,8 +455,8 @@ void write_array_of_AOVs(AtShaderGlobals * sg, AtArray * names, float id) {
 typedef std::map<std::string,float>             manf_map_t ;
 typedef std::map<std::string,float>::iterator   manf_map_it;
 
-void compute_metadata_ID(char id_buffer[8], std::string cryptomatte_name) {
-    AtColor color_hash;
+void compute_metadata_ID(char id_buffer[8], AtString cryptomatte_name) {
+    AtRGB color_hash;
     hash_name_rgb(cryptomatte_name.c_str(), &color_hash);
     uint32_t float_bits;
     std::memcpy(&float_bits, &color_hash.r, 4);
@@ -466,12 +466,12 @@ void compute_metadata_ID(char id_buffer[8], std::string cryptomatte_name) {
     strncpy(id_buffer, hex_chars, 7);
 }
 
-void write_metadata_to_driver(AtNode * driver, std::string cryptomatte_name, manf_map_t * map) {
+void write_metadata_to_driver(AtNode * driver, AtString cryptomatte_name, manf_map_t * map) {
     if (!driver)
         return;
 
     AtArray * orig_md = AiNodeGetArray( driver, "custom_attributes");
-    const AtUInt32 orig_num_entries = orig_md ? orig_md->nelements : 0;
+    const uint32_t orig_num_entries = orig_md ? AiArrayGetNumElements(orig_md) : 0;
 
     std::string metadata_hash, metadata_conv, metadata_name, metadata_manf; // the new entries
     AtArray * combined_md = AiArrayAllocate(orig_num_entries + 4, 1, AI_TYPE_STRING); //Does not need destruction
@@ -481,7 +481,7 @@ void write_metadata_to_driver(AtNode * driver, std::string cryptomatte_name, man
     compute_metadata_ID(metadata_id_buffer, cryptomatte_name);
     prefix += std::string(metadata_id_buffer) + std::string("/");
 
-    for (AtUInt32 i=0; i<orig_num_entries; i++) {
+    for (uint32_t i=0; i<orig_num_entries; i++) {
         if (prefix.compare(AiArrayGetStr(orig_md, i)) == 0) {
             AiMsgWarning("Cryptomatte: Unable to write metadata. EXR metadata key, %s, already in use.", prefix.c_str());
             return;
@@ -490,7 +490,7 @@ void write_metadata_to_driver(AtNode * driver, std::string cryptomatte_name, man
 
     metadata_hash = prefix + std::string("hash MurmurHash3_32");
     metadata_conv = prefix + std::string("conversion uint32_to_float32");
-    metadata_name = prefix + std::string("name ") + cryptomatte_name;
+    metadata_name = prefix + std::string("name ") + cryptomatte_name.c_str();
     metadata_manf = prefix + std::string("manifest ");
 
     manf_map_it map_it = map->begin();
@@ -503,7 +503,7 @@ void write_metadata_to_driver(AtNode * driver, std::string cryptomatte_name, man
     }
 
     metadata_manf.append("{");
-    for (AtUInt32 i=0; i<metadata_entries; i++) {
+    for (uint32_t i=0; i<metadata_entries; i++) {
         const char * name = map_it->first.c_str();
         float hash_value = map_it->second;
         ++map_it;
@@ -525,7 +525,7 @@ void write_metadata_to_driver(AtNode * driver, std::string cryptomatte_name, man
     }
     metadata_manf.append("}");
     
-    for (AtUInt32 i=0; i<orig_num_entries; i++) {
+    for (uint32_t i=0; i<orig_num_entries; i++) {
         AiArraySetStr(combined_md, i, AiArrayGetStr(orig_md, i));
     }
     AiArraySetStr(combined_md, orig_num_entries + 0, metadata_manf.c_str());
@@ -537,16 +537,16 @@ void write_metadata_to_driver(AtNode * driver, std::string cryptomatte_name, man
 }
 
 
-bool metadata_needed(AtNode* driver, const char* aov_name) {
-    std::string flag = std::string(CRYPTOMATTE_METADATA_SET_FLAG) + aov_name;
+bool metadata_needed(AtNode* driver, const AtString aov_name) {
+    std::string flag = std::string(CRYPTOMATTE_METADATA_SET_FLAG) + aov_name.c_str();
     return (driver && !AiNodeLookUpUserParameter(driver, flag.c_str()));
 }
 
 
-void metadata_set_unneeded(AtNode* driver, const char* aov_name) {
+void metadata_set_unneeded(AtNode* driver, const AtString aov_name) {
     if (driver == NULL)
         return;
-    std::string flag = std::string(CRYPTOMATTE_METADATA_SET_FLAG) + aov_name;
+    std::string flag = std::string(CRYPTOMATTE_METADATA_SET_FLAG) + aov_name.c_str();
     if (AiNodeLookUpUserParameter(driver, flag.c_str()) == NULL)
         AiNodeDeclare(driver, flag.c_str(), "constant BOOL");
 }
@@ -555,7 +555,7 @@ void metadata_set_unneeded(AtNode* driver, const char* aov_name) {
 void add_hash_to_map(const char * c_str, manf_map_t * md_map) {
     if (!string_has_content(c_str))
         return;
-    AtColor hash;
+    AtRGB hash;
     std::string name_string = std::string(c_str);
     if (md_map->count(name_string) == 0) {
         hash_name_rgb(c_str, &hash);
@@ -576,7 +576,7 @@ void build_user_metadata(AtArray * uc_info, AtArray* drivers) {
     AtArray * uc_src_array = AiArrayGetArray(uc_info, 1);
 
     bool do_anything = false;
-    for (AtUInt32 i=0; i<drivers->nelements; i++) {
+    for (uint32_t i=0; i<AiArrayGetNumElements(drivers); i++) {
         AtNode *driver = static_cast<AtNode*>(AiArrayGetPtr(drivers, i));
         if (driver == NULL) {
             do_metadata[i] = false;
@@ -592,7 +592,7 @@ void build_user_metadata(AtArray * uc_info, AtArray* drivers) {
     AtNodeIterator * shape_iterator = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
     while (!AiNodeIteratorFinished(shape_iterator)) {
         AtNode *node = AiNodeIteratorGetNext(shape_iterator);
-        for (AtUInt32 i=0; i<drivers->nelements; i++) {
+        for (uint32_t i=0; i<AiArrayGetNumElements(drivers); i++) {
             if (!do_metadata[i])
                 continue;
             const char * user_data_name = AiArrayGetStr(uc_src_array, i);
@@ -606,7 +606,7 @@ void build_user_metadata(AtArray * uc_info, AtArray* drivers) {
             } else {
                 AtArray * values = AiNodeGetArray(node, user_data_name);
                 if (values != NULL) {
-                    for (AtUInt32 ai=0; ai<values->nelements; ai++)
+                    for (uint32_t ai=0; ai<AiArrayGetNumElements(values); ai++)
                         add_hash_to_map(AiArrayGetStr(values, ai), &map_md_user[i]);
                 }
             }
@@ -614,12 +614,12 @@ void build_user_metadata(AtArray * uc_info, AtArray* drivers) {
     }
     AiNodeIteratorDestroy(shape_iterator);
 
-    for (AtUInt32 i=0; i<drivers->nelements; i++) {
+    for (uint32_t i=0; i<AiArrayGetNumElements(drivers); i++) {
         if (!do_metadata[i])
             continue;
         
         AtNode *driver = static_cast<AtNode*>(AiArrayGetPtr(drivers, i));
-        const char *aov_name = AiArrayGetStr(uc_aov_array, i);
+        AtString aov_name = AiArrayGetStr(uc_aov_array, i);
         metadata_set_unneeded(driver, aov_name);
         write_metadata_to_driver(driver, aov_name, &map_md_user[i]);
     }
@@ -632,18 +632,18 @@ bool node_param_is_string(AtNode * node, const char* param_name) {
 }
 
 void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode* driver_material, 
-                             std::string aov_asset, std::string aov_object, std::string aov_material, 
+                             AtString aov_asset, AtString aov_object, AtString aov_material, 
                              bool strip_obj_ns, bool strip_mat_ns) 
 {
     const clock_t metadata_start_time = clock();
 
-    const bool do_md_asset = metadata_needed(driver_asset, aov_asset.c_str());
-    const bool do_md_object = metadata_needed(driver_object, aov_object.c_str());
-    const bool do_md_material = metadata_needed(driver_material, aov_material.c_str());
+    const bool do_md_asset = metadata_needed(driver_asset, aov_asset);
+    const bool do_md_object = metadata_needed(driver_object, aov_object);
+    const bool do_md_material = metadata_needed(driver_material, aov_material);
 
-    metadata_set_unneeded(driver_asset, aov_asset.c_str());
-    metadata_set_unneeded(driver_object, aov_object.c_str());
-    metadata_set_unneeded(driver_material, aov_material.c_str());
+    metadata_set_unneeded(driver_asset, aov_asset);
+    metadata_set_unneeded(driver_object, aov_object);
+    metadata_set_unneeded(driver_material, aov_material);
 
     if (!do_md_asset && !do_md_object && !do_md_material)
         return;
@@ -670,7 +670,7 @@ void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode
             // Process all shaders from the objects into the manifest. 
             // This includes cluster materials.
             AtArray * shaders = AiNodeGetArray(node, "shader");
-            for (AtUInt32 i = 0; i < shaders->nelements; i++) {
+            for (uint32_t i = 0; i < AiArrayGetNumElements(shaders); i++) {
                 AtNode * shader = static_cast<AtNode*>(AiArrayGetPtr(shaders, i));
                 get_material_name(NULL, node, shader, strip_mat_ns, NULL, mat_name);
                 add_hash_to_map(mat_name, &map_md_material); 
@@ -751,7 +751,7 @@ AtArray* init_user_cryptomatte_data() {
                 AiArraySetStr(uc_src_array, 0, AiNodeGetStr(renderOptions, CRYPTO_USER_SRC_PARAM));
             }
 
-            if (!uc_aov_array || !uc_src_array || uc_aov_array->nelements != uc_src_array->nelements) {
+            if (!uc_aov_array || !uc_src_array || AiArrayGetNumElements(uc_aov_array) != AiArrayGetNumElements(uc_src_array)) {
                 if (uc_aov_array)
                     AiArrayDestroy(uc_aov_array);
                 if (uc_src_array)
@@ -759,10 +759,10 @@ AtArray* init_user_cryptomatte_data() {
                 uc_aov_array = NULL;
                 uc_src_array = NULL;
             } else {
-                const int user_aov_num = std::min(uc_aov_array->nelements, (AtUInt32) MAX_USER_CRYPTOMATTES);
-                if (user_aov_num < (int) uc_aov_array->nelements) {
+                const int user_aov_num = std::min(AiArrayGetNumElements(uc_aov_array), (uint32_t) MAX_USER_CRYPTOMATTES);
+                if (user_aov_num < (int) AiArrayGetNumElements(uc_aov_array)) {
                     AiMsgWarning("Cryptomatte: Maximum number of user cryptomattes is %d, removing %d", 
-                        MAX_USER_CRYPTOMATTES, uc_aov_array->nelements - user_aov_num);
+                        MAX_USER_CRYPTOMATTES, AiArrayGetNumElements(uc_aov_array) - user_aov_num);
                 }
                 uc_info = AiArrayAllocate(2+user_aov_num, 1, AI_TYPE_ARRAY);
                 AiArraySetArray(uc_info, 0, uc_aov_array);
@@ -799,7 +799,7 @@ struct CryptomatteGlobals {
 
         AtNode * options = AiUniverseGetOptions();
         AtNode * controller = static_cast<AtNode*>( AiNodeGetPtr(options, "background") );
-        if (controller && AiNodeIs(controller, "uBasic_controller")) {
+        if (controller && AiNodeIs(controller, AtString("uBasic_controller"))) {
             // this is legacy Psyop stuff. Sorry. 
             strip_mat_ns = AiNodeGetBool(controller, "strip_material_namespaces");
             if (AiNodeGetBool(controller, "override_cryptomatte")) {
@@ -845,14 +845,10 @@ struct CryptomatteGlobals {
 };
 
 
-// #include <windows.h>
-// HANDLE g_hIOMutex= CreateMutex(NULL, FALSE, NULL);
-
-
 struct CryptomatteData {
-    std::string aov_cryptoasset;
-    std::string aov_cryptoobject;
-    std::string aov_cryptomaterial;
+    AtString aov_cryptoasset;
+    AtString aov_cryptoobject;
+    AtString aov_cryptomaterial;
     AtArray * aovArray_cryptoasset;
     AtArray * aovArray_cryptoobject;
     AtArray * aovArray_cryptomaterial;
@@ -868,10 +864,10 @@ public:
         init_cryptomatte_cache();
     }
 
-    void setup_all(const char* aov_cryptoasset, const char* aov_cryptoobject, const char* aov_cryptomaterial) {
-        this->aov_cryptoasset = std::string(aov_cryptoasset);
-        this->aov_cryptoobject = std::string(aov_cryptoobject);
-        this->aov_cryptomaterial = std::string(aov_cryptomaterial);
+    void setup_all(const AtString aov_cryptoasset, const AtString aov_cryptoobject, const AtString aov_cryptomaterial) {
+        this->aov_cryptoasset = aov_cryptoasset;
+        this->aov_cryptoobject = aov_cryptoobject;
+        this->aov_cryptomaterial = aov_cryptomaterial;
 
         this->destroy_arrays();
 
@@ -879,27 +875,21 @@ public:
         this->setup_cryptomatte_nodes();
     }
 
-    // void setup_all_mutex(const char* aov_cryptoasset, const char* aov_cryptoobject, const char* aov_cryptomaterial) {
-    //     WaitForSingleObject( g_hIOMutex, INFINITE );
-    //     this->setup_all(aov_cryptoasset, aov_cryptoobject, aov_cryptomaterial);
-    //     ReleaseMutex( g_hIOMutex);
-    // }
-
-    void do_cryptomattes(AtShaderGlobals *sg, AtNode * node, int p_override_asset, int p_override_object, int p_override_material ) {
+    void do_cryptomattes(AtShaderGlobals *sg, AtNode * node, int p_override_asset, int p_override_object, int p_override_material, float opacity ) {
         if (sg->Rt & AI_RAY_CAMERA) {
-            this->do_standard_cryptomattes(sg, node, p_override_asset, p_override_object, p_override_material);
-            this->do_user_cryptomattes(sg);
+            this->do_standard_cryptomattes(sg, node, p_override_asset, p_override_object, p_override_material, opacity);
+            this->do_user_cryptomattes(sg, opacity);
         }
     }
 
 private:
-    void do_standard_cryptomattes(AtShaderGlobals *sg, AtNode * node, int p_override_asset, int p_override_object, int p_override_material ) {
-        if (!AiAOVEnabled(this->aov_cryptoasset.c_str(), AI_TYPE_RGB)
-            && !AiAOVEnabled(this->aov_cryptoobject.c_str(), AI_TYPE_RGB)
-            && !AiAOVEnabled(this->aov_cryptomaterial.c_str(), AI_TYPE_RGB)) {
+    void do_standard_cryptomattes(AtShaderGlobals *sg, AtNode * node, int p_override_asset, int p_override_object, int p_override_material, float opacity ) {
+        if (!AiAOVEnabled(this->aov_cryptoasset, AI_TYPE_RGB)
+            && !AiAOVEnabled(this->aov_cryptoobject, AI_TYPE_RGB)
+            && !AiAOVEnabled(this->aov_cryptomaterial, AI_TYPE_RGB)) {
             return;
         }
-        AtColor nsp_hash_clr, obj_hash_clr, mat_hash_clr;
+        AtRGB nsp_hash_clr, obj_hash_clr, mat_hash_clr;
 
         const char * nsp_override = (p_override_asset > -1) ? AiShaderEvalParamStr(p_override_asset) : "";
         const char * obj_override = (p_override_object > -1) ? AiShaderEvalParamStr(p_override_object) : "";
@@ -907,49 +897,49 @@ private:
 
         this->hash_object_rgb(sg, &nsp_hash_clr, &obj_hash_clr, &mat_hash_clr, nsp_override, obj_override, mat_override);
 
-        if (AiAOVEnabled(this->aov_cryptoasset.c_str(), AI_TYPE_VECTOR))
-            write_array_of_AOVs(sg, this->aovArray_cryptoasset, nsp_hash_clr.r);
-        if (AiAOVEnabled(this->aov_cryptoobject.c_str(), AI_TYPE_VECTOR))
-            write_array_of_AOVs(sg, this->aovArray_cryptoobject, obj_hash_clr.r);
-        if (AiAOVEnabled(this->aov_cryptomaterial.c_str(), AI_TYPE_VECTOR))
-            write_array_of_AOVs(sg, this->aovArray_cryptomaterial, mat_hash_clr.r);
+        if (AiAOVEnabled(this->aov_cryptoasset, AI_TYPE_VECTOR))
+            write_array_of_AOVs(sg, this->aovArray_cryptoasset, nsp_hash_clr.r, opacity);
+        if (AiAOVEnabled(this->aov_cryptoobject, AI_TYPE_VECTOR))
+            write_array_of_AOVs(sg, this->aovArray_cryptoobject, obj_hash_clr.r, opacity);
+        if (AiAOVEnabled(this->aov_cryptomaterial, AI_TYPE_VECTOR))
+            write_array_of_AOVs(sg, this->aovArray_cryptomaterial, mat_hash_clr.r, opacity);
         
         nsp_hash_clr.r = 0.0f;
         obj_hash_clr.r = 0.0f;
         mat_hash_clr.r = 0.0f;
 
-        AiAOVSetRGBA(sg, this->aov_cryptoasset.c_str(), AiRGBtoRGBA( nsp_hash_clr ));      
-        AiAOVSetRGBA(sg, this->aov_cryptoobject.c_str(), AiRGBtoRGBA( obj_hash_clr ));
-        AiAOVSetRGBA(sg, this->aov_cryptomaterial.c_str(), AiRGBtoRGBA( mat_hash_clr ));
+        AiAOVSetRGBA(sg, this->aov_cryptoasset, nsp_hash_clr);      
+        AiAOVSetRGBA(sg, this->aov_cryptoobject, obj_hash_clr);
+        AiAOVSetRGBA(sg, this->aov_cryptomaterial, mat_hash_clr);
     }
 
-    void do_user_cryptomattes(AtShaderGlobals * sg) {
+    void do_user_cryptomattes(AtShaderGlobals * sg, float opacity ) {
         if (this->user_cryptomatte_info == NULL)
             return;
 
         AtArray* uc_aov_array = AiArrayGetArray(this->user_cryptomatte_info, 0);
         AtArray* uc_src_array = AiArrayGetArray(this->user_cryptomatte_info, 1);
 
-        for (AtUInt32 uc_index=2; uc_index<this->user_cryptomatte_info->nelements; uc_index++) {
+        for (uint32_t uc_index=2; uc_index<AiArrayGetNumElements(this->user_cryptomatte_info); uc_index++) {
             AtArray * aovArray = AiArrayGetArray(this->user_cryptomatte_info, uc_index);
             if (aovArray != NULL) {
-                AtUInt32 i = uc_index-2;
-                const char * aov_name = AiArrayGetStr(uc_aov_array, i);
-                const char * src_data_name = AiArrayGetStr(uc_src_array, i);
+                uint32_t i = uc_index-2;
+                AtString aov_name = AiArrayGetStr(uc_aov_array, i);
+                AtString src_data_name = AiArrayGetStr(uc_src_array, i);
+                AtRGB hash;
+                AtString result;
 
-                AtColor hash;
-                const char* result = NULL;
-                AiUDataGetStr(src_data_name, &result);
-                if (string_has_content(result)) {
-                    hash_name_rgb(result, &hash);
-                    write_array_of_AOVs(sg, aovArray, hash.r);
-                    AiAOVSetRGBA(sg, aov_name, AiRGBtoRGBA( hash ));
+                AiUDataGetStr(src_data_name, result);
+                if (string_has_content(result.c_str())) {
+                    hash_name_rgb(result.c_str(), &hash);
+                    write_array_of_AOVs(sg, aovArray, hash.r, opacity);
+                    AiAOVSetRGBA(sg, aov_name, hash);
                 }
             }
         }
     }
 
-    void hash_object_rgb(AtShaderGlobals* sg, AtColor * nsp_hash_clr, AtColor * obj_hash_clr, AtColor * mat_hash_clr, 
+    void hash_object_rgb(AtShaderGlobals* sg, AtRGB * nsp_hash_clr, AtRGB * obj_hash_clr, AtRGB * mat_hash_clr, 
                          const char * nsp_override, const char * obj_override, const char * mat_override) 
     {
         if (CRYPTOMATTE_CACHE[sg->tid].object == sg->Op) {
@@ -976,7 +966,7 @@ private:
             bool cachable = true;
             AtArray * shaders = AiNodeGetArray(sg->Op, "shader");
             AtNode *shader = NULL;
-            if (shaders->nelements == 1) {
+            if (AiArrayGetNumElements(shaders) == 1) {
                 // use whatever is assigned, not whatever is currently evaluating
                 // this will match the manifest
                 shader = static_cast<AtNode*>(AiArrayGetPtr(shaders, 0));
@@ -1012,9 +1002,9 @@ private:
         if (this->user_cryptomatte_info != NULL) {
             uc_aov_array = AiArrayGetArray(this->user_cryptomatte_info, 0);
             uc_src_array = AiArrayGetArray(this->user_cryptomatte_info, 1);
-            tmp_uc_drivers = AiArrayAllocate(uc_aov_array->nelements, 1, AI_TYPE_NODE); // destroyed later
+            tmp_uc_drivers = AiArrayAllocate(AiArrayGetNumElements(uc_aov_array), 1, AI_TYPE_NODE); // destroyed later
 
-            num_cryptomatte_AOVs += (this->user_cryptomatte_info)->nelements - 2;
+            num_cryptomatte_AOVs += AiArrayGetNumElements(this->user_cryptomatte_info) - 2;
         }
 
         this->aovArray_cryptoasset = AiArrayAllocate(this->globals.aov_depth, 1, AI_TYPE_STRING);
@@ -1029,7 +1019,7 @@ private:
         AtArray * tmp_new_outputs = AiArrayAllocate(num_cryptomatte_AOVs * this->globals.aov_depth, 1, AI_TYPE_STRING); // destroyed later
         int new_output_num = 0;
 
-        for (AtUInt32 i=0; i < outputs->nelements; i++) {
+        for (uint32_t i=0; i < AiArrayGetNumElements(outputs); i++) {
             const char * output_string = AiArrayGetStr( outputs, i);
             size_t output_string_chars = strlen(output_string);
             char temp_string[MAX_STRING_LENGTH * 8]; 
@@ -1064,7 +1054,7 @@ private:
                 driver = AiNodeLookUpByName(driver_name);
                 driver_cryptoMaterial = driver;
             } else if (this->user_cryptomatte_info != NULL) {
-                for (AtUInt32 j=0; j < uc_aov_array->nelements; j++) {
+                for (uint32_t j=0; j < AiArrayGetNumElements(uc_aov_array); j++) {
                     const char * user_aov_name = AiArrayGetStr(uc_aov_array, j);
                     if (strcmp(aov_name, user_aov_name) == 0) {
                         cryptoAOVs = AiArrayAllocate(MAX_CRYPTOMATTE_DEPTH, 1, AI_TYPE_STRING); // will be destroyed when cryptomatteData is
@@ -1081,15 +1071,15 @@ private:
         }
 
         if (new_output_num > 0) {
-            int total_outputs = outputs->nelements + new_output_num;
+            int total_outputs = AiArrayGetNumElements(outputs) + new_output_num;
             AtArray * final_outputs = AiArrayAllocate(total_outputs, 1, AI_TYPE_STRING); // Does not need destruction
-            for (AtUInt32 i=0; i < outputs->nelements; i++) {
+            for (uint32_t i=0; i < AiArrayGetNumElements(outputs); i++) {
                 // Iterate through old outputs and add them
                 AiArraySetStr(final_outputs, i, AiArrayGetStr( outputs, i));
             }
             for (int i=0; i < new_output_num; i++)  {
                 // Iterate through new outputs and add them
-                AiArraySetStr(final_outputs, i + outputs->nelements, AiArrayGetStr( tmp_new_outputs, i));
+                AiArraySetStr(final_outputs, i + AiArrayGetNumElements(outputs), AiArrayGetStr( tmp_new_outputs, i));
             }
             AiNodeSetArray(renderOptions, "outputs", final_outputs );
         }
@@ -1109,7 +1099,7 @@ private:
         // helper for setup_cryptomatte_nodes. Populates cryptoAOVs and returns the number of new outputs created. 
         int new_ouputs = 0;
 
-        if (!AiNodeIs(driver, "driver_exr")) {
+        if (!AiNodeIs(driver, AtString("driver_exr"))) {
             AiMsgWarning("Cryptomatte Error: Can only write Cryptomatte to EXR files.");
             return new_ouputs;
         }
@@ -1148,6 +1138,12 @@ private:
         
         AiAOVRegister(aov_name, AI_TYPE_RGB, AI_AOV_BLEND_OPACITY);
 
+        AtArray *outputs = AiNodeGetArray( AiUniverseGetOptions(), "outputs");
+        
+        std::unordered_set<std::string> outputSet;
+        for (int i=0; i < AiArrayGetNumElements(outputs); i++)
+            outputSet.insert( std::string(AiArrayGetStr(outputs, i)));
+
         ///////////////////////////////////////////////
         //      Create filters and outputs as needed 
         for (int i=0; i<this->globals.aov_depth; i++) {
@@ -1169,29 +1165,27 @@ private:
             strcat(filter_rank_name, rank_number_string );
             strcat(aov_rank_name, rank_number_string );
             
-            if ( AiNodeLookUpByName( filter_rank_name ) == NULL) {
+            const bool nofilter = AiNodeLookUpByName( filter_rank_name ) == NULL;
+            if ( nofilter ) {
                 AtNode *filter = AiNode("cryptomatte_filter");
                 AiNodeSetStr(filter, "name", filter_rank_name);
                 AiNodeSetInt(filter, "rank", i*2);
                 AiNodeSetStr(filter, "filter", aFilter_filter);
                 AiNodeSetFlt(filter, "width", aFilter_width);
                 AiNodeSetStr(filter, "mode", "double_rgba");
+            }
 
+            std::string new_output_str(aov_rank_name);
+            new_output_str += " " ;
+            new_output_str += "VECTOR" ;
+            new_output_str += " " ;
+            new_output_str += filter_rank_name ;
+            new_output_str += " " ;
+            new_output_str += AiNodeGetName(driver);
+
+            if (outputSet.find(new_output_str) == outputSet.end()) {
                 AiAOVRegister(aov_rank_name, AI_TYPE_VECTOR, AI_AOV_BLEND_NONE);
-
-                // Add an output to the render globals, or make a list of outputs to add, and register an AOV
-                char new_output_string[MAX_STRING_LENGTH * 8];
-                memset(new_output_string, 0, sizeof(new_output_string));
-
-                strcat(new_output_string, aov_rank_name );
-                strcat(new_output_string, " " );
-                strcat(new_output_string, "VECTOR" );
-                strcat(new_output_string, " " );
-                strcat(new_output_string, filter_rank_name );
-                strcat(new_output_string, " " );
-                strcat(new_output_string, AiNodeGetName(driver));
-
-                AiArraySetStr(tmp_new_outputs, output_offset + new_ouputs, new_output_string);
+                AiArraySetStr(tmp_new_outputs, output_offset + new_ouputs, new_output_str.c_str());
                 new_ouputs++;
             }
             AiArraySetStr(cryptoAOVs, i, aov_rank_name);
@@ -1211,7 +1205,7 @@ private:
         if (this->aovArray_cryptomaterial)
             AiArrayDestroy(this->aovArray_cryptomaterial);
         if (this->user_cryptomatte_info) {
-            for (AtUInt32 i=0; i<this->user_cryptomatte_info->nelements; i++) {
+            for (uint32_t i=0; i<AiArrayGetNumElements(this->user_cryptomatte_info); i++) {
                 AtArray *subarray = AiArrayGetArray(this->user_cryptomatte_info, i);
                 AiArraySetArray(this->user_cryptomatte_info, i, NULL);
                 if (subarray)
