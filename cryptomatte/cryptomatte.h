@@ -371,31 +371,30 @@ AtString get_user_data(AtShaderGlobals * sg, AtNode * node, AtString user_data_n
 
 
 bool get_object_names(AtShaderGlobals *sg, AtNode *node, bool strip_obj_ns, 
-                      const char *nsp_override, const char *obj_override, 
+                      // const char *nsp_override, const char *obj_override, 
                       char nsp_name_out[MAX_STRING_LENGTH], char obj_name_out[MAX_STRING_LENGTH]) 
 {
-    bool nsp_has_override = string_has_content(nsp_override);
-    bool obj_has_override = string_has_content(obj_override);
-    bool cachable = !obj_has_override && !nsp_has_override;
+    // bool nsp_has_override = string_has_content(nsp_override);
+    // bool obj_has_override = string_has_content(obj_override);
+    // bool cachable = !obj_has_override && !nsp_has_override;
+    bool cachable = true;
 
-    AtString nsp_user_data = nsp_has_override ? AtString() : get_user_data(sg, node, CRYPTO_ASSET_UDATA, &cachable);
-    AtString obj_user_data = obj_has_override ? AtString() : get_user_data(sg, node, CRYPTO_OBJECT_UDATA, &cachable);
+    AtString nsp_user_data = get_user_data(sg, node, CRYPTO_ASSET_UDATA, &cachable);
+    AtString obj_user_data = get_user_data(sg, node, CRYPTO_OBJECT_UDATA, &cachable);
 
-    bool need_nsp_name = !nsp_has_override && !nsp_user_data;        
-    bool need_obj_name = !obj_has_override && !obj_user_data;
+    // bool need_nsp_name = !nsp_has_override && !nsp_user_data;        
+    // bool need_obj_name = !obj_has_override && !obj_user_data;
+    bool need_nsp_name = !nsp_user_data;        
+    bool need_obj_name = !obj_user_data;
     if (need_obj_name || need_nsp_name) {
         const char *obj_full_name = AiNodeGetName(node);
         get_clean_object_name(obj_full_name, obj_name_out, nsp_name_out, strip_obj_ns);
     }
 
-    if (nsp_has_override)
-        strcpy(nsp_name_out, nsp_override);
-    else if (nsp_user_data)
+    if (nsp_user_data)
         strcpy(nsp_name_out, nsp_user_data);
 
-    if (obj_has_override)
-        strcpy(obj_name_out, obj_override);
-    else if (obj_user_data)
+    if (obj_user_data)
         strcpy(obj_name_out, obj_user_data);
 
     nsp_name_out[MAX_STRING_LENGTH-1] = '\0';
@@ -404,18 +403,14 @@ bool get_object_names(AtShaderGlobals *sg, AtNode *node, bool strip_obj_ns,
 
 
 bool get_material_name(AtShaderGlobals *sg, AtNode *node, AtNode *shader, bool strip_mat_ns, 
-                       const char *mat_override, char mat_name_out[MAX_STRING_LENGTH]) 
+                       char mat_name_out[MAX_STRING_LENGTH]) 
 {
-    bool mat_has_override = string_has_content(mat_override);
-    bool cachable = !mat_has_override; 
-    AtString mat_user_data = mat_has_override ? AtString() : get_user_data(sg, node, CRYPTO_MATERIAL_UDATA, &cachable);
+    bool cachable = true;
+    AtString mat_user_data = get_user_data(sg, node, CRYPTO_MATERIAL_UDATA, &cachable);
 
-    if (!mat_has_override)
-        get_clean_material_name(AiNodeGetName(shader), mat_name_out, strip_mat_ns);
+    get_clean_material_name(AiNodeGetName(shader), mat_name_out, strip_mat_ns);
 
-    if (mat_has_override)
-        strcpy(mat_name_out, mat_override); 
-    else if (mat_user_data)
+    if (mat_user_data)
         strcpy(mat_name_out, mat_user_data); 
 
     mat_name_out[MAX_STRING_LENGTH-1] = '\0';
@@ -659,7 +654,7 @@ void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode
         char nsp_name[MAX_STRING_LENGTH] = "";
         char obj_name[MAX_STRING_LENGTH] = "";
 
-        get_object_names(NULL, node, strip_obj_ns, NULL, NULL, nsp_name, obj_name);
+        get_object_names(NULL, node, strip_obj_ns, nsp_name, obj_name);
 
         if (do_md_asset || do_md_object) { 
             add_hash_to_map(nsp_name, &map_md_asset);
@@ -672,7 +667,7 @@ void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode
             AtArray * shaders = AiNodeGetArray(node, "shader");
             for (uint32_t i = 0; i < AiArrayGetNumElements(shaders); i++) {
                 AtNode * shader = static_cast<AtNode*>(AiArrayGetPtr(shaders, i));
-                get_material_name(NULL, node, shader, strip_mat_ns, NULL, mat_name);
+                get_material_name(NULL, node, shader, strip_mat_ns, mat_name);
                 add_hash_to_map(mat_name, &map_md_material); 
             }
         }
@@ -792,55 +787,22 @@ struct CryptomatteGlobals {
     uint8_t pcloud_ice_verbosity;
 
     CryptomatteGlobals() {
-        int depth = CRYPTO_DEPTH_DEFAULT;
-        bool strip_obj_ns = CRYPTO_STRIPOBJNS_DEFAULT;
-        bool strip_mat_ns = CRYPTO_STRIPMATNS_DEFAULT;
-        int pcloud_ice_verbosity = CRYPTO_ICEPCLOUDVERB_DEFAULT;
-
-        AtNode * options = AiUniverseGetOptions();
-        AtNode * controller = static_cast<AtNode*>( AiNodeGetPtr(options, "background") );
-        if (controller && AiNodeIs(controller, AtString("uBasic_controller"))) {
-            // this is legacy Psyop stuff. Sorry. 
-            strip_mat_ns = AiNodeGetBool(controller, "strip_material_namespaces");
-            if (AiNodeGetBool(controller, "override_cryptomatte")) {
-                depth = AiNodeGetInt(controller, "cryptomatte_depth");
-                pcloud_ice_verbosity = AiNodeGetInt(controller, "pointcloud_instance_verbosity");
-            }
-        }
-
-        // Everyone else may use user data on the options. 
-        const AtUserParamEntry *depth_pentry = AiNodeLookUpUserParameter(options, CRYPTO_DEPTH_PARAM);
-        if (depth_pentry && AiUserParamGetType(depth_pentry) == AI_TYPE_INT)
-            depth = AiNodeGetInt(options, CRYPTO_DEPTH_PARAM);
-
-        const AtUserParamEntry *strip_obj_ns_pentry = AiNodeLookUpUserParameter(options, CRYPTO_STRIPOBJNS_PARAM);
-        if (strip_obj_ns_pentry && AiUserParamGetType(strip_obj_ns_pentry) == AI_TYPE_BOOLEAN)
-            strip_obj_ns = AiNodeGetBool(options, CRYPTO_STRIPOBJNS_PARAM);
-
-        const AtUserParamEntry *strip_mat_ns_pentry = AiNodeLookUpUserParameter(options, CRYPTO_STRIPMATNS_PARAM);
-        if (strip_mat_ns_pentry && AiUserParamGetType(strip_mat_ns_pentry) == AI_TYPE_BOOLEAN)
-            strip_mat_ns = AiNodeGetBool(options, CRYPTO_STRIPMATNS_PARAM);
-
-        const AtUserParamEntry *pcloud_ice_verb_pentry = AiNodeLookUpUserParameter(options, CRYPTO_ICEPCLOUDVERB_PARAM);
-        if (pcloud_ice_verb_pentry && AiUserParamGetType(pcloud_ice_verb_pentry) == AI_TYPE_INT)
-            pcloud_ice_verbosity = AiNodeGetInt(options, CRYPTO_ICEPCLOUDVERB_PARAM);
-
-        depth = std::min(depth, MAX_CRYPTOMATTE_DEPTH);
-        depth = std::max(depth, 1);
-        pcloud_ice_verbosity = std::min(pcloud_ice_verbosity, 2);
-        pcloud_ice_verbosity = std::max(pcloud_ice_verbosity, 0);
-
-        this->depth = depth;
-        this->pcloud_ice_verbosity = pcloud_ice_verbosity;
-        this->strip_obj_ns = strip_obj_ns;
-        this->strip_mat_ns = strip_mat_ns;
-
+        this->depth = CRYPTO_DEPTH_DEFAULT;
+        // this->depth = std::min(this->depth, MAX_CRYPTOMATTE_DEPTH);
+        // this->depth = std::max(this->depth, 1);
         if ( this->depth % 2 == 0 )
             this->aov_depth = this->depth/2;
         else
             this->aov_depth = (this->depth + 1)/2;
+        
+        this->pcloud_ice_verbosity = CRYPTO_ICEPCLOUDVERB_DEFAULT;
+        // this->pcloud_ice_verbosity = std::min(this->pcloud_ice_verbosity, 2);
+        // this->pcloud_ice_verbosity = std::max(this->pcloud_ice_verbosity, 0);
 
-        g_pointcloud_instance_verbosity = pcloud_ice_verbosity;
+        this->strip_obj_ns = CRYPTO_STRIPOBJNS_DEFAULT;
+        this->strip_mat_ns = CRYPTO_STRIPMATNS_DEFAULT;
+
+        g_pointcloud_instance_verbosity = pcloud_ice_verbosity; // to do: really remove this
     }
 };
 
@@ -853,7 +815,7 @@ struct CryptomatteData {
     AtArray * aovArray_cryptoobject;
     AtArray * aovArray_cryptomaterial;
     AtArray * user_cryptomatte_info;
-    const CryptomatteGlobals globals;
+    CryptomatteGlobals globals;
 
 public:
     CryptomatteData() {
@@ -862,7 +824,10 @@ public:
         this->aovArray_cryptomaterial = NULL;
         this->user_cryptomatte_info = NULL;
         init_cryptomatte_cache();
+        this->globals = CryptomatteGlobals();
     }
+
+
 
     void setup_all(const AtString aov_cryptoasset, const AtString aov_cryptoobject, const AtString aov_cryptomaterial) {
         this->aov_cryptoasset = aov_cryptoasset;
@@ -875,15 +840,23 @@ public:
         this->setup_cryptomatte_nodes();
     }
 
-    void do_cryptomattes(AtShaderGlobals *sg, AtNode * node, int p_override_asset, int p_override_object, int p_override_material, float opacity ) {
-        if (sg->Rt & AI_RAY_CAMERA) {
-            this->do_standard_cryptomattes(sg, node, p_override_asset, p_override_object, p_override_material, opacity);
-            this->do_user_cryptomattes(sg, opacity);
+    void do_cryptomattes(AtShaderGlobals *sg ) {
+          
+        if (sg->Rt & AI_RAY_CAMERA && sg->Op != NULL) {
+            AtClosureList closures = sg->out.CLOSURE();
+            AtRGB opacity = AI_RGB_WHITE;
+            for (AtClosure closure = closures.front(); closure; closure = closure.next())
+                if (closure.type() == AI_CLOSURE_TRANSPARENT)
+                    opacity -= closure.weight();
+            float flt_opacity = AiClamp(AiColorToGrey(opacity), 0.0f, 1.0f);
+
+            this->do_standard_cryptomattes(sg, flt_opacity);
+            this->do_user_cryptomattes(sg, flt_opacity);
         }
     }
 
 private:
-    void do_standard_cryptomattes(AtShaderGlobals *sg, AtNode * node, int p_override_asset, int p_override_object, int p_override_material, float opacity ) {
+    void do_standard_cryptomattes(AtShaderGlobals *sg, float opacity ) {
         if (!AiAOVEnabled(this->aov_cryptoasset, AI_TYPE_RGB)
             && !AiAOVEnabled(this->aov_cryptoobject, AI_TYPE_RGB)
             && !AiAOVEnabled(this->aov_cryptomaterial, AI_TYPE_RGB)) {
@@ -891,11 +864,7 @@ private:
         }
         AtRGB nsp_hash_clr, obj_hash_clr, mat_hash_clr;
 
-        const char * nsp_override = (p_override_asset > -1) ? AiShaderEvalParamStr(p_override_asset) : "";
-        const char * obj_override = (p_override_object > -1) ? AiShaderEvalParamStr(p_override_object) : "";
-        const char * mat_override = (p_override_material > -1) ? AiShaderEvalParamStr(p_override_material) : "";
-
-        this->hash_object_rgb(sg, &nsp_hash_clr, &obj_hash_clr, &mat_hash_clr, nsp_override, obj_override, mat_override);
+        this->hash_object_rgb(sg, &nsp_hash_clr, &obj_hash_clr, &mat_hash_clr);
 
         if (AiAOVEnabled(this->aov_cryptoasset, AI_TYPE_VECTOR))
             write_array_of_AOVs(sg, this->aovArray_cryptoasset, nsp_hash_clr.r, opacity);
@@ -939,8 +908,7 @@ private:
         }
     }
 
-    void hash_object_rgb(AtShaderGlobals* sg, AtRGB * nsp_hash_clr, AtRGB * obj_hash_clr, AtRGB * mat_hash_clr, 
-                         const char * nsp_override, const char * obj_override, const char * mat_override) 
+    void hash_object_rgb(AtShaderGlobals* sg, AtRGB * nsp_hash_clr, AtRGB * obj_hash_clr, AtRGB * mat_hash_clr) 
     {
         if (CRYPTOMATTE_CACHE[sg->tid].object == sg->Op) {
             *nsp_hash_clr = CRYPTOMATTE_CACHE[sg->tid].nsp_hash_clr;
@@ -948,7 +916,7 @@ private:
          } else {
             char nsp_name[MAX_STRING_LENGTH] = "";
             char obj_name[MAX_STRING_LENGTH] = "";
-            bool cachable = get_object_names(sg, sg->Op, this->globals.strip_obj_ns, nsp_override, obj_override, nsp_name, obj_name);
+            bool cachable = get_object_names(sg, sg->Op, this->globals.strip_obj_ns, nsp_name, obj_name);
             hash_name_rgb(nsp_name, nsp_hash_clr);
             hash_name_rgb(obj_name, obj_hash_clr);
             if (cachable) {
@@ -978,7 +946,7 @@ private:
             }
 
             char mat_name[MAX_STRING_LENGTH] = "";
-            cachable = get_material_name(sg, sg->Op, shader, this->globals.strip_mat_ns, mat_override, mat_name) && cachable;
+            cachable = get_material_name(sg, sg->Op, shader, this->globals.strip_mat_ns, mat_name) && cachable;
             hash_name_rgb(mat_name, mat_hash_clr);
 
             if (cachable) {
