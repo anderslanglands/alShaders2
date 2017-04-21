@@ -798,15 +798,15 @@ private:
                 uint32_t i = uc_index-2;
                 AtString aov_name = AiArrayGetStr(uc_aov_array, i);
                 AtString src_data_name = AiArrayGetStr(uc_src_array, i);
-                AtRGB hash;
+                AtRGB hash = AI_RGB_BLACK;
                 AtString result;
 
                 AiUDataGetStr(src_data_name, result);
-                if (string_has_content(result.c_str())) {
+                if (!result.empty())
                     hash_name_rgb(result.c_str(), &hash);
-                    write_array_of_AOVs(sg, aovArray, hash.r, opacity);
-                    AiAOVSetRGBA(sg, aov_name, hash);
-                }
+
+                write_array_of_AOVs(sg, aovArray, hash.r, opacity);
+                AiAOVSetRGBA(sg, aov_name, hash);
             }
         }
     }
