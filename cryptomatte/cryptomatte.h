@@ -73,16 +73,6 @@ Advanced features - using user options on the render globals to control Cryptoma
 
     declare crypto_ice_verbosity constant INT
     crypto_ice_verbosity 1
-
-Declaring user-data driven Cryptomattes:
-
-    // This creates a cryptotmatte out of AOV "my_crypto_aov", 
-    // which will contain only "my_custom_user_data"
-
-    declare crypto_user_aov constant ARRAY STRING 
-    declare crypto_user_src constant ARRAY STRING 
-    crypto_user_aov "my_crypto_aov" 
-    crypto_user_src "my_custom_user_data"
 */
 
 
@@ -103,18 +93,11 @@ static const AtString CRYPTO_OBJECT_UDATA("crypto_object");
 static const AtString CRYPTO_MATERIAL_UDATA("crypto_material");
 
 // Arnold options parameters
-//      For user cryptomattes
-#define CRYPTO_USER_AOV_PARAM "crypto_user_aov"
-#define CRYPTO_USER_SRC_PARAM "crypto_user_src"
 
 //      For system controls
-#define CRYPTO_DEPTH_PARAM "crypto_depth"
 #define CRYPTO_DEPTH_DEFAULT 6
-#define CRYPTO_STRIPOBJNS_PARAM "crypto_strip_object_ns"
 #define CRYPTO_STRIPOBJNS_DEFAULT true
-#define CRYPTO_STRIPMATNS_PARAM "crypto_strip_material_ns"
 #define CRYPTO_STRIPMATNS_DEFAULT true
-#define CRYPTO_ICEPCLOUDVERB_PARAM "crypto_ice_verbosity"
 #define CRYPTO_ICEPCLOUDVERB_DEFAULT 1
 
 // Internal
@@ -371,19 +354,12 @@ AtString get_user_data(AtShaderGlobals * sg, AtNode * node, AtString user_data_n
 
 
 bool get_object_names(AtShaderGlobals *sg, AtNode *node, bool strip_obj_ns, 
-                      // const char *nsp_override, const char *obj_override, 
-                      char nsp_name_out[MAX_STRING_LENGTH], char obj_name_out[MAX_STRING_LENGTH]) 
-{
-    // bool nsp_has_override = string_has_content(nsp_override);
-    // bool obj_has_override = string_has_content(obj_override);
-    // bool cachable = !obj_has_override && !nsp_has_override;
+                      char nsp_name_out[MAX_STRING_LENGTH], char obj_name_out[MAX_STRING_LENGTH]) {
     bool cachable = true;
 
     AtString nsp_user_data = get_user_data(sg, node, CRYPTO_ASSET_UDATA, &cachable);
     AtString obj_user_data = get_user_data(sg, node, CRYPTO_OBJECT_UDATA, &cachable);
 
-    // bool need_nsp_name = !nsp_has_override && !nsp_user_data;        
-    // bool need_obj_name = !obj_has_override && !obj_user_data;
     bool need_nsp_name = nsp_user_data.empty();        
     bool need_obj_name = obj_user_data.empty();
     if (need_obj_name || need_nsp_name) {
@@ -433,7 +409,7 @@ void write_array_of_AOVs(AtShaderGlobals * sg, AtArray * names, float id, float 
 
     for (uint32_t i=0; i < AiArrayGetNumElements(names); i++) {
         AtString aovName = AiArrayGetStr( names, i);
-        if (aovName.empty()) // to do: necessary? empty atstring may be fine.. 
+        if (aovName.empty())
             return;
         AiAOVSetVec(sg, aovName, val);
     }
@@ -712,8 +688,8 @@ void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode
 struct CryptomatteData {
     uint8_t option_depth;
     uint8_t option_aov_depth;
-    bool option_strip_obj_ns;
-    bool option_strip_mat_ns;
+    bool    option_strip_obj_ns;
+    bool    option_strip_mat_ns;
     uint8_t option_pcloud_ice_verbosity;
     AtString aov_cryptoasset;
     AtString aov_cryptoobject;
@@ -722,7 +698,6 @@ struct CryptomatteData {
     AtArray * aovArray_cryptoobject;
     AtArray * aovArray_cryptomaterial;
     AtArray * user_cryptomatte_info;
-
 
 public:
     CryptomatteData() {
@@ -786,7 +761,6 @@ public:
     }
 
 private:
-
     void init_user_cryptomatte_data(AtArray *uc_aov_array, AtArray *uc_src_array) {
         if (uc_aov_array != NULL && uc_src_array != NULL) {
             const int num_user_aovs = AiArrayGetNumElements(uc_aov_array);
