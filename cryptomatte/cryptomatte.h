@@ -384,8 +384,8 @@ bool get_object_names(AtShaderGlobals *sg, AtNode *node, bool strip_obj_ns,
 
     // bool need_nsp_name = !nsp_has_override && !nsp_user_data;        
     // bool need_obj_name = !obj_has_override && !obj_user_data;
-    bool need_nsp_name = !nsp_user_data;        
-    bool need_obj_name = !obj_user_data;
+    bool need_nsp_name = nsp_user_data.empty();        
+    bool need_obj_name = obj_user_data.empty();
     if (need_obj_name || need_nsp_name) {
         const char *obj_full_name = AiNodeGetName(node);
         get_clean_object_name(obj_full_name, obj_name_out, nsp_name_out, strip_obj_ns);
@@ -410,7 +410,7 @@ bool get_material_name(AtShaderGlobals *sg, AtNode *node, AtNode *shader, bool s
 
     get_clean_material_name(AiNodeGetName(shader), mat_name_out, strip_mat_ns);
 
-    if (mat_user_data)
+    if (!mat_user_data.empty())
         strcpy(mat_name_out, mat_user_data); 
 
     mat_name_out[MAX_STRING_LENGTH-1] = '\0';
@@ -433,7 +433,7 @@ void write_array_of_AOVs(AtShaderGlobals * sg, AtArray * names, float id, float 
 
     for (uint32_t i=0; i < AiArrayGetNumElements(names); i++) {
         AtString aovName = AiArrayGetStr( names, i);
-        if (!string_has_content(aovName)) // to do: necessary? empty atstring may be fine.. 
+        if (aovName.empty()) // to do: necessary? empty atstring may be fine.. 
             return;
         AiAOVSetVec(sg, aovName, val);
     }
@@ -702,76 +702,6 @@ void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode
     AiMsgInfo("Cryptomatte manifest created - %f seconds", (float( clock () - metadata_start_time ) /  CLOCKS_PER_SEC));
 }
 
-
-
-///////////////////////////////////////////////
-//
-//      User Cryptomatte initialization
-//
-///////////////////////////////////////////////
-
-
-AtArray* init_user_cryptomatte_data() {
-    AtNode * renderOptions = AiUniverseGetOptions();
-    
-    AtArray *uc_info = NULL, *uc_aov_array = NULL, *uc_src_array = NULL;
-    const AtUserParamEntry* uc_aov_pentry = AiNodeLookUpUserParameter(renderOptions, CRYPTO_USER_AOV_PARAM);
-    const AtUserParamEntry* uc_src_pentry = AiNodeLookUpUserParameter(renderOptions, CRYPTO_USER_SRC_PARAM);
-    if (uc_aov_pentry && uc_src_pentry) {
-        const int uc_aov_type = AiUserParamGetType(uc_aov_pentry);
-        const int uc_aov_cat = AiUserParamGetCategory(uc_aov_pentry);
-        const int uc_aov_array_type = AiUserParamGetArrayType(uc_aov_pentry);
-        const int uc_src_type = AiUserParamGetType(uc_src_pentry);
-        const int uc_src_cat = AiUserParamGetCategory(uc_src_pentry);
-        const int uc_src_array_type = AiUserParamGetArrayType(uc_src_pentry);
-
-        const bool aov_type_good = uc_aov_type == AI_TYPE_STRING || uc_aov_array_type == AI_TYPE_STRING;
-        const bool src_type_good = uc_src_type == AI_TYPE_STRING || uc_src_array_type == AI_TYPE_STRING;
-        if (aov_type_good && src_type_good) {
-            if (uc_aov_type == AI_TYPE_ARRAY || uc_aov_cat != AI_USERDEF_CONSTANT) {
-                // array type or non-constant means you AiNodeGet an array
-                AtArray *a = AiNodeGetArray(renderOptions, CRYPTO_USER_AOV_PARAM);
-                uc_aov_array = a ? AiArrayCopy(a) : NULL;
-            } else {
-                uc_aov_array = AiArrayAllocate(1, 1, AI_TYPE_STRING);
-                AiArraySetStr(uc_aov_array, 0, AiNodeGetStr(renderOptions, CRYPTO_USER_AOV_PARAM));
-            }
-
-            if (uc_src_type == AI_TYPE_ARRAY || uc_src_cat != AI_USERDEF_CONSTANT) {
-                // array type or non-constant means you AiNodeGet an array
-                AtArray *a = AiNodeGetArray(renderOptions, CRYPTO_USER_SRC_PARAM);
-                uc_src_array = a ? AiArrayCopy(a) : NULL;
-            } else {
-                uc_src_array = AiArrayAllocate(1, 1, AI_TYPE_STRING);
-                AiArraySetStr(uc_src_array, 0, AiNodeGetStr(renderOptions, CRYPTO_USER_SRC_PARAM));
-            }
-
-            if (!uc_aov_array || !uc_src_array || AiArrayGetNumElements(uc_aov_array) != AiArrayGetNumElements(uc_src_array)) {
-                if (uc_aov_array)
-                    AiArrayDestroy(uc_aov_array);
-                if (uc_src_array)
-                    AiArrayDestroy(uc_src_array);
-                uc_aov_array = NULL;
-                uc_src_array = NULL;
-            } else {
-                const int user_aov_num = std::min(AiArrayGetNumElements(uc_aov_array), (uint32_t) MAX_USER_CRYPTOMATTES);
-                if (user_aov_num < (int) AiArrayGetNumElements(uc_aov_array)) {
-                    AiMsgWarning("Cryptomatte: Maximum number of user cryptomattes is %d, removing %d", 
-                        MAX_USER_CRYPTOMATTES, AiArrayGetNumElements(uc_aov_array) - user_aov_num);
-                }
-                uc_info = AiArrayAllocate(2+user_aov_num, 1, AI_TYPE_ARRAY);
-                AiArraySetArray(uc_info, 0, uc_aov_array);
-                AiArraySetArray(uc_info, 1, uc_src_array);
-                for (int i=0; i<user_aov_num; i++)
-                    AiArraySetArray(uc_info, i+2, NULL);
-            }
-
-        }
-    }
-    return uc_info;
-}
-
-
 ///////////////////////////////////////////////
 //
 //      Shader Data Struct
@@ -795,13 +725,12 @@ struct CryptomatteGlobals {
         else
             this->aov_depth = (this->depth + 1)/2;
         
-        this->pcloud_ice_verbosity = CRYPTO_ICEPCLOUDVERB_DEFAULT;
-        // this->pcloud_ice_verbosity = std::min(this->pcloud_ice_verbosity, 2);
-        // this->pcloud_ice_verbosity = std::max(this->pcloud_ice_verbosity, 0);
-
         this->strip_obj_ns = CRYPTO_STRIPOBJNS_DEFAULT;
         this->strip_mat_ns = CRYPTO_STRIPMATNS_DEFAULT;
 
+        this->pcloud_ice_verbosity = CRYPTO_ICEPCLOUDVERB_DEFAULT;
+        // this->pcloud_ice_verbosity = std::min(this->pcloud_ice_verbosity, 2);
+        // this->pcloud_ice_verbosity = std::max(this->pcloud_ice_verbosity, 0);
         g_pointcloud_instance_verbosity = pcloud_ice_verbosity; // to do: really remove this
     }
 };
@@ -827,16 +756,15 @@ public:
         this->globals = CryptomatteGlobals();
     }
 
-
-
-    void setup_all(const AtString aov_cryptoasset, const AtString aov_cryptoobject, const AtString aov_cryptomaterial) {
+    void setup_all(const AtString aov_cryptoasset, const AtString aov_cryptoobject, const AtString aov_cryptomaterial,
+                   AtArray *uc_aov_array, AtArray *uc_src_array) {
         this->aov_cryptoasset = aov_cryptoasset;
         this->aov_cryptoobject = aov_cryptoobject;
         this->aov_cryptomaterial = aov_cryptomaterial;
 
         this->destroy_arrays();
 
-        this->user_cryptomatte_info = init_user_cryptomatte_data();
+        this->init_user_cryptomatte_data(uc_aov_array, uc_src_array);
         this->setup_cryptomatte_nodes();
     }
 
@@ -856,6 +784,21 @@ public:
     }
 
 private:
+
+    void init_user_cryptomatte_data(AtArray *uc_aov_array, AtArray *uc_src_array) {
+        if (uc_aov_array != NULL && uc_src_array != NULL) {
+            const int num_user_aovs = AiArrayGetNumElements(uc_aov_array);
+            const int num_user_srcs = AiArrayGetNumElements(uc_src_array);
+            if (num_user_aovs > 0 && num_user_aovs == num_user_srcs) {
+                this->user_cryptomatte_info = AiArrayAllocate(2 + num_user_aovs, 1, AI_TYPE_ARRAY);
+                AiArraySetArray(this->user_cryptomatte_info, 0, uc_aov_array);
+                AiArraySetArray(this->user_cryptomatte_info, 1, uc_src_array);
+                for (int i=0; i<num_user_aovs; i++)
+                    AiArraySetArray(this->user_cryptomatte_info, i+2, NULL);
+            } 
+        }
+    }
+
     void do_standard_cryptomattes(AtShaderGlobals *sg, float opacity ) {
         if (!AiAOVEnabled(this->aov_cryptoasset, AI_TYPE_RGB)
             && !AiAOVEnabled(this->aov_cryptoobject, AI_TYPE_RGB)
