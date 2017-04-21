@@ -709,44 +709,12 @@ void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode
 ///////////////////////////////////////////////
 
 
-struct CryptomatteGlobals {
-    uint8_t depth;
-    uint8_t aov_depth;
-    bool strip_obj_ns;
-    bool strip_mat_ns;
-    uint8_t pcloud_ice_verbosity;
-
-    CryptomatteGlobals() {
-        this->set_depth(CRYPTO_DEPTH_DEFAULT);
-        this->set_namespace_stripping(CRYPTO_STRIPOBJNS_DEFAULT, CRYPTO_STRIPMATNS_DEFAULT);
-        this->set_ice_pcloud_verbosity(CRYPTO_ICEPCLOUDVERB_DEFAULT);
-    }
-
-    void set_depth(int depth) {
-        depth = std::min(depth, MAX_CRYPTOMATTE_DEPTH);
-        depth = std::max(depth, 1);
-        this->depth = depth;
-        if ( this->depth % 2 == 0 )
-            this->aov_depth = this->depth/2;
-        else
-            this->aov_depth = (this->depth + 1)/2;
-    }
-
-    void set_namespace_stripping(bool strip_obj, bool strip_mat) {
-        this->strip_obj_ns = strip_obj;
-        this->strip_mat_ns = strip_mat;
-    }
-
-    void set_ice_pcloud_verbosity(int verbosity) {
-        verbosity = std::min(verbosity, 2);
-        verbosity = std::max(verbosity, 0);
-        this->pcloud_ice_verbosity = verbosity;
-        g_pointcloud_instance_verbosity = pcloud_ice_verbosity; // to do: really remove this
-    }
-};
-
-
 struct CryptomatteData {
+    uint8_t option_depth;
+    uint8_t option_aov_depth;
+    bool option_strip_obj_ns;
+    bool option_strip_mat_ns;
+    uint8_t option_pcloud_ice_verbosity;
     AtString aov_cryptoasset;
     AtString aov_cryptoobject;
     AtString aov_cryptomaterial;
@@ -754,7 +722,7 @@ struct CryptomatteData {
     AtArray * aovArray_cryptoobject;
     AtArray * aovArray_cryptomaterial;
     AtArray * user_cryptomatte_info;
-    CryptomatteGlobals globals;
+
 
 public:
     CryptomatteData() {
@@ -763,19 +731,9 @@ public:
         this->aovArray_cryptomaterial = NULL;
         this->user_cryptomatte_info = NULL;
         init_cryptomatte_cache();
-        this->globals = CryptomatteGlobals();
-    }
-
-    void set_option_depth(int depth) {
-        this->globals.set_depth(depth);
-    }
-
-    void set_option_namespace_stripping(bool strip_obj, bool strip_mat) {
-        this->globals.set_namespace_stripping(strip_obj, strip_mat);
-    }
-
-    void set_option_ice_pcloud_verbosity(int verbosity) {
-        this->globals.set_ice_pcloud_verbosity(verbosity);
+        this->set_option_depth(CRYPTO_DEPTH_DEFAULT);
+        this->set_option_namespace_stripping(CRYPTO_STRIPOBJNS_DEFAULT, CRYPTO_STRIPMATNS_DEFAULT);
+        this->set_option_ice_pcloud_verbosity(CRYPTO_ICEPCLOUDVERB_DEFAULT);
     }
 
     void setup_all(const AtString aov_cryptoasset, const AtString aov_cryptoobject, const AtString aov_cryptomaterial,
@@ -788,6 +746,28 @@ public:
 
         this->init_user_cryptomatte_data(uc_aov_array, uc_src_array);
         this->setup_cryptomatte_nodes();
+    }
+
+    void set_option_depth(int depth) {
+        depth = std::min(depth, MAX_CRYPTOMATTE_DEPTH);
+        depth = std::max(depth, 1);
+        this->option_depth = depth;
+        if ( this->option_depth % 2 == 0 )
+            this->option_aov_depth = this->option_depth/2;
+        else
+            this->option_aov_depth = (this->option_depth + 1)/2;
+    }
+
+    void set_option_namespace_stripping(bool strip_obj, bool strip_mat) {
+        this->option_strip_obj_ns = strip_obj;
+        this->option_strip_mat_ns = strip_mat;
+    }
+
+    void set_option_ice_pcloud_verbosity(int verbosity) {
+        verbosity = std::min(verbosity, 2);
+        verbosity = std::max(verbosity, 0);
+        this->option_pcloud_ice_verbosity = verbosity;
+        g_pointcloud_instance_verbosity = this->option_pcloud_ice_verbosity; // to do: really remove this
     }
 
     void do_cryptomattes(AtShaderGlobals *sg ) {
@@ -881,7 +861,7 @@ private:
          } else {
             char nsp_name[MAX_STRING_LENGTH] = "";
             char obj_name[MAX_STRING_LENGTH] = "";
-            bool cachable = get_object_names(sg, sg->Op, this->globals.strip_obj_ns, nsp_name, obj_name);
+            bool cachable = get_object_names(sg, sg->Op, this->option_strip_obj_ns, nsp_name, obj_name);
             hash_name_rgb(nsp_name, nsp_hash_clr);
             hash_name_rgb(obj_name, obj_hash_clr);
             if (cachable) {
@@ -911,7 +891,7 @@ private:
             }
 
             char mat_name[MAX_STRING_LENGTH] = "";
-            cachable = get_material_name(sg, sg->Op, shader, this->globals.strip_mat_ns, mat_name) && cachable;
+            cachable = get_material_name(sg, sg->Op, shader, this->option_strip_mat_ns, mat_name) && cachable;
             hash_name_rgb(mat_name, mat_hash_clr);
 
             if (cachable) {
@@ -940,16 +920,16 @@ private:
             num_cryptomatte_AOVs += AiArrayGetNumElements(this->user_cryptomatte_info) - 2;
         }
 
-        this->aovArray_cryptoasset = AiArrayAllocate(this->globals.aov_depth, 1, AI_TYPE_STRING);
-        this->aovArray_cryptoobject = AiArrayAllocate(this->globals.aov_depth, 1, AI_TYPE_STRING);
-        this->aovArray_cryptomaterial = AiArrayAllocate(this->globals.aov_depth, 1, AI_TYPE_STRING);
+        this->aovArray_cryptoasset = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
+        this->aovArray_cryptoobject = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
+        this->aovArray_cryptomaterial = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
 
         AtNode * driver_cryptoAsset = NULL;
         AtNode * driver_cryptoObject = NULL;
         AtNode * driver_cryptoMaterial = NULL;
 
         num_cryptomatte_AOVs += 3;
-        AtArray * tmp_new_outputs = AiArrayAllocate(num_cryptomatte_AOVs * this->globals.aov_depth, 1, AI_TYPE_STRING); // destroyed later
+        AtArray * tmp_new_outputs = AiArrayAllocate(num_cryptomatte_AOVs * this->option_aov_depth, 1, AI_TYPE_STRING); // destroyed later
         int new_output_num = 0;
 
         for (uint32_t i=0; i < AiArrayGetNumElements(outputs); i++) {
@@ -1018,7 +998,7 @@ private:
         }
 
         build_standard_metadata(driver_cryptoAsset, driver_cryptoObject, driver_cryptoMaterial,
-            this->aov_cryptoasset, this->aov_cryptoobject, this->aov_cryptomaterial, this->globals.strip_obj_ns, this->globals.strip_mat_ns);
+            this->aov_cryptoasset, this->aov_cryptoobject, this->aov_cryptomaterial, this->option_strip_obj_ns, this->option_strip_mat_ns);
         build_user_metadata(this->user_cryptomatte_info, tmp_uc_drivers);
 
         AiArrayDestroy(tmp_new_outputs);
@@ -1079,7 +1059,7 @@ private:
 
         ///////////////////////////////////////////////
         //      Create filters and outputs as needed 
-        for (int i=0; i<this->globals.aov_depth; i++) {
+        for (int i=0; i<this->option_aov_depth; i++) {
             char filter_rank_name[MAX_STRING_LENGTH];
             memset(filter_rank_name, 0, MAX_STRING_LENGTH);
 
