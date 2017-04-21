@@ -7,6 +7,9 @@ AI_SHADER_NODE_EXPORT_METHODS(cryptomatte_aovMtd)
 
 enum cryptomatte_aovParams
 {
+   p_cryptomatte_depth,
+   p_strip_obj_namespaces,
+   p_strip_mat_namespaces,
    p_aov_crypto_asset,
    p_aov_crypto_object,
    p_aov_crypto_material,
@@ -22,6 +25,9 @@ enum cryptomatte_aovParams
 
 node_parameters
 {
+   AiParameterInt("cryptomatte_depth", CRYPTO_DEPTH_DEFAULT);
+   AiParameterBool("strip_obj_namespaces", CRYPTO_STRIPOBJNS_DEFAULT);
+   AiParameterBool("strip_mat_namespaces", CRYPTO_STRIPMATNS_DEFAULT);
    AiParameterStr("aov_crypto_asset", "crypto_asset");
    AiParameterStr("aov_crypto_object", "crypto_object");
    AiParameterStr("aov_crypto_material", "crypto_material");
@@ -76,6 +82,10 @@ node_update
                           AiNodeGetStr(node, "aov_crypto_object"),
                           AiNodeGetStr(node, "aov_crypto_material"), 
                           uc_aov_array, uc_src_array);
+
+   cryptomatte->set_option_depth(AiNodeGetInt(node, "cryptomatte_depth"));
+   cryptomatte->set_option_namespace_stripping(AiNodeGetBool(node, "strip_obj_namespaces"), 
+                                               AiNodeGetBool(node, "strip_mat_namespaces"));
 }
 
 shader_evaluate

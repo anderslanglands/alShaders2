@@ -717,20 +717,30 @@ struct CryptomatteGlobals {
     uint8_t pcloud_ice_verbosity;
 
     CryptomatteGlobals() {
-        this->depth = CRYPTO_DEPTH_DEFAULT;
-        // this->depth = std::min(this->depth, MAX_CRYPTOMATTE_DEPTH);
-        // this->depth = std::max(this->depth, 1);
+        this->set_depth(CRYPTO_DEPTH_DEFAULT);
+        this->set_namespace_stripping(CRYPTO_STRIPOBJNS_DEFAULT, CRYPTO_STRIPMATNS_DEFAULT);
+        this->set_ice_pcloud_verbosity(CRYPTO_ICEPCLOUDVERB_DEFAULT);
+    }
+
+    void set_depth(int depth) {
+        depth = std::min(depth, MAX_CRYPTOMATTE_DEPTH);
+        depth = std::max(depth, 1);
+        this->depth = depth;
         if ( this->depth % 2 == 0 )
             this->aov_depth = this->depth/2;
         else
             this->aov_depth = (this->depth + 1)/2;
-        
-        this->strip_obj_ns = CRYPTO_STRIPOBJNS_DEFAULT;
-        this->strip_mat_ns = CRYPTO_STRIPMATNS_DEFAULT;
+    }
 
-        this->pcloud_ice_verbosity = CRYPTO_ICEPCLOUDVERB_DEFAULT;
-        // this->pcloud_ice_verbosity = std::min(this->pcloud_ice_verbosity, 2);
-        // this->pcloud_ice_verbosity = std::max(this->pcloud_ice_verbosity, 0);
+    void set_namespace_stripping(bool strip_obj, bool strip_mat) {
+        this->strip_obj_ns = strip_obj;
+        this->strip_mat_ns = strip_mat;
+    }
+
+    void set_ice_pcloud_verbosity(int verbosity) {
+        verbosity = std::min(verbosity, 2);
+        verbosity = std::max(verbosity, 0);
+        this->pcloud_ice_verbosity = verbosity;
         g_pointcloud_instance_verbosity = pcloud_ice_verbosity; // to do: really remove this
     }
 };
@@ -754,6 +764,18 @@ public:
         this->user_cryptomatte_info = NULL;
         init_cryptomatte_cache();
         this->globals = CryptomatteGlobals();
+    }
+
+    void set_option_depth(int depth) {
+        this->globals.set_depth(depth);
+    }
+
+    void set_option_namespace_stripping(bool strip_obj, bool strip_mat) {
+        this->globals.set_namespace_stripping(strip_obj, strip_mat);
+    }
+
+    void set_option_ice_pcloud_verbosity(int verbosity) {
+        this->globals.set_ice_pcloud_verbosity(verbosity);
     }
 
     void setup_all(const AtString aov_cryptoasset, const AtString aov_cryptoobject, const AtString aov_cryptomaterial,
