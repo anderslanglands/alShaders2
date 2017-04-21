@@ -90,7 +90,7 @@ node_update
 
 shader_evaluate
 {
-   if (sg->Rt & AI_RAY_CAMERA && sg->Op != NULL) {
+   if (sg->Rt & AI_RAY_CAMERA && sg->sc == AI_CONTEXT_SURFACE) {
       CryptomatteData *cryptomatte = (CryptomatteData*) AiNodeGetLocalData(node);
       cryptomatte->do_cryptomattes(sg);
    }

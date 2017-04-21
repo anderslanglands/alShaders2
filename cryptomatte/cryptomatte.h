@@ -58,24 +58,6 @@ How to add cryptomatte to a shader:
 
 */
 
-/*
-
-Advanced features - using user options on the render globals to control Cryptomattes:
-
-    declare crypto_depth constant INT 
-    crypto_depth 6
-
-    declare crypto_strip_object_ns constant BOOL
-    crypto_strip_object_ns true
-
-    declare crypto_strip_material_ns constant BOOL
-    crypto_strip_material_ns true
-
-    declare crypto_ice_verbosity constant INT
-    crypto_ice_verbosity 1
-*/
-
-
 ///////////////////////////////////////////////
 //
 //      Constants
@@ -104,6 +86,12 @@ static const AtString CRYPTO_MATERIAL_UDATA("crypto_material");
 #define CRYPTOMATTE_METADATA_SET_FLAG "already_has_crypto_metadata_"
 
 unsigned char g_pointcloud_instance_verbosity = 0;  // to do: remove this.
+
+// Some static AtStrings to cache
+const static AtString aStr_polymesh("polymesh");
+const static AtString aStr_curves("curves");
+const static AtString aStr_shidxs("shidxs");
+const static AtString aStr_shader("shader");
 
 ///////////////////////////////////////////////
 //
@@ -684,7 +672,6 @@ void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode
 //
 ///////////////////////////////////////////////
 
-
 struct CryptomatteData {
     uint8_t option_depth;
     uint8_t option_aov_depth;
@@ -701,10 +688,10 @@ struct CryptomatteData {
 
 public:
     CryptomatteData() {
-        this->aovArray_cryptoasset = NULL;
-        this->aovArray_cryptoobject = NULL;
+        this->aovArray_cryptoasset    = NULL;
+        this->aovArray_cryptoobject   = NULL;
         this->aovArray_cryptomaterial = NULL;
-        this->user_cryptomatte_info = NULL;
+        this->user_cryptomatte_info   = NULL;
         init_cryptomatte_cache();
         this->set_option_depth(CRYPTO_DEPTH_DEFAULT);
         this->set_option_namespace_stripping(CRYPTO_STRIPOBJNS_DEFAULT, CRYPTO_STRIPMATNS_DEFAULT);
@@ -724,8 +711,7 @@ public:
     }
 
     void set_option_depth(int depth) {
-        depth = std::min(depth, MAX_CRYPTOMATTE_DEPTH);
-        depth = std::max(depth, 1);
+        depth = std::min(std::max(depth, 1), MAX_CRYPTOMATTE_DEPTH);
         this->option_depth = depth;
         if ( this->option_depth % 2 == 0 )
             this->option_aov_depth = this->option_depth/2;
@@ -739,15 +725,13 @@ public:
     }
 
     void set_option_ice_pcloud_verbosity(int verbosity) {
-        verbosity = std::min(verbosity, 2);
-        verbosity = std::max(verbosity, 0);
+        verbosity = std::min(std::max(verbosity, 0), 2);
         this->option_pcloud_ice_verbosity = verbosity;
         g_pointcloud_instance_verbosity = this->option_pcloud_ice_verbosity; // to do: really remove this
     }
 
     void do_cryptomattes(AtShaderGlobals *sg ) {
-          
-        if (sg->Rt & AI_RAY_CAMERA && sg->Op != NULL) {
+        if (sg->Rt & AI_RAY_CAMERA && sg->sc == AI_CONTEXT_SURFACE) {
             AtClosureList closures = sg->out.CLOSURE();
             AtRGB opacity = AI_RGB_WHITE;
             for (AtClosure closure = closures.front(); closure; closure = closure.next())
@@ -851,17 +835,17 @@ private:
             *mat_hash_clr = CRYPTOMATTE_CACHE[sg->tid].mat_hash_clr;
         } else {
             bool cachable = true;
-            AtArray * shaders = AiNodeGetArray(sg->Op, "shader");
             AtNode *shader = NULL;
-            if (AiArrayGetNumElements(shaders) == 1) {
+            AtArray *shaders = AiNodeGetArray(sg->Op, aStr_shader);
+            int num_shaders = AiArrayGetNumElements(shaders);
+            if (num_shaders == 1) {
                 // use whatever is assigned, not whatever is currently evaluating
                 // this will match the manifest
                 shader = static_cast<AtNode*>(AiArrayGetPtr(shaders, 0));
-            } else {
-                // multiple things are assigned and it would be wrong to guess
-                // this may or may not match the manifest
-                cachable = false;
-                shader = sg->shader;
+            } else if (num_shaders > 0) {
+                // this currently does not work. TO DO: get a way to get the current shidxs
+                uint8_t assignment = 0; //AiNodeGetByte(node, aStr_shidxs);
+                shader = static_cast<AtNode*>(AiArrayGetPtr(shaders, assignment));
             }
 
             char mat_name[MAX_STRING_LENGTH] = "";
@@ -890,7 +874,8 @@ private:
             uc_aov_array = AiArrayGetArray(this->user_cryptomatte_info, 0);
             uc_src_array = AiArrayGetArray(this->user_cryptomatte_info, 1);
             tmp_uc_drivers = AiArrayAllocate(AiArrayGetNumElements(uc_aov_array), 1, AI_TYPE_NODE); // destroyed later
-
+            for (uint32_t i=0; i<AiArrayGetNumElements(uc_aov_array); i++ )
+                AiArraySetPtr(tmp_uc_drivers, i, NULL);
             num_cryptomatte_AOVs += AiArrayGetNumElements(this->user_cryptomatte_info) - 2;
         }
 
@@ -944,7 +929,7 @@ private:
                 for (uint32_t j=0; j < AiArrayGetNumElements(uc_aov_array); j++) {
                     const char * user_aov_name = AiArrayGetStr(uc_aov_array, j);
                     if (strcmp(aov_name, user_aov_name) == 0) {
-                        cryptoAOVs = AiArrayAllocate(MAX_CRYPTOMATTE_DEPTH, 1, AI_TYPE_STRING); // will be destroyed when cryptomatteData is
+                        cryptoAOVs = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING); // will be destroyed when cryptomatteData is
                         driver = AiNodeLookUpByName(driver_name);
                         AiArraySetPtr(tmp_uc_drivers, j, driver);
                         AiArraySetArray(this->user_cryptomatte_info, j + 2, cryptoAOVs);
