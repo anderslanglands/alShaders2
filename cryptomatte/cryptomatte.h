@@ -943,37 +943,36 @@ private:
 
     void setup_cryptomatte_nodes() {
         AtNode * renderOptions = AiUniverseGetOptions();
-        AtArray * outputs = AiNodeGetArray( renderOptions, "outputs");
+        const AtArray * outputs = AiNodeGetArray( renderOptions, "outputs");
 
         AtArray *tmp_uc_drivers = NULL, *uc_aov_array = NULL, *uc_src_array = NULL;
+
+        const int prev_output_num = AiArrayGetNumElements(outputs);
         int num_cryptomatte_AOVs = 0;
         if (this->user_cryptomatte_info != NULL) {
+            num_cryptomatte_AOVs += AiArrayGetNumElements(this->user_cryptomatte_info) - 2;
             uc_aov_array = AiArrayGetArray(this->user_cryptomatte_info, 0);
             uc_src_array = AiArrayGetArray(this->user_cryptomatte_info, 1);
             tmp_uc_drivers = AiArrayAllocate(AiArrayGetNumElements(uc_aov_array), 1, AI_TYPE_NODE); // destroyed later
             for (uint32_t i=0; i<AiArrayGetNumElements(uc_aov_array); i++ )
                 AiArraySetPtr(tmp_uc_drivers, i, NULL);
-            num_cryptomatte_AOVs += AiArrayGetNumElements(this->user_cryptomatte_info) - 2;
         }
 
         this->aovArray_cryptoasset = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
         this->aovArray_cryptoobject = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
         this->aovArray_cryptomaterial = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
 
-        AtNode * driver_cryptoAsset = NULL;
-        AtNode * driver_cryptoObject = NULL;
-        AtNode * driver_cryptoMaterial = NULL;
-
+        AtNode *driver_cryptoAsset = NULL, *driver_cryptoObject = NULL, *driver_cryptoMaterial = NULL;
         num_cryptomatte_AOVs += 3;
-        AtArray * tmp_new_outputs = AiArrayAllocate(num_cryptomatte_AOVs * this->option_aov_depth, 1, AI_TYPE_STRING); // destroyed later
+
+        AtArray *tmp_new_outputs = AiArrayAllocate(num_cryptomatte_AOVs * this->option_aov_depth, 1, AI_TYPE_STRING); // destroyed later
         int new_output_num = 0;
 
-        for (uint32_t i=0; i < AiArrayGetNumElements(outputs); i++) {
-            const char * output_string = AiArrayGetStr( outputs, i);
-            size_t output_string_chars = strlen(output_string);
+        for (uint32_t i=0; i < prev_output_num; i++) {
+            size_t output_string_chars = AiArrayGetStr( outputs, i).length();
             char temp_string[MAX_STRING_LENGTH * 8]; 
             memset(temp_string, 0, sizeof(temp_string));
-            strncpy(temp_string, output_string, output_string_chars);
+            strncpy(temp_string, AiArrayGetStr( outputs, i), output_string_chars);
 
             char *c0 = strtok(temp_string," ");
             char *c1 = strtok(NULL," ");
@@ -1015,19 +1014,20 @@ private:
             }
 
             if (cryptoAOVs != NULL)
-                new_output_num += this->create_AOV_array(driver, aov_name, filter_name, cryptoAOVs, tmp_new_outputs, new_output_num);
+                new_output_num += this->create_AOV_array(driver, aov_name, filter_name, cryptoAOVs, 
+                                                         tmp_new_outputs, new_output_num);
         }
 
         if (new_output_num > 0) {
-            int total_outputs = AiArrayGetNumElements(outputs) + new_output_num;
+            const int total_outputs = prev_output_num + new_output_num;
             AtArray * final_outputs = AiArrayAllocate(total_outputs, 1, AI_TYPE_STRING); // Does not need destruction
-            for (uint32_t i=0; i < AiArrayGetNumElements(outputs); i++) {
+            for (uint32_t i=0; i < prev_output_num; i++) {
                 // Iterate through old outputs and add them
-                AiArraySetStr(final_outputs, i, AiArrayGetStr( outputs, i));
+                AiArraySetStr(final_outputs, i, AiArrayGetStr(outputs, i));
             }
             for (int i=0; i < new_output_num; i++)  {
                 // Iterate through new outputs and add them
-                AiArraySetStr(final_outputs, i + AiArrayGetNumElements(outputs), AiArrayGetStr( tmp_new_outputs, i));
+                AiArraySetStr(final_outputs, i + prev_output_num, AiArrayGetStr(tmp_new_outputs, i));
             }
             AiNodeSetArray(renderOptions, "outputs", final_outputs );
         }
