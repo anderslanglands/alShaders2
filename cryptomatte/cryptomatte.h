@@ -841,20 +841,17 @@ private:
     }
 
     void do_standard_cryptomattes(AtShaderGlobals *sg, float opacity ) {
-        const bool do_asset = AiAOVEnabled(aov_cryptoasset, AI_TYPE_RGB);
-        const bool do_object = AiAOVEnabled(aov_cryptoobject, AI_TYPE_RGB);
-        const bool do_material = AiAOVEnabled(aov_cryptomaterial, AI_TYPE_RGB);
-        if (!do_asset && !do_object && !do_material)
+        if (!this->aovArray_cryptoasset && !this->aovArray_cryptoobject && !this->aovArray_cryptomaterial)
             return;
         
         AtRGB nsp_hash_clr, obj_hash_clr, mat_hash_clr;
         this->hash_object_rgb(sg, &nsp_hash_clr, &obj_hash_clr, &mat_hash_clr);
 
-        if (do_asset)
+        if (this->aovArray_cryptoasset)
             write_array_of_AOVs(sg, this->aovArray_cryptoasset, nsp_hash_clr.r, opacity);
-        if (do_object)
+        if (this->aovArray_cryptoobject)
             write_array_of_AOVs(sg, this->aovArray_cryptoobject, obj_hash_clr.r, opacity);
-        if (do_material)
+        if (this->aovArray_cryptomaterial)
             write_array_of_AOVs(sg, this->aovArray_cryptomaterial, mat_hash_clr.r, opacity);
         
         nsp_hash_clr.r = 0.0f;
@@ -962,10 +959,6 @@ private:
                 AiArraySetPtr(tmp_uc_drivers, i, NULL);
         }
 
-        this->aovArray_cryptoasset = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
-        this->aovArray_cryptoobject = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
-        this->aovArray_cryptomaterial = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
-
         AtNode *driver_cryptoAsset = NULL, *driver_cryptoObject = NULL, *driver_cryptoMaterial = NULL;
         num_cryptomatte_AOVs += 3;
 
@@ -993,18 +986,21 @@ private:
             AtNode * driver = NULL;
             AtArray * cryptoAOVs = NULL;
             if (strcmp( aov_name, this->aov_cryptoasset.c_str()) == 0) {
+                this->aovArray_cryptoasset = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
                 cryptoAOVs = this->aovArray_cryptoasset;
                 driver = AiNodeLookUpByName(driver_name);
                 driver_cryptoAsset = driver;
             } else if (strcmp( aov_name, this->aov_cryptoobject.c_str()) == 0) {
+                this->aovArray_cryptoobject = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
                 cryptoAOVs = this->aovArray_cryptoobject;
                 driver = AiNodeLookUpByName(driver_name);
                 driver_cryptoObject = driver;
             } else if (strcmp( aov_name, this->aov_cryptomaterial.c_str()) == 0) {
+                this->aovArray_cryptomaterial = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
                 cryptoAOVs = this->aovArray_cryptomaterial;
                 driver = AiNodeLookUpByName(driver_name);
                 driver_cryptoMaterial = driver;
-            } else if (this->user_cryptomatte_info != NULL) {
+            } else if (this->user_cryptomatte_info) {
                 for (uint32_t j=0; j < AiArrayGetNumElements(uc_aov_array); j++) {
                     const char * user_aov_name = AiArrayGetStr(uc_aov_array, j);
                     if (strcmp(aov_name, user_aov_name) == 0) {
