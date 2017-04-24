@@ -15,7 +15,7 @@
 
 AI_FILTER_NODE_EXPORT_METHODS(cryptomatte_filterMtd)
 
-
+static const AtString ats_opacity("opacity");
 
 enum cryptomatte_filterParams {
    p_width,
@@ -25,9 +25,10 @@ enum cryptomatte_filterParams {
 };
 
 struct CryptomatteFilterData {
-    float width;
-    int rank;
-    int filter;
+   float (*filter_func)(AtVector2, float);
+   float width;
+   int rank;
+   int filter;
 };
 
 enum modeEnum {
@@ -63,7 +64,8 @@ node_loader {
 node_initialize {
    // Z is still required despite the values themselves not being used. 
    static const char* necessary_aovs[] = {
-      "FLOAT Z", 
+      "FLOAT Z",
+      "RGB opacity",
       NULL 
    };
     CryptomatteFilterData * data = new CryptomatteFilterData();
@@ -81,10 +83,33 @@ node_update {
    AtShaderGlobals shader_globals;
    AtShaderGlobals *sg = &shader_globals;
 
-    CryptomatteFilterData * data = (CryptomatteFilterData*) AiNodeGetLocalData(node);
-    data->width = AiNodeGetFlt(node, "width");
-    data->rank = AiNodeGetInt(node, "rank");
-    data->filter = AiNodeGetInt(node, "filter");
+   CryptomatteFilterData * data = (CryptomatteFilterData*) AiNodeGetLocalData(node);
+   data->width = AiNodeGetFlt(node, "width");
+   data->rank = AiNodeGetInt(node, "rank");
+   data->filter = AiNodeGetInt(node, "filter");
+
+   switch (data->filter) {
+      case p_filter_triangle:
+         data->filter_func = &triangle;
+         break;
+      case p_filter_blackman_harris:
+         data->filter_func = &blackman_harris;
+         break;
+      case p_filter_box:
+         data->filter_func = &box;
+         break;
+      case p_filter_disk:
+         data->filter_func = &disk;
+         break;
+      case p_filter_cone:
+         data->filter_func = &cone;
+         break;
+      case p_filter_gaussian:
+      default:
+         data->filter_func = &gaussian;
+         break;
+   }
+
    if (data->filter == p_filter_box) {
       AiFilterUpdate(node, 1.0f);
    } else {
@@ -99,7 +124,6 @@ filter_output_type {
    else
       return AI_TYPE_NONE;
 }
-
 
 ///////////////////////////////////////////////
 //
@@ -141,8 +165,6 @@ filter_pixel {
    AtNode * camera = AiUniverseGetCamera();
    float camera_far_clip = AiNodeGetFlt(camera, "far_clip");
    
-   float (*filter)(AtVector2, float);
-
 
    ///////////////////////////////////////////////
    //
@@ -153,12 +175,14 @@ filter_pixel {
    bool early_out = true;
 
    while (AiAOVSampleIteratorGetNext(iterator)) {
-
-      if (AiAOVSampleIteratorHasValue(iterator))   {
-         early_out = false;   
-         break;
+      while (AiAOVSampleIteratorGetNextDepth(iterator)) {
+         if (AiAOVSampleIteratorHasValue(iterator))   {
+            early_out = false;   
+            break;
+         }
       }
-
+      if (!early_out)
+         break;
    }
 
    if (early_out) {
@@ -170,36 +194,6 @@ filter_pixel {
    }
    AiAOVSampleIteratorReset(iterator);
 
-
-   ///////////////////////////////////////////////
-   //
-   //    Select Filter
-   //
-   ///////////////////////////////////////////////
-
-   switch (data->filter) {
-      case p_filter_triangle:
-         filter = &triangle;
-         break;
-      case p_filter_blackman_harris:
-         filter = &blackman_harris;
-         break;
-      case p_filter_box:
-         filter = &box;
-         break;
-      case p_filter_disk:
-         filter = &disk;
-         break;
-      case p_filter_cone:
-         filter = &cone;
-         break;
-      case p_filter_gaussian:
-      default:
-         filter = &gaussian;
-         break;
-   }
-
-
    ///////////////////////////////////////////////
    //
    //    Set up sample-weight maps and friends
@@ -207,8 +201,6 @@ filter_pixel {
    ///////////////////////////////////////////////
 
    sw_map_t vals;
-
-
    int total_samples = 0;
    float total_weight = 0.0f;
    float sample_weight;
@@ -222,25 +214,12 @@ filter_pixel {
    ///////////////////////////////////////////////
    while (AiAOVSampleIteratorGetNext(iterator)) {
       offset = AiAOVSampleIteratorGetOffset(iterator);
-      sample_weight = filter(offset, data->width);
+      sample_weight = data->filter_func(offset, data->width);
 
-      if (sample_weight == 0.0f) {
+      if (sample_weight == 0.0f)
          continue;
-      }
+
       total_samples++;
-
-      ///////////////////////////////////////////////
-      //
-      //    Samples with no value.
-      //
-      ///////////////////////////////////////////////
-
-      if (!AiAOVSampleIteratorHasValue(iterator))  {        
-         total_weight += sample_weight;
-         write_to_samples_map(&vals, 0.0f, sample_weight);
-         continue;
-      }
-
 
       ///////////////////////////////////////////////
       //
@@ -248,18 +227,17 @@ filter_pixel {
       //
       ///////////////////////////////////////////////
       
-      float quota = sample_weight;
       float iterative_transparency_weight = 1.0f;
-      int depth = 0;
+      float quota = sample_weight;
       AtVector sample_value = AI_V3_ZERO;
-
       total_weight += quota;
+
       while (AiAOVSampleIteratorGetNextDepth(iterator)) {
          // sample.x is the ID
          // sample.y is unused
-         // sample.z is the opacity
+
+         const float sub_sample_opacity = AiColorToGrey(AiAOVSampleIteratorGetAOVRGB(iterator, ats_opacity));
          sample_value = AiAOVSampleIteratorGetVec(iterator);
-         const float sub_sample_opacity = sample_value.z;
          const float sub_sample_weight = sub_sample_opacity * iterative_transparency_weight * sample_weight;
 
          // so if the current sub sample is 80% opaque, it means 20% of the weight will remain for the next subsample
@@ -269,9 +247,10 @@ filter_pixel {
          write_to_samples_map(&vals, sample_value.x, sub_sample_weight);
       }
       
-      if (quota != 0.0) {
+
+      if (quota > 0.0) {
          // the remaining values gets allocated to the last sample 
-         write_to_samples_map(&vals, sample_value.x, quota);
+         write_to_samples_map(&vals, sample_value.x, 0.0f);
       }
    }
 
