@@ -52,40 +52,25 @@ node_finish
    delete cryptomatte;
 }
 
-void maybe_add_user_aov(AtArray * uc_aov_array, AtArray * uc_src_array, int &uc_count,
-                  const AtString user_aov, const AtString user_src) {
-   if (!user_aov.empty() && !user_src.empty()) {
-      AiArraySetStr(uc_aov_array, uc_count, user_aov);
-      AiArraySetStr(uc_src_array, uc_count, user_src);
-      uc_count++;
-   }
-}
-
 node_update
 {
    CryptomatteData *cryptomatte = (CryptomatteData*) AiNodeGetLocalData(node);
-   AtArray * uc_aov_array = AiArrayAllocate(4, 1, AI_TYPE_STRING);
-   AtArray * uc_src_array = AiArrayAllocate(4, 1, AI_TYPE_STRING);
-   int uc_count = 0;
-   maybe_add_user_aov(uc_aov_array, uc_src_array, uc_count, 
-                      AiNodeGetStr(node, "user_aov_0"), AiNodeGetStr(node, "user_src_0"));
-   maybe_add_user_aov(uc_aov_array, uc_src_array, uc_count, 
-                      AiNodeGetStr(node, "user_aov_1"), AiNodeGetStr(node, "user_src_1"));
-   maybe_add_user_aov(uc_aov_array, uc_src_array, uc_count, 
-                      AiNodeGetStr(node, "user_aov_2"), AiNodeGetStr(node, "user_src_2"));
-   maybe_add_user_aov(uc_aov_array, uc_src_array, uc_count, 
-                      AiNodeGetStr(node, "user_aov_3"), AiNodeGetStr(node, "user_src_3"));
-   AiArrayResize(uc_aov_array, uc_count, 1);
-   AiArrayResize(uc_src_array, uc_count, 1);
-
-   cryptomatte->setup_all(AiNodeGetStr(node, "aov_crypto_asset"),
-                          AiNodeGetStr(node, "aov_crypto_object"),
-                          AiNodeGetStr(node, "aov_crypto_material"), 
-                          uc_aov_array, uc_src_array);
 
    cryptomatte->set_option_depth(AiNodeGetInt(node, "cryptomatte_depth"));
    cryptomatte->set_option_namespace_stripping(AiNodeGetBool(node, "strip_obj_namespaces"), 
                                                AiNodeGetBool(node, "strip_mat_namespaces"));
+
+   AtArray* uc_aov_array = AiArray(4, 1, AI_TYPE_STRING, 
+      AiNodeGetStr(node, "user_aov_0"), AiNodeGetStr(node, "user_aov_1"), 
+      AiNodeGetStr(node, "user_aov_2"), AiNodeGetStr(node, "user_aov_3"));
+   AtArray* uc_src_array = AiArray(4, 1, AI_TYPE_STRING, 
+      AiNodeGetStr(node, "user_src_0"), AiNodeGetStr(node, "user_src_1"), 
+      AiNodeGetStr(node, "user_src_2"), AiNodeGetStr(node, "user_src_3"));
+   
+   cryptomatte->setup_all(AiNodeGetStr(node, "aov_crypto_asset"),
+                          AiNodeGetStr(node, "aov_crypto_object"),
+                          AiNodeGetStr(node, "aov_crypto_material"), 
+                          uc_aov_array, uc_src_array);
 }
 
 shader_evaluate

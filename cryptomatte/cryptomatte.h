@@ -790,17 +790,49 @@ public:
     }
 
 private:
-    void init_user_cryptomatte_data(AtArray *uc_aov_array, AtArray *uc_src_array) {
-        if (uc_aov_array != NULL && uc_src_array != NULL) {
-            const int num_user_aovs = AiArrayGetNumElements(uc_aov_array);
-            const int num_user_srcs = AiArrayGetNumElements(uc_src_array);
-            if (num_user_aovs > 0 && num_user_aovs == num_user_srcs) {
-                this->user_cryptomatte_info = AiArrayAllocate(2 + num_user_aovs, 1, AI_TYPE_ARRAY);
-                AiArraySetArray(this->user_cryptomatte_info, 0, uc_aov_array);
-                AiArraySetArray(this->user_cryptomatte_info, 1, uc_src_array);
-                for (int i=0; i<num_user_aovs; i++)
-                    AiArraySetArray(this->user_cryptomatte_info, i+2, NULL);
-            } 
+    void init_user_cryptomatte_data(const AtArray *aov_input, const AtArray *src_input) {
+        /*
+            Structure of user data generated is currently this. 
+                user_cryptomatte_info[0] = aov array
+                user_cryptomatte_info[1] = source array
+                user_cryptomatte_info[2:] = sub-aov arrays for aov and source i-1
+            Example: 
+                user_cryptomatte_info[0] = ['myCryptoObject', 'myCryptoAsset']. 
+                user_cryptomatte_info[1] = ['myObjUserData', 'myAssetUserData']. 
+                user_cryptomatte_info[2] = [myCryptoObject00, myCryptoObject01]
+                user_cryptomatte_info[3] = [myCryptoAsset00, myCryptoAsset01]  
+        */
+        if (aov_input == NULL && src_input == NULL)
+            return;
+
+        const int num_inputs = std::min(AiArrayGetNumElements(aov_input), 
+                                        AiArrayGetNumElements(src_input));
+        AtArray *uc_aov_array = AiArrayAllocate(MAX_USER_CRYPTOMATTES, 1, AI_TYPE_STRING);
+        AtArray *uc_src_array = AiArrayAllocate(MAX_USER_CRYPTOMATTES, 1, AI_TYPE_STRING);
+        int uc_count = 0;
+        for (uint32_t i=0; i<num_inputs; i++) {
+            const AtString aov = AiArrayGetStr(aov_input, i);
+            const AtString src = AiArrayGetStr(src_input, i);
+            if (!aov.empty() && !src.empty()) {
+                AiMsgInfo("Adding user-Cryptomatte %d: AOV: %s Source user data: %s", 
+                          uc_count, aov, src);
+                AiArraySetStr(uc_aov_array, uc_count, aov);
+                AiArraySetStr(uc_src_array, uc_count, src);
+                uc_count++;
+            }
+        }
+        AiArrayResize(uc_aov_array, uc_count, 1);
+        AiArrayResize(uc_src_array, uc_count, 1);
+
+        if (uc_count) {
+            this->user_cryptomatte_info = AiArrayAllocate(2 + uc_count, 1, AI_TYPE_ARRAY);
+            AiArraySetArray(this->user_cryptomatte_info, 0, uc_aov_array);
+            AiArraySetArray(this->user_cryptomatte_info, 1, uc_src_array);
+            for (int i=0; i<uc_count; i++)
+                AiArraySetArray(this->user_cryptomatte_info, i+2, NULL);
+        } else {
+            AiArrayDestroy(uc_aov_array);
+            AiArrayDestroy(uc_src_array);
         }
     }
 
