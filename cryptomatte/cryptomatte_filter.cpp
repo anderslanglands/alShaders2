@@ -250,7 +250,7 @@ filter_pixel {
 
       if (quota > 0.0) {
          // the remaining values gets allocated to the last sample 
-         write_to_samples_map(&vals, sample_value.x, 0.0f);
+         write_to_samples_map(&vals, sample_value.x, quota);
       }
    }
 

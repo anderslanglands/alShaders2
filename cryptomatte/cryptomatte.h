@@ -433,11 +433,11 @@ bool get_material_name(AtShaderGlobals *sg, AtNode *node, AtNode *shader, bool s
 ///////////////////////////////////////////////
 
 
-void write_array_of_AOVs(AtShaderGlobals * sg, AtArray * names, float id, float opacity) {
+void write_array_of_AOVs(AtShaderGlobals * sg, AtArray * names, float id) {
     AtVector val;
     val.x = id; 
     val.y = 0.0f;
-    val.z = opacity;
+    val.z = 0.0f;
 
     for (uint32_t i=0; i < AiArrayGetNumElements(names); i++) {
         AtString aovName = AiArrayGetStr( names, i);
@@ -777,23 +777,12 @@ public:
 
     void do_cryptomattes(AtShaderGlobals *sg ) {
         if (sg->Rt & AI_RAY_CAMERA && sg->sc == AI_CONTEXT_SURFACE) {
-            const float opacity = this->compute_opacity_from_closures(sg);
-
-            this->do_standard_cryptomattes(sg, opacity);
-            this->do_user_cryptomattes(sg, opacity);
+            this->do_standard_cryptomattes(sg);
+            this->do_user_cryptomattes(sg);
         }
     }
 
 private:
-    float compute_opacity_from_closures(const AtShaderGlobals *sg) {
-        AtClosureList closures = sg->out.CLOSURE();
-        AtRGB opacity = AI_RGB_WHITE;
-        for (AtClosure closure = closures.front(); closure; closure = closure.next())
-            if (closure.type() == AI_CLOSURE_TRANSPARENT)
-                opacity -= closure.weight();
-        return AiClamp(AiColorToGrey(opacity), 0.0f, 1.0f);
-    }
-
     void init_user_cryptomatte_data(const AtArray *aov_input, const AtArray *src_input) {
         /*
         Structure of user data generated is currently this. 
@@ -840,7 +829,7 @@ private:
         }
     }
 
-    void do_standard_cryptomattes(AtShaderGlobals *sg, float opacity ) {
+    void do_standard_cryptomattes(AtShaderGlobals *sg) {
         if (!this->aovArray_cryptoasset && !this->aovArray_cryptoobject && !this->aovArray_cryptomaterial)
             return;
         
@@ -848,11 +837,11 @@ private:
         this->hash_object_rgb(sg, &nsp_hash_clr, &obj_hash_clr, &mat_hash_clr);
 
         if (this->aovArray_cryptoasset)
-            write_array_of_AOVs(sg, this->aovArray_cryptoasset, nsp_hash_clr.r, opacity);
+            write_array_of_AOVs(sg, this->aovArray_cryptoasset, nsp_hash_clr.r);
         if (this->aovArray_cryptoobject)
-            write_array_of_AOVs(sg, this->aovArray_cryptoobject, obj_hash_clr.r, opacity);
+            write_array_of_AOVs(sg, this->aovArray_cryptoobject, obj_hash_clr.r);
         if (this->aovArray_cryptomaterial)
-            write_array_of_AOVs(sg, this->aovArray_cryptomaterial, mat_hash_clr.r, opacity);
+            write_array_of_AOVs(sg, this->aovArray_cryptomaterial, mat_hash_clr.r);
         
         nsp_hash_clr.r = 0.0f;
         obj_hash_clr.r = 0.0f;
@@ -863,7 +852,7 @@ private:
         AiAOVSetRGBA(sg, this->aov_cryptomaterial, mat_hash_clr);
     }
 
-    void do_user_cryptomattes(AtShaderGlobals * sg, float opacity ) {
+    void do_user_cryptomattes(AtShaderGlobals * sg ) {
         if (this->user_cryptomatte_info == NULL)
             return;
 
@@ -883,7 +872,7 @@ private:
                 if (!result.empty())
                     hash_name_rgb(result.c_str(), &hash);
 
-                write_array_of_AOVs(sg, aovArray, hash.r, opacity);
+                write_array_of_AOVs(sg, aovArray, hash.r);
                 AiAOVSetRGBA(sg, aov_name, hash);
             }
         }
