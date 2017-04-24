@@ -777,19 +777,23 @@ public:
 
     void do_cryptomattes(AtShaderGlobals *sg ) {
         if (sg->Rt & AI_RAY_CAMERA && sg->sc == AI_CONTEXT_SURFACE) {
-            AtClosureList closures = sg->out.CLOSURE();
-            AtRGB opacity = AI_RGB_WHITE;
-            for (AtClosure closure = closures.front(); closure; closure = closure.next())
-                if (closure.type() == AI_CLOSURE_TRANSPARENT)
-                    opacity -= closure.weight();
-            float flt_opacity = AiClamp(AiColorToGrey(opacity), 0.0f, 1.0f);
+            const float opacity = this->compute_opacity_from_closures(sg);
 
-            this->do_standard_cryptomattes(sg, flt_opacity);
-            this->do_user_cryptomattes(sg, flt_opacity);
+            this->do_standard_cryptomattes(sg, opacity);
+            this->do_user_cryptomattes(sg, opacity);
         }
     }
 
 private:
+    float compute_opacity_from_closures(const AtShaderGlobals *sg) {
+        AtClosureList closures = sg->out.CLOSURE();
+        AtRGB opacity = AI_RGB_WHITE;
+        for (AtClosure closure = closures.front(); closure; closure = closure.next())
+            if (closure.type() == AI_CLOSURE_TRANSPARENT)
+                opacity -= closure.weight();
+        return AiClamp(AiColorToGrey(opacity), 0.0f, 1.0f);
+    }
+
     void init_user_cryptomatte_data(const AtArray *aov_input, const AtArray *src_input) {
         /*
         Structure of user data generated is currently this. 
