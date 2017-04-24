@@ -841,20 +841,20 @@ private:
     }
 
     void do_standard_cryptomattes(AtShaderGlobals *sg, float opacity ) {
-        if (!AiAOVEnabled(this->aov_cryptoasset, AI_TYPE_RGB)
-            && !AiAOVEnabled(this->aov_cryptoobject, AI_TYPE_RGB)
-            && !AiAOVEnabled(this->aov_cryptomaterial, AI_TYPE_RGB)) {
+        const bool do_asset = AiAOVEnabled(aov_cryptoasset, AI_TYPE_RGB);
+        const bool do_object = AiAOVEnabled(aov_cryptoobject, AI_TYPE_RGB);
+        const bool do_material = AiAOVEnabled(aov_cryptomaterial, AI_TYPE_RGB);
+        if (!do_asset && !do_object && !do_material)
             return;
-        }
+        
         AtRGB nsp_hash_clr, obj_hash_clr, mat_hash_clr;
-
         this->hash_object_rgb(sg, &nsp_hash_clr, &obj_hash_clr, &mat_hash_clr);
 
-        if (AiAOVEnabled(this->aov_cryptoasset, AI_TYPE_VECTOR))
+        if (do_asset)
             write_array_of_AOVs(sg, this->aovArray_cryptoasset, nsp_hash_clr.r, opacity);
-        if (AiAOVEnabled(this->aov_cryptoobject, AI_TYPE_VECTOR))
+        if (do_object)
             write_array_of_AOVs(sg, this->aovArray_cryptoobject, obj_hash_clr.r, opacity);
-        if (AiAOVEnabled(this->aov_cryptomaterial, AI_TYPE_VECTOR))
+        if (do_material)
             write_array_of_AOVs(sg, this->aovArray_cryptomaterial, mat_hash_clr.r, opacity);
         
         nsp_hash_clr.r = 0.0f;
