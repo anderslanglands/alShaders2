@@ -151,20 +151,10 @@ void write_to_samples_map(sw_map_t * vals, float hash, float sample_weight) {
 //
 ///////////////////////////////////////////////
 
-filter_pixel { 
-   AtShaderGlobals shader_globals;
-   AtShaderGlobals *sg = &shader_globals;
+filter_pixel {
    AtRGBA *out_value = (AtRGBA *)data_out;
    *out_value = AI_RGBA_ZERO;
-    
-    CryptomatteFilterData * data = (CryptomatteFilterData*)AiNodeGetLocalData(node);
-
-   AtNode * renderOptions = AiUniverseGetOptions();
-   int auto_transparency_depth = AiNodeGetInt(renderOptions, "auto_transparency_depth");
-
-   AtNode * camera = AiUniverseGetCamera();
-   float camera_far_clip = AiNodeGetFlt(camera, "far_clip");
-   
+   CryptomatteFilterData * data = (CryptomatteFilterData*)AiNodeGetLocalData(node);
 
    ///////////////////////////////////////////////
    //
@@ -186,10 +176,8 @@ filter_pixel {
    }
 
    if (early_out) {
-      *out_value = AI_RGBA_ZERO;
-      if (data->rank == 0) {
-         out_value->g = 1.0f;             
-      }
+      if (data->rank == 0)
+         out_value->g = 1.0f;
       return;
    }
    AiAOVSampleIteratorReset(iterator);
@@ -201,11 +189,7 @@ filter_pixel {
    ///////////////////////////////////////////////
 
    sw_map_t vals;
-   int total_samples = 0;
    float total_weight = 0.0f;
-   float sample_weight;
-   AtVector2 offset;
-   static const AtString zAOV("Z");
 
    ///////////////////////////////////////////////
    //
@@ -213,32 +197,18 @@ filter_pixel {
    //
    ///////////////////////////////////////////////
    while (AiAOVSampleIteratorGetNext(iterator)) {
-      offset = AiAOVSampleIteratorGetOffset(iterator);
-      sample_weight = data->filter_func(offset, data->width);
-
+      float sample_weight = data->filter_func(AiAOVSampleIteratorGetOffset(iterator), data->width);
       if (sample_weight == 0.0f)
          continue;
 
-      total_samples++;
-
-      ///////////////////////////////////////////////
-      //
-      //    Samples with values, depth or no depth
-      //
-      ///////////////////////////////////////////////
-      
       float iterative_transparency_weight = 1.0f;
       float quota = sample_weight;
       float sample_value = 0.0f;
       total_weight += quota;
 
       while (AiAOVSampleIteratorGetNextDepth(iterator)) {
-         // sample.x is the ID
-         // sample.y is unused
-
          const float sub_sample_opacity = AiColorToGrey(AiAOVSampleIteratorGetAOVRGB(iterator, ats_opacity));
          sample_value = AiAOVSampleIteratorGetFlt(iterator);
-
          const float sub_sample_weight = sub_sample_opacity * iterative_transparency_weight * sample_weight;
 
          // so if the current sub sample is 80% opaque, it means 20% of the weight will remain for the next subsample
@@ -248,7 +218,6 @@ filter_pixel {
          write_to_samples_map(&vals, sample_value, sub_sample_weight);
       }
       
-
       if (quota > 0.0) {
          // the remaining values gets allocated to the last sample 
          write_to_samples_map(&vals, sample_value, quota);
@@ -262,21 +231,21 @@ filter_pixel {
    //
    ///////////////////////////////////////////////
 
-   if (total_samples == 0) {
+   // rank 0 means if vals.size() does not contain 0, we can stop
+   // rank 2 means if vals.size() does not contain 2, we can stop
+   if (vals.size() <= data->rank)
       return;
-   }
 
    sw_map_iterator_t vals_iter;
    
    std::vector<std::pair<float, float> > all_vals;
    std::vector<std::pair<float, float> >::iterator all_vals_iter;
 
-   for (vals_iter = vals.begin(); vals_iter != vals.end(); ++vals_iter) {
+   all_vals.reserve(vals.size());
+   for (vals_iter = vals.begin(); vals_iter != vals.end(); ++vals_iter)
       all_vals.push_back(*vals_iter);
-   }
    
    std::sort(all_vals.begin(), all_vals.end(), compareTail());
-
 
    int iter = 0;
    for (all_vals_iter = all_vals.begin(); all_vals_iter != all_vals.end(); ++all_vals_iter) {
