@@ -792,15 +792,15 @@ public:
 private:
     void init_user_cryptomatte_data(const AtArray *aov_input, const AtArray *src_input) {
         /*
-            Structure of user data generated is currently this. 
-                user_cryptomatte_info[0] = aov array
-                user_cryptomatte_info[1] = source array
-                user_cryptomatte_info[2:] = sub-aov arrays for aov and source i-1
-            Example: 
-                user_cryptomatte_info[0] = ['myCryptoObject', 'myCryptoAsset']. 
-                user_cryptomatte_info[1] = ['myObjUserData', 'myAssetUserData']. 
-                user_cryptomatte_info[2] = [myCryptoObject00, myCryptoObject01]
-                user_cryptomatte_info[3] = [myCryptoAsset00, myCryptoAsset01]  
+        Structure of user data generated is currently this. 
+            this->user_cryptomatte_info[0] = aov array
+            this->user_cryptomatte_info[1] = source array
+            this->user_cryptomatte_info[2:] = sub-aov arrays for aov and source i-1
+        Example: 
+            this->user_cryptomatte_info[0] = ['myCryptoObject', 'myCryptoAsset']. 
+            this->user_cryptomatte_info[1] = ['myObjUserData', 'myAssetUserData']. 
+            this->user_cryptomatte_info[2] = ['myCryptoObject00', 'myCryptoObject01', 'myCryptoObject02']
+            this->user_cryptomatte_info[3] = ['myCryptoAsset00', 'myCryptoAsset01', 'myCryptoAsset02']  
         */
         if (aov_input == NULL && src_input == NULL)
             return;
