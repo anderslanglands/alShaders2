@@ -119,7 +119,7 @@ node_update {
 }
 
 filter_output_type {
-   if (input_type == AI_TYPE_VECTOR)
+   if (input_type == AI_TYPE_FLOAT)
       return AI_TYPE_RGBA;
    else
       return AI_TYPE_NONE;
@@ -229,7 +229,7 @@ filter_pixel {
       
       float iterative_transparency_weight = 1.0f;
       float quota = sample_weight;
-      AtVector sample_value = AI_V3_ZERO;
+      float sample_value = 0.0f;
       total_weight += quota;
 
       while (AiAOVSampleIteratorGetNextDepth(iterator)) {
@@ -237,20 +237,21 @@ filter_pixel {
          // sample.y is unused
 
          const float sub_sample_opacity = AiColorToGrey(AiAOVSampleIteratorGetAOVRGB(iterator, ats_opacity));
-         sample_value = AiAOVSampleIteratorGetVec(iterator);
+         sample_value = AiAOVSampleIteratorGetFlt(iterator);
+
          const float sub_sample_weight = sub_sample_opacity * iterative_transparency_weight * sample_weight;
 
          // so if the current sub sample is 80% opaque, it means 20% of the weight will remain for the next subsample
          iterative_transparency_weight *= (1.0f - sub_sample_opacity); 
 
          quota -= sub_sample_weight;
-         write_to_samples_map(&vals, sample_value.x, sub_sample_weight);
+         write_to_samples_map(&vals, sample_value, sub_sample_weight);
       }
       
 
       if (quota > 0.0) {
          // the remaining values gets allocated to the last sample 
-         write_to_samples_map(&vals, sample_value.x, quota);
+         write_to_samples_map(&vals, sample_value, quota);
       }
    }
 

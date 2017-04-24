@@ -434,16 +434,11 @@ bool get_material_name(AtShaderGlobals *sg, AtNode *node, AtNode *shader, bool s
 
 
 void write_array_of_AOVs(AtShaderGlobals * sg, AtArray * names, float id) {
-    AtVector val;
-    val.x = id; 
-    val.y = 0.0f;
-    val.z = 0.0f;
-
     for (uint32_t i=0; i < AiArrayGetNumElements(names); i++) {
         AtString aovName = AiArrayGetStr( names, i);
         if (aovName.empty())
             return;
-        AiAOVSetVec(sg, aovName, val);
+        AiAOVSetFlt(sg, aovName, id);
     }
 }
 
@@ -1115,14 +1110,14 @@ private:
 
             std::string new_output_str(aov_rank_name);
             new_output_str += " " ;
-            new_output_str += "VECTOR" ;
+            new_output_str += "FLOAT" ;
             new_output_str += " " ;
             new_output_str += filter_rank_name ;
             new_output_str += " " ;
             new_output_str += AiNodeGetName(driver);
 
             if (outputSet.find(new_output_str) == outputSet.end()) {
-                AiAOVRegister(aov_rank_name, AI_TYPE_VECTOR, AI_AOV_BLEND_NONE);
+                AiAOVRegister(aov_rank_name, AI_TYPE_FLOAT, AI_AOV_BLEND_NONE);
                 AiArraySetStr(tmp_new_outputs, output_offset + new_ouputs, new_output_str.c_str());
                 new_ouputs++;
             }
