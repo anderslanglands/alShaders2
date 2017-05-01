@@ -674,7 +674,6 @@ void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode
     AtNodeIterator * shape_iterator = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
     while (!AiNodeIteratorFinished(shape_iterator)) {
         AtNode *node = AiNodeIteratorGetNext(shape_iterator);
-        char mat_name[MAX_STRING_LENGTH] = "";
         char nsp_name[MAX_STRING_LENGTH] = "";
         char obj_name[MAX_STRING_LENGTH] = "";
 
@@ -690,10 +689,11 @@ void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode
             // This includes cluster materials.
             AtArray * shaders = AiNodeGetArray(node, "shader");
             for (uint32_t i = 0; i < AiArrayGetNumElements(shaders); i++) {
+                char mat_name[MAX_STRING_LENGTH] = "";
                 AtNode * shader = static_cast<AtNode*>(AiArrayGetPtr(shaders, i));
                 get_material_name(NULL, node, shader, strip_mat_ns, mat_name);
-                // add_hash_to_map(mat_name, &map_md_material); 
                 add_obj_to_manifest(node, mat_name, CRYPTO_MATERIAL_OFFSET_UDATA, &map_md_material);
+                mat_name[0] = '\0';
             }
         }
     }
@@ -893,29 +893,19 @@ private:
             }
         }
 
+        AtNode *shader = AiShaderGlobalsGetShader(sg);
         if (CRYPTOMATTE_CACHE[sg->tid].shader_object == sg->Op) {
             *mat_hash_clr = CRYPTOMATTE_CACHE[sg->tid].mat_hash_clr;
         } else {
-            bool cachable = true;
-            AtNode *shader = NULL;
             AtArray *shaders = AiNodeGetArray(sg->Op, aStr_shader);
-            int num_shaders = AiArrayGetNumElements(shaders);
-            if (num_shaders == 1) {
-                // use whatever is assigned, not whatever is currently evaluating
-                // this will match the manifest
-                shader = static_cast<AtNode*>(AiArrayGetPtr(shaders, 0));
-            } else if (num_shaders > 0) {
-                // this currently does not work. TO DO: get a way to get the current shidxs
-                uint8_t assignment = 0; //AiNodeGetByte(node, aStr_shidxs);
-                shader = static_cast<AtNode*>(AiArrayGetPtr(shaders, assignment));
-            }
+            bool cachable = shaders ? AiArrayGetNumElements(shaders) == 1 : false;
 
             char mat_name[MAX_STRING_LENGTH] = "";
             cachable = get_material_name(sg, sg->Op, shader, this->option_strip_mat_ns, mat_name) && cachable;
             hash_name_rgb(mat_name, mat_hash_clr);
 
             if (cachable) {
-                // only values that will be valid for the whole node, sg->shader, are cachable.
+                // only values that will be valid for the whole node, sg->Op, are cachable.
                 CRYPTOMATTE_CACHE[sg->tid].shader_object = sg->Op;
                 CRYPTOMATTE_CACHE[sg->tid].mat_hash_clr = *mat_hash_clr;
             }
