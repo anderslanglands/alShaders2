@@ -693,7 +693,6 @@ void build_standard_metadata(AtNode* driver_asset, AtNode* driver_object, AtNode
                 AtNode * shader = static_cast<AtNode*>(AiArrayGetPtr(shaders, i));
                 get_material_name(NULL, node, shader, strip_mat_ns, mat_name);
                 add_obj_to_manifest(node, mat_name, CRYPTO_MATERIAL_OFFSET_UDATA, &map_md_material);
-                mat_name[0] = '\0';
             }
         }
     }
