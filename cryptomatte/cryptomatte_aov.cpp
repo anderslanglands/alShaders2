@@ -81,19 +81,11 @@ shader_evaluate
    }
 }
 
-node_loader
+void registerCryptomatteAov(AtNodeLib *node)
 {
-   if (i == 0)
-   {
-      node->methods = cryptomatte_aovMtd;
-      node->output_type = AI_TYPE_CLOSURE;
-      node->name = "cryptomatte_aov";
-      node->node_type = AI_NODE_SHADER;
-      strcpy(node->version, AI_VERSION);
-      return true;
-   }
-   else
-   {
-      return false;
-   }
+   node->methods = cryptomatte_aovMtd;
+   node->output_type = AI_TYPE_CLOSURE;
+   node->name = "cryptomatte_aov";
+   node->node_type = AI_NODE_SHADER;
+   strcpy(node->version, AI_VERSION);
 }

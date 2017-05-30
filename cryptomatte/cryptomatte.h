@@ -802,7 +802,7 @@ private:
             const AtString src = AiArrayGetStr(src_input, i);
             if (!aov.empty() && !src.empty()) {
                 AiMsgInfo("Adding user-Cryptomatte %d: AOV: %s Source user data: %s", 
-                          uc_count, aov, src);
+                          uc_count, aov.c_str(), src.c_str());
                 AiArraySetStr(uc_aov_array, uc_count, aov);
                 AiArraySetStr(uc_src_array, uc_count, src);
                 uc_count++;
@@ -952,7 +952,6 @@ private:
             
             bool short_output = (c4 == NULL);
             char * aov_name =      short_output ? c0 : c1;
-            char * aov_type_name = short_output ? c1 : c2;
             char * filter_name =   short_output ? c2 : c3;
             char * driver_name =   short_output ? c3 : c4;
 

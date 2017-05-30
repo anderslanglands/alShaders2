@@ -51,14 +51,12 @@ node_parameters {
    AiParameterEnum("mode", p_mode_double_rgba, modeEnumNames);
 }
 
-node_loader {
-   if (i>0) return 0;
+void registerCryptomatteFilter(AtNodeLib *node) {
    node->methods     = cryptomatte_filterMtd;
    node->output_type = AI_TYPE_RGBA;
    node->name        = "cryptomatte_filter";
    node->node_type   = AI_NODE_FILTER;
    strcpy(node->version, AI_VERSION);
-   return true;
 }
 
 node_initialize {
@@ -81,7 +79,6 @@ node_finish {
 
 node_update {
    AtShaderGlobals shader_globals;
-   AtShaderGlobals *sg = &shader_globals;
 
    CryptomatteFilterData * data = (CryptomatteFilterData*) AiNodeGetLocalData(node);
    data->width = AiNodeGetFlt(node, "width");
