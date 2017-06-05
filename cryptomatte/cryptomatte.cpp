@@ -3,9 +3,9 @@
 #include <string>
 #include "cryptomatte.h"
 
-AI_SHADER_NODE_EXPORT_METHODS(cryptomatte_aovMtd)
+AI_SHADER_NODE_EXPORT_METHODS(cryptomatteMtd)
 
-enum cryptomatte_aovParams
+enum cryptomatteParams
 {
    p_cryptomatte_depth,
    p_strip_obj_namespaces,
@@ -87,9 +87,9 @@ shader_evaluate
 
 void registerCryptomatteAov(AtNodeLib *node)
 {
-   node->methods = cryptomatte_aovMtd;
+   node->methods = cryptomatteMtd;
    node->output_type = AI_TYPE_CLOSURE;
-   node->name = "cryptomatte_aov";
+   node->name = "cryptomatte";
    node->node_type = AI_NODE_SHADER;
    strcpy(node->version, AI_VERSION);
 }

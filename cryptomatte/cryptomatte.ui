@@ -1,22 +1,22 @@
 import uigen
 
 ui.shader({
-   'name': 'cryptomatte_aov',
+   'name': 'cryptomatte',
    'intro': '',
-   'description': 'Cryptomatte AOV Writer (pass-through)',
+   'description': 'Cryptomatte AOV Shader',
    'output': 'rgb',
-   'maya_name': 'cryptomatteAOV',
+   'maya_name': 'cryptomatte',
    'maya_classification': 'shader/surface',
    'maya_id':'0x00116421',
-   'maya_swatch': True,
+   'maya_swatch': False,
    'maya_matte': False,
    'maya_bump': False,
    'c4d_classification': 'texture',
    'c4d_menu': 'texture',
-   'soft_name': 'CryptomatteAOV',
+   'soft_name': 'Cryptomatte',
    'soft_classification': 'texture',
    'soft_version': 1,
-   'help_url': 'http://www.anderslanglands.com/alshaders/cryptomatte_aov.html',
+   'help_url': 'http://www.anderslanglands.com/alshaders/cryptomatte.html',
    'houdini_icon':'VOP_shadinglayer',
    'houdini_category':'AOV'
 })
