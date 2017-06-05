@@ -1,12 +1,7 @@
-add_library(cryptomatte_filter SHARED cryptomatte_filter.cpp MurmurHash3.cpp)
-target_link_libraries(cryptomatte_filter ai)
-set_target_properties(cryptomatte_filter PROPERTIES PREFIX "")
-install(TARGETS cryptomatte_filter DESTINATION ${DSO_INSTALL_DIR})
 install(DIRECTORY nuke DESTINATION ${INSTALL_DIR})
 
-
 set(SHADER cryptomatte)
-set(SRC ${SHADER}.cpp MurmurHash3.cpp)
+set(SRC ${SHADER}.cpp cryptomatte_filter.cpp loader.cpp MurmurHash3.cpp)
 set(UI ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER}.ui)
 set(MTD ${CMAKE_CURRENT_BINARY_DIR}/${SHADER}.mtd)
 set(AE ${CMAKE_CURRENT_BINARY_DIR}/cryptomatteAOVTemplate.py)
