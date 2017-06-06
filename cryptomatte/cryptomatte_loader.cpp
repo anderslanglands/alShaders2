@@ -3,12 +3,12 @@
 
 typedef void (*NodeRegisterFunc)(AtNodeLib *node);
 
-void registerCryptomatteAov(AtNodeLib *node);
+void registerCryptomatte(AtNodeLib *node);
 void registerCryptomatteFilter(AtNodeLib *node);
 
 static NodeRegisterFunc registry[] =
 {
-    &registerCryptomatteAov,
+    &registerCryptomatte,
     &registerCryptomatteFilter,
 };
 

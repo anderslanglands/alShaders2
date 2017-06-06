@@ -39,10 +39,6 @@ node_parameters
    AiParameterStr("user_src_2", "");
    AiParameterStr("user_aov_3", "");
    AiParameterStr("user_src_3", "");
-
-   AiMetaDataSetInt(nentry, "aov_crypto_asset", "aov.type", AI_TYPE_RGBA);
-   AiMetaDataSetInt(nentry, "aov_crypto_object", "aov.type", AI_TYPE_RGBA);
-   AiMetaDataSetInt(nentry, "aov_crypto_material", "aov.type", AI_TYPE_RGBA);
 }
 
 node_initialize
@@ -85,7 +81,7 @@ shader_evaluate
    }
 }
 
-void registerCryptomatteAov(AtNodeLib *node)
+void registerCryptomatte(AtNodeLib *node)
 {
    node->methods = cryptomatteMtd;
    node->output_type = AI_TYPE_CLOSURE;

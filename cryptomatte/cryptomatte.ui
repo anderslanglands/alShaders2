@@ -21,43 +21,40 @@ ui.shader({
    'houdini_category':'AOV'
 })
 
-with uigen.group(ui, 'Globals', description='Control global Cryptomatte settings here'):
-   ui.parameter('cryptomatte_depth', 'int', 6, 'Cryptomatte Depth', description='Set the cryptomatte depth (number of cryptomatte AOVs)')
-   ui.parameter('strip_obj_namespaces', 'bool', True, 'Strip Object Namespaces', description='Strip namespaces from object names')
-   ui.parameter('strip_mat_namespaces', 'bool', True, 'Strip Material Namespaces', description='Strip namespaces from material names')
+with uigen.group(ui, 'Cryptomatte Globals', collapse=False):
+   ui.parameter('cryptomatte_depth', 'int', 6, label='Cryptomatte Depth', 
+      description='Set the cryptomatte depth (number of cryptomatte AOVs)')
+   ui.parameter('strip_obj_namespaces', 'bool', True, label='Strip Object Namespaces', 
+      description='Strip namespaces from object names')
+   ui.parameter('strip_mat_namespaces', 'bool', True, label='Strip Material Namespaces', 
+      description='Strip namespaces from material names')
 
-with uigen.group(ui, 'AOVs', description='Use these parameters to change the name of the AOVs that the shader writes'):
-   ui.aov('aov_crypto_asset', 'rgb', 'Asset AOV name', description='Set the name of the cryptomatte asset AOV')
-   ui.aov('aov_crypto_object', 'rgb', 'Object AOV name', description='Set the name of the cryptomatte object AOV')
-   ui.aov('aov_crypto_material', 'rgb', 'Material AOV name', description='Set the name of the cryptomatte material AOV')
+with uigen.group(ui, 'Standard Cryptomatte AOVs', collapse=False):
+   ui.aov('aov_crypto_asset', 'rgb', label='Asset AOV name', 
+      description='Set the name of the cryptomatte asset AOV')
+   ui.aov('aov_crypto_object', 'rgb', label='Object AOV name', 
+      description='Set the name of the cryptomatte object AOV')
+   ui.aov('aov_crypto_material', 'rgb', label='Material AOV name', 
+      description='Set the name of the cryptomatte material AOV')
 
-with uigen.group(ui, 'User Defined', description='User Defined Cryptomattes'):
-   ui.parameter("user_aov_0", "string", "User AOV 0");
-   ui.parameter("user_src_0", "string", "User source 0");
-   ui.parameter("user_aov_1", "string", "User AOV 1");
-   ui.parameter("user_src_1", "string", "User source 1");
-   ui.parameter("user_aov_2", "string", "User AOV 2");
-   ui.parameter("user_src_2", "string", "User source 2");
-   ui.parameter("user_aov_3", "string", "User AOV 3");
-   ui.parameter("user_src_3", "string", "User source 3");
-
-"""
-   AiParameterInt("cryptomatte_depth", CRYPTO_DEPTH_DEFAULT);
-   AiParameterBool("strip_obj_namespaces", CRYPTO_STRIPOBJNS_DEFAULT);
-   AiParameterBool("strip_mat_namespaces", CRYPTO_STRIPMATNS_DEFAULT);
-   AiParameterStr("aov_crypto_asset", "crypto_asset");
-   AiParameterStr("aov_crypto_object", "crypto_object");
-   AiParameterStr("aov_crypto_material", "crypto_material");
-   AiParameterStr("user_aov_0", "");
-   AiParameterStr("user_src_0", "");
-   AiParameterStr("user_aov_1", "");
-   AiParameterStr("user_src_1", "");
-   AiParameterStr("user_aov_2", "");
-   AiParameterStr("user_src_2", "");
-   AiParameterStr("user_aov_3", "");
-   AiParameterStr("user_src_3", "");
-
-   AiMetaDataSetInt(nentry, "aov_crypto_asset", "aov.type", AI_TYPE_RGBA);
-   AiMetaDataSetInt(nentry, "aov_crypto_object", "aov.type", AI_TYPE_RGBA);
-   AiMetaDataSetInt(nentry, "aov_crypto_material", "aov.type", AI_TYPE_RGBA);
-"""
+with uigen.group(ui, 'User Defined Cryptomattes', collapse=True):
+   with uigen.group(ui, 'User Cryptomatte 0', collapse=False ):
+      ui.parameter('user_aov_0', 'string', '', label='AOV name', 
+         description='AOV name for user Cryptomatte 0')
+      ui.parameter('user_src_0', 'string', '', label='Source User Data', 
+         description='Source user data name for user Cryptomatte 0')
+   with uigen.group(ui, 'User Cryptomatte 1', collapse=False ):
+      ui.parameter('user_aov_1', 'string', '', label='AOV name', 
+         description='AOV name for user Cryptomatte 1')
+      ui.parameter('user_src_1', 'string', '', label='Source User Data', 
+         description='Source user data name for user Cryptomatte 1')
+   with uigen.group(ui, 'User Cryptomatte 2', collapse=False ):
+      ui.parameter('user_aov_2', 'string', '', label='AOV name', 
+         description='AOV name for user Cryptomatte 2')
+      ui.parameter('user_src_2', 'string', '', label='Source User Data', 
+         description='Source user data name for user Cryptomatte 2')
+   with uigen.group(ui, 'User Cryptomatte 3', collapse=False ):
+      ui.parameter('user_aov_3', 'string', '', label='AOV name', 
+         description='AOV name for user Cryptomatte 3')
+      ui.parameter('user_src_3', 'string', '', label='Source User Data', 
+         description='Source user data name for user Cryptomatte 3')

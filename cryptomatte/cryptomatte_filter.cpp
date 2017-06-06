@@ -78,8 +78,6 @@ node_finish {
 }
 
 node_update {
-   AtShaderGlobals shader_globals;
-
    CryptomatteFilterData * data = (CryptomatteFilterData*) AiNodeGetLocalData(node);
    data->width = AiNodeGetFlt(node, "width");
    data->rank = AiNodeGetInt(node, "rank");
@@ -193,6 +191,7 @@ filter_pixel {
    //    Iterate samples
    //
    ///////////////////////////////////////////////
+
    while (AiAOVSampleIteratorGetNext(iterator)) {
       float sample_weight = data->filter_func(AiAOVSampleIteratorGetOffset(iterator), data->width);
       if (sample_weight == 0.0f)
