@@ -985,9 +985,12 @@ private:
                 }
             }
 
-            if (cryptoAOVs != NULL)
+            if (cryptoAOVs != NULL) {
+                for (uint32_t j=0; j<this->option_aov_depth; j++)
+                    AiArraySetStr(cryptoAOVs, j, "");
                 new_output_num += this->create_AOV_array(driver, aov_name, filter_name, cryptoAOVs, 
                                                          tmp_new_outputs, new_output_num);
+            }
         }
 
         if (new_output_num > 0) {
