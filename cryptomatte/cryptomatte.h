@@ -77,7 +77,6 @@ static const AtString CRYPTO_MATERIAL_UDATA("crypto_material");
 static const AtString CRYPTO_ASSET_OFFSET_UDATA("crypto_asset_offset");
 static const AtString CRYPTO_OBJECT_OFFSET_UDATA("crypto_object_offset");
 static const AtString CRYPTO_MATERIAL_OFFSET_UDATA("crypto_material_offset");
-// Arnold options parameters
 
 //      For system controls
 #define CRYPTO_DEPTH_DEFAULT 6
@@ -91,9 +90,6 @@ static const AtString CRYPTO_MATERIAL_OFFSET_UDATA("crypto_material_offset");
 unsigned char g_pointcloud_instance_verbosity = 0;  // to do: remove this.
 
 // Some static AtStrings to cache
-const static AtString aStr_polymesh("polymesh");
-const static AtString aStr_curves("curves");
-const static AtString aStr_shidxs("shidxs");
 const static AtString aStr_shader("shader");
 
 ///////////////////////////////////////////////

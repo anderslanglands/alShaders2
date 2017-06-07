@@ -13,14 +13,14 @@ enum cryptomatteParams
    p_aov_crypto_asset,
    p_aov_crypto_object,
    p_aov_crypto_material,
-   p_user_aov_0,
-   p_user_src_0,
-   p_user_aov_1,
-   p_user_src_1,
-   p_user_aov_2,
-   p_user_src_2,
-   p_user_aov_3,
-   p_user_src_3,
+   p_user_crypto_aov_0,
+   p_user_crypto_src_0,
+   p_user_crypto_aov_1,
+   p_user_crypto_src_1,
+   p_user_crypto_aov_2,
+   p_user_crypto_src_2,
+   p_user_crypto_aov_3,
+   p_user_crypto_src_3,
 };
 
 node_parameters
@@ -31,14 +31,14 @@ node_parameters
    AiParameterStr("aov_crypto_asset", "crypto_asset");
    AiParameterStr("aov_crypto_object", "crypto_object");
    AiParameterStr("aov_crypto_material", "crypto_material");
-   AiParameterStr("user_aov_0", "");
-   AiParameterStr("user_src_0", "");
-   AiParameterStr("user_aov_1", "");
-   AiParameterStr("user_src_1", "");
-   AiParameterStr("user_aov_2", "");
-   AiParameterStr("user_src_2", "");
-   AiParameterStr("user_aov_3", "");
-   AiParameterStr("user_src_3", "");
+   AiParameterStr("user_crypto_aov_0", "");
+   AiParameterStr("user_crypto_src_0", "");
+   AiParameterStr("user_crypto_aov_1", "");
+   AiParameterStr("user_crypto_src_1", "");
+   AiParameterStr("user_crypto_aov_2", "");
+   AiParameterStr("user_crypto_src_2", "");
+   AiParameterStr("user_crypto_aov_3", "");
+   AiParameterStr("user_crypto_src_3", "");
 }
 
 node_initialize
@@ -61,11 +61,11 @@ node_update
                                                AiNodeGetBool(node, "strip_mat_namespaces"));
 
    AtArray* uc_aov_array = AiArray(4, 1, AI_TYPE_STRING, 
-      AiNodeGetStr(node, "user_aov_0"), AiNodeGetStr(node, "user_aov_1"), 
-      AiNodeGetStr(node, "user_aov_2"), AiNodeGetStr(node, "user_aov_3"));
+      AiNodeGetStr(node, "user_crypto_aov_0"), AiNodeGetStr(node, "user_crypto_aov_1"), 
+      AiNodeGetStr(node, "user_crypto_aov_2"), AiNodeGetStr(node, "user_crypto_aov_3"));
    AtArray* uc_src_array = AiArray(4, 1, AI_TYPE_STRING, 
-      AiNodeGetStr(node, "user_src_0"), AiNodeGetStr(node, "user_src_1"), 
-      AiNodeGetStr(node, "user_src_2"), AiNodeGetStr(node, "user_src_3"));
+      AiNodeGetStr(node, "user_crypto_src_0"), AiNodeGetStr(node, "user_crypto_src_1"), 
+      AiNodeGetStr(node, "user_crypto_src_2"), AiNodeGetStr(node, "user_crypto_src_3"));
    
    cryptomatte->setup_all(AiNodeGetStr(node, "aov_crypto_asset"),
                           AiNodeGetStr(node, "aov_crypto_object"),
