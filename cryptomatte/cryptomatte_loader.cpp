@@ -5,11 +5,13 @@ typedef void (*NodeRegisterFunc)(AtNodeLib *node);
 
 void registerCryptomatte(AtNodeLib *node);
 void registerCryptomatteFilter(AtNodeLib *node);
+void registerCryptomatteManifestDriver(AtNodeLib *node);
 
 static NodeRegisterFunc registry[] =
 {
     &registerCryptomatte,
     &registerCryptomatteFilter,
+    &registerCryptomatteManifestDriver,
 };
 
 static const int num_nodes = sizeof(registry) / sizeof(NodeRegisterFunc);
