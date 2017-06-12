@@ -7,7 +7,7 @@ AI_SHADER_NODE_EXPORT_METHODS(cryptomatteMtd)
 
 enum cryptomatteParams
 {
-   p_sidecar_manifest,
+   p_sidecar_manifests,
    p_cryptomatte_depth,
    p_strip_obj_namespaces,
    p_strip_mat_namespaces,
@@ -26,7 +26,7 @@ enum cryptomatteParams
 
 node_parameters
 {
-   AiParameterBool("sidecar_manifest", CRYPTO_SIDECARMANIFEST_DEFAULT);
+   AiParameterBool("sidecar_manifests", CRYPTO_SIDECARMANIFESTS_DEFAULT);
    AiParameterInt("cryptomatte_depth", CRYPTO_DEPTH_DEFAULT);
    AiParameterBool("strip_obj_namespaces", CRYPTO_STRIPOBJNS_DEFAULT);
    AiParameterBool("strip_mat_namespaces", CRYPTO_STRIPMATNS_DEFAULT);
@@ -59,7 +59,7 @@ node_update
 {
    CryptomatteData *data = (CryptomatteData*) AiNodeGetLocalData(node);
 
-   CryptomatteData_set_option_sidecar_manifest(data, AiNodeGetBool(node, "sidecar_manifest"));
+   CryptomatteData_set_option_sidecar_manifests(data, AiNodeGetBool(node, "sidecar_manifests"));
    CryptomatteData_set_option_depth(data, AiNodeGetInt(node, "cryptomatte_depth"));
    CryptomatteData_set_option_namespace_stripping(data, AiNodeGetBool(node, "strip_obj_namespaces"), 
                                                   AiNodeGetBool(node, "strip_mat_namespaces"));

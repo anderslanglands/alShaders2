@@ -571,7 +571,7 @@ struct CryptomatteData {
     uint8_t option_pcloud_ice_verbosity;
 
     AtNode * manifest_driver;
-    bool option_sidecar_manifest;
+    bool option_sidecar_manifests;
 
     string_vector_t manif_asset_p;
     string_vector_t manif_object_p;
@@ -631,8 +631,8 @@ public:
         g_pointcloud_instance_verbosity = this->option_pcloud_ice_verbosity; // to do: really remove this
     }
 
-    void set_option_sidecar_manifest(bool sidecar) {
-        this->option_sidecar_manifest = sidecar;
+    void set_option_sidecar_manifests(bool sidecar) {
+        this->option_sidecar_manifests = sidecar;
     }
 
     void do_cryptomattes(AtShaderGlobals *sg ) {
@@ -862,7 +862,7 @@ private:
 
 
         if (tmp_new_outputs.size() > 0) {
-            if (this->option_sidecar_manifest) {
+            if (this->option_sidecar_manifests) {
                 if (this->manifest_driver == NULL) {
                     this->manifest_driver = AiNode("cryptomatte_manifest_driver");
                     AiNodeSetStr(this->manifest_driver, "name", "cryptomatte_manifest_driver");
@@ -894,7 +894,7 @@ private:
     void setup_deferred_manifest(AtNode *driver, AtString token, std::string &path_out, std::string &metadata_path_out) {
         path_out = "";
         metadata_path_out = "";
-        if (driver && this->option_sidecar_manifest) {                
+        if (driver && this->option_sidecar_manifests) {                
             std::string filepath = std::string(AiNodeGetStr(driver, "filename").c_str());
             const size_t exr_found = filepath.find(".exr");
             if (exr_found != std::string::npos)
@@ -1039,7 +1039,7 @@ private:
 
         manf_map_t map_md_asset, map_md_object, map_md_material;
 
-        if (!this->option_sidecar_manifest)
+        if (!this->option_sidecar_manifests)
             this->compile_standard_manifests(do_md_asset, do_md_object, do_md_material, map_md_asset, map_md_object, map_md_material);
 
         std::string manif_asset_m, manif_object_m, manif_material_m;
@@ -1059,7 +1059,7 @@ private:
             write_metadata_to_driver(driver_material_v[i], this->aov_cryptomaterial, &map_md_material, manif_material_m);
         }
 
-        if (!this->option_sidecar_manifest)
+        if (!this->option_sidecar_manifests)
             AiMsgInfo("Cryptomatte manifest created - %f seconds", (float( clock () - metadata_start_time ) /  CLOCKS_PER_SEC));
         else
             AiMsgInfo("Cryptomatte manifest creation deferred - sidecar file written at end of render.");
@@ -1072,7 +1072,7 @@ private:
         manifs_user_m.resize(drivers_vv.size());
         this->manifs_user_p.resize(drivers_vv.size());
 
-        const bool sidecar = this->option_sidecar_manifest;
+        const bool sidecar = this->option_sidecar_manifests;
         // if (this->user_cryptomatte_info == NULL || drivers == NULL)
         if (this->user_cryptomatte_info == NULL || drivers_vv.size() == 0)
             return;
@@ -1283,8 +1283,8 @@ void CryptomatteData_set_option_namespace_stripping(CryptomatteData *data, bool 
 void CryptomatteData_set_option_ice_pcloud_verbosity(CryptomatteData *data, int verbosity) {
     data->set_option_ice_pcloud_verbosity(verbosity);
 }
-void CryptomatteData_set_option_sidecar_manifest(CryptomatteData *data, bool sidecar) {
-    data->set_option_sidecar_manifest(sidecar);
+void CryptomatteData_set_option_sidecar_manifests(CryptomatteData *data, bool sidecar) {
+    data->set_option_sidecar_manifests(sidecar);
 }
 void CryptomatteData_do_cryptomattes(CryptomatteData *data, AtShaderGlobals *sg ) {
     data->do_cryptomattes(sg);
