@@ -620,9 +620,9 @@ private:
 
 struct CryptomatteData {
     // Accessed during sampling, so hopefully in first cache line. 
-    AtArray * aovArray_cryptoasset;
-    AtArray * aovArray_cryptoobject;
-    AtArray * aovArray_cryptomaterial;
+    AtArray * aov_array_cryptoasset;
+    AtArray * aov_array_cryptoobject;
+    AtArray * aov_array_cryptomaterial;
     UserCryptomattes user_cryptomattes;
 
     // User options. 
@@ -651,9 +651,9 @@ struct CryptomatteData {
 public:
     CryptomatteData() {
         this->manifest_driver = NULL;
-        this->aovArray_cryptoasset    = NULL;
-        this->aovArray_cryptoobject   = NULL;
-        this->aovArray_cryptomaterial = NULL;
+        this->aov_array_cryptoasset    = NULL;
+        this->aov_array_cryptoobject   = NULL;
+        this->aov_array_cryptomaterial = NULL;
         this->user_cryptomattes = UserCryptomattes();
         init_cryptomatte_cache();
         this->set_option_depth(CRYPTO_DEPTH_DEFAULT);
@@ -712,18 +712,18 @@ public:
 
 private:
     void do_standard_cryptomattes(AtShaderGlobals *sg) {
-        if (!this->aovArray_cryptoasset && !this->aovArray_cryptoobject && !this->aovArray_cryptomaterial)
+        if (!this->aov_array_cryptoasset && !this->aov_array_cryptoobject && !this->aov_array_cryptomaterial)
             return;
         
         AtRGB nsp_hash_clr, obj_hash_clr, mat_hash_clr;
         this->hash_object_rgb(sg, &nsp_hash_clr, &obj_hash_clr, &mat_hash_clr);
 
-        if (this->aovArray_cryptoasset)
-            write_array_of_AOVs(sg, this->aovArray_cryptoasset, nsp_hash_clr.r);
-        if (this->aovArray_cryptoobject)
-            write_array_of_AOVs(sg, this->aovArray_cryptoobject, obj_hash_clr.r);
-        if (this->aovArray_cryptomaterial)
-            write_array_of_AOVs(sg, this->aovArray_cryptomaterial, mat_hash_clr.r);
+        if (this->aov_array_cryptoasset)
+            write_array_of_AOVs(sg, this->aov_array_cryptoasset, nsp_hash_clr.r);
+        if (this->aov_array_cryptoobject)
+            write_array_of_AOVs(sg, this->aov_array_cryptoobject, obj_hash_clr.r);
+        if (this->aov_array_cryptomaterial)
+            write_array_of_AOVs(sg, this->aov_array_cryptomaterial, mat_hash_clr.r);
         
         nsp_hash_clr.r = 0.0f;
         obj_hash_clr.r = 0.0f;
@@ -832,18 +832,18 @@ private:
             AtNode * driver = NULL;
             AtArray * cryptoAOVs = NULL;
             if (strcmp( aov_name, this->aov_cryptoasset.c_str()) == 0) {
-                this->aovArray_cryptoasset = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
-                cryptoAOVs = this->aovArray_cryptoasset;
+                this->aov_array_cryptoasset = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
+                cryptoAOVs = this->aov_array_cryptoasset;
                 driver = AiNodeLookUpByName(driver_name);
                 driver_cryptoAsset_v.push_back(driver);
             } else if (strcmp( aov_name, this->aov_cryptoobject.c_str()) == 0) {
-                this->aovArray_cryptoobject = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
-                cryptoAOVs = this->aovArray_cryptoobject;
+                this->aov_array_cryptoobject = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
+                cryptoAOVs = this->aov_array_cryptoobject;
                 driver = AiNodeLookUpByName(driver_name);
                 driver_cryptoObject_v.push_back(driver);
             } else if (strcmp( aov_name, this->aov_cryptomaterial.c_str()) == 0) {
-                this->aovArray_cryptomaterial = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
-                cryptoAOVs = this->aovArray_cryptomaterial;
+                this->aov_array_cryptomaterial = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
+                cryptoAOVs = this->aov_array_cryptomaterial;
                 driver = AiNodeLookUpByName(driver_name);
                 driver_cryptoMaterial_v.push_back(driver);
             } else if (this->user_cryptomattes.count != 0) {
@@ -1227,15 +1227,15 @@ private:
     ///////////////////////////////////////////////
 
     void destroy_arrays() {
-        if (this->aovArray_cryptoasset)
-            AiArrayDestroy(this->aovArray_cryptoasset);
-        if (this->aovArray_cryptoobject)
-            AiArrayDestroy(this->aovArray_cryptoobject);
-        if (this->aovArray_cryptomaterial)
-            AiArrayDestroy(this->aovArray_cryptomaterial);
-        this->aovArray_cryptoasset = NULL;
-        this->aovArray_cryptoobject = NULL;
-        this->aovArray_cryptomaterial = NULL;
+        if (this->aov_array_cryptoasset)
+            AiArrayDestroy(this->aov_array_cryptoasset);
+        if (this->aov_array_cryptoobject)
+            AiArrayDestroy(this->aov_array_cryptoobject);
+        if (this->aov_array_cryptomaterial)
+            AiArrayDestroy(this->aov_array_cryptomaterial);
+        this->aov_array_cryptoasset = NULL;
+        this->aov_array_cryptoobject = NULL;
+        this->aov_array_cryptomaterial = NULL;
         this->user_cryptomattes = UserCryptomattes();
     }
 
