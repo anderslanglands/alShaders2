@@ -460,8 +460,12 @@ void write_manifest_sidecar_file(manf_map_t *map_md_asset, string_vector_t manif
     }
 }
 
+bool check_driver(AtNode *driver) {
+    return driver != NULL && AiNodeIs(driver, AtString("driver_exr"));
+}
+
 void write_metadata_to_driver(AtNode * driver, AtString cryptomatte_name, manf_map_t *map, std::string sidecar_manif_file) {
-    if (!driver)
+    if (!check_driver(driver))
         return;
 
     AtArray * orig_md = AiNodeGetArray( driver, "custom_attributes");
@@ -506,7 +510,7 @@ void write_metadata_to_driver(AtNode * driver, AtString cryptomatte_name, manf_m
 
 bool metadata_needed(AtNode* driver, const AtString aov_name) {
     std::string flag = std::string(CRYPTOMATTE_METADATA_SET_FLAG) + aov_name.c_str();
-    return driver && !AiNodeLookUpUserParameter(driver, flag.c_str());
+    return check_driver(driver) && !AiNodeLookUpUserParameter(driver, flag.c_str());
 }
 
 
@@ -635,9 +639,6 @@ struct CryptomatteData {
     uint8_t option_pcloud_ice_verbosity;
     bool    option_sidecar_manifests;
 
-    // Sidecar manifest driver. 
-    AtNode * manifest_driver;
-
     // Vector of paths for each of the cryptomattes. Vector because each cryptomatte can write
     // to multiple drivers (stereo, multi-camera)
     string_vector_t manif_asset_paths;
@@ -648,7 +649,6 @@ struct CryptomatteData {
 
 public:
     CryptomatteData() {
-        this->manifest_driver = NULL;
         this->aov_array_cryptoasset    = NULL;
         this->aov_array_cryptoobject   = NULL;
         this->aov_array_cryptomaterial = NULL;
@@ -822,6 +822,7 @@ private:
 
             AtNode * driver = NULL;
             AtArray * cryptoAOVs = NULL;
+
             if (strcmp( aov_name, this->aov_cryptoasset.c_str()) == 0) {
                 this->aov_array_cryptoasset = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING);
                 cryptoAOVs = this->aov_array_cryptoasset;
@@ -857,15 +858,16 @@ private:
             }
         }
 
-
         if (new_outputs.size() > 0) {
             if (this->option_sidecar_manifests) {
-                if (this->manifest_driver == NULL) {
-                    this->manifest_driver = AiNode("cryptomatte_manifest_driver");
-                    AiNodeSetStr(this->manifest_driver, "name", "cryptomatte_manifest_driver");
+                AtString manifest_driver_name("cryptomatte_manifest_driver");
+                AtNode *manifest_driver = AiNodeLookUpByName(manifest_driver_name);
+                if (manifest_driver == NULL) {
+                    manifest_driver = AiNode("cryptomatte_manifest_driver");
+                    AiNodeSetStr(manifest_driver, "name", manifest_driver_name);
                 }
-                AiNodeSetLocalData(this->manifest_driver, this);
-                new_outputs.push_back(AiNodeGetName(this->manifest_driver));
+                AiNodeSetLocalData(manifest_driver, this);
+                new_outputs.push_back(manifest_driver_name.c_str());
             }
             const uint32_t total_outputs = prev_output_num + (uint32_t) new_outputs.size();
             AtArray * final_outputs = AiArrayAllocate(total_outputs, 1, AI_TYPE_STRING); // Does not need destruction
@@ -887,7 +889,7 @@ private:
     void setup_deferred_manifest(AtNode *driver, AtString token, std::string &path_out, std::string &metadata_path_out) {
         path_out = "";
         metadata_path_out = "";
-        if (driver && this->option_sidecar_manifests) {                
+        if (check_driver(driver) && this->option_sidecar_manifests) {                
             std::string filepath = std::string(AiNodeGetStr(driver, "filename").c_str());
             const size_t exr_found = filepath.find(".exr");
             if (exr_found != std::string::npos)
@@ -928,7 +930,7 @@ private:
     }
 
     void compile_standard_manifests(bool do_md_asset, bool do_md_object, bool do_md_material, 
-                               manf_map_t &map_md_asset, manf_map_t &map_md_object, manf_map_t &map_md_material) {
+                                    manf_map_t &map_md_asset, manf_map_t &map_md_object, manf_map_t &map_md_material) {
         AtNodeIterator * shape_iterator = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
         while (!AiNodeIteratorFinished(shape_iterator)) {
             AtNode *node = AiNodeIteratorGetNext(shape_iterator);
@@ -1078,9 +1080,6 @@ private:
         std::vector<manf_map_t> manf_maps;
         manf_maps.resize(this->user_cryptomattes.count);
 
-        // bool do_metadata[MAX_USER_CRYPTOMATTES];
-        // manf_map_t map_md_user[MAX_USER_CRYPTOMATTES];
-
         bool do_anything = false;
         for (uint32_t i=0; i<drivers_vv.size(); i++) {
             do_metadata[i] = false;
@@ -1125,7 +1124,7 @@ private:
     void create_AOV_array(const char *aov_name, const char *filter_name, const char *camera_name, 
                           AtNode *driver, AtArray *cryptoAOVs, string_vector_t *new_ouputs) {
         // helper for setup_cryptomatte_nodes. Populates cryptoAOVs and returns the number of new outputs created. 
-        if (!AiNodeIs(driver, AtString("driver_exr"))) {
+        if (!check_driver(driver)) {
             AiMsgWarning("Cryptomatte Error: Can only write Cryptomatte to EXR files.");
             return;
         }
