@@ -570,7 +570,7 @@ struct UserCryptomattes {
 
     UserCryptomattes(const AtArray *aov_input, const AtArray *src_input) {
         this->clear();
-        if (aov_input == NULL && src_input == NULL)
+        if (aov_input == NULL || src_input == NULL)
             return;
 
         const uint32_t num_inputs = std::min(AiArrayGetNumElements(aov_input), 
