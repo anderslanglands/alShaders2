@@ -560,19 +560,16 @@ void add_obj_to_manifest(const AtNode *node, char name[MAX_STRING_LENGTH],
 
 struct UserCryptomattes {
     size_t count;
-    std::vector<AtString> user_aovs;
-    std::vector<AtString> user_srcs;
-    std::vector<AtArray*>  user_aov_arrays;
+    std::vector<AtArray*> aov_arrays;
+    std::vector<AtString> aovs;
+    std::vector<AtString> sources;
 
     UserCryptomattes() {
-        this->count = 0;
-        this->user_aovs = std::vector<AtString>();
-        this->user_srcs = std::vector<AtString>();
-        this->user_aov_arrays = std::vector<AtArray*>();
+        this->clear();
     }
 
     UserCryptomattes(const AtArray *aov_input, const AtArray *src_input) {
-        this->count = 0;
+        this->clear();
         if (aov_input == NULL && src_input == NULL)
             return;
 
@@ -584,23 +581,32 @@ struct UserCryptomattes {
             const AtString src = AiArrayGetStr(src_input, i);
             if (!aov.empty() && !src.empty()) {
                 AiMsgInfo("Adding user-Cryptomatte %d: AOV: %s Source user data: %s", 
-                          this->user_aovs.size(), aov.c_str(), src.c_str());
-                this->user_aovs.push_back(aov);
-                this->user_srcs.push_back(src);
+                          this->aovs.size(), aov.c_str(), src.c_str());
+                this->aovs.push_back(aov);
+                this->sources.push_back(src);
             }
         }
-        this->user_aov_arrays.resize(this->user_aovs.size());
-        for (int i=0; i<this->user_aovs.size(); i++)
-            this->user_aov_arrays[i] = NULL;
+        this->aov_arrays.resize(this->aovs.size());
+        for (int i=0; i<this->aovs.size(); i++)
+            this->aov_arrays[i] = NULL;
 
-        this->count = this->user_aovs.size();
+        this->count = this->aovs.size();
     }
 
     ~UserCryptomattes() {
-        for (size_t i=0; i<this->user_aov_arrays.size(); i++) {
-            if (this->user_aov_arrays[i])
-                AiArrayDestroy(this->user_aov_arrays[i]); 
+        for (size_t i=0; i<this->aov_arrays.size(); i++) {
+            if (this->aov_arrays[i])
+                AiArrayDestroy(this->aov_arrays[i]); 
         }
+    }
+
+private:
+    void clear() {
+        // helper. Does not deallocate aov arrays. 
+        this->count = 0;
+        this->aov_arrays = std::vector<AtArray*>();
+        this->aovs = std::vector<AtString>();
+        this->sources = std::vector<AtString>();
     }
 };
 
@@ -613,28 +619,34 @@ struct UserCryptomattes {
 ///////////////////////////////////////////////
 
 struct CryptomatteData {
+    // Accessed during sampling, so hopefully in first cache line. 
+    AtArray * aovArray_cryptoasset;
+    AtArray * aovArray_cryptoobject;
+    AtArray * aovArray_cryptomaterial;
+    UserCryptomattes user_cryptomattes;
+
+    // User options. 
     uint8_t option_depth;
     uint8_t option_aov_depth;
     bool    option_strip_obj_ns;
     bool    option_strip_mat_ns;
     uint8_t option_pcloud_ice_verbosity;
+    bool    option_sidecar_manifests;
 
+    // Sidecar manifest driver. 
     AtNode * manifest_driver;
-    bool option_sidecar_manifests;
 
-    string_vector_t manif_asset_p;
-    string_vector_t manif_object_p;
-    string_vector_t manif_material_p;
-    string_vector_vector_t manifs_user_p;
+    // Vector of paths for each of the cryptomattes. Vector because each cryptomatte can write
+    // to multiple drivers (stereo, multi-camera)
+    string_vector_t manif_asset_paths;
+    string_vector_t manif_object_paths;
+    string_vector_t manif_material_paths;
+    // Nested vector of paths for each user cryptomatte. 
+    string_vector_vector_t manifs_user_paths;
 
     AtString aov_cryptoasset;
     AtString aov_cryptoobject;
     AtString aov_cryptomaterial;
-    AtArray * aovArray_cryptoasset;
-    AtArray * aovArray_cryptoobject;
-    AtArray * aovArray_cryptomaterial;
-
-    UserCryptomattes user_cryptomattes;
 
 public:
     CryptomatteData() {
@@ -727,10 +739,10 @@ private:
             return;
 
         for (uint32_t i=0; i<this->user_cryptomattes.count; i++) {
-            AtArray * aovArray = this->user_cryptomattes.user_aov_arrays[i];
+            AtArray * aovArray = this->user_cryptomattes.aov_arrays[i];
             if (aovArray != NULL) {
-                AtString aov_name = this->user_cryptomattes.user_aovs[i];
-                AtString src_data_name = this->user_cryptomattes.user_srcs[i];
+                AtString aov_name = this->user_cryptomattes.aovs[i];
+                AtString src_data_name = this->user_cryptomattes.sources[i];
                 AtRGB hash = AI_RGB_BLACK;
                 AtString result;
 
@@ -797,7 +809,7 @@ private:
         const uint32_t prev_output_num = AiArrayGetNumElements(outputs);
 
         std::vector<AtNode*> driver_cryptoAsset_v, driver_cryptoObject_v, driver_cryptoMaterial_v;
-        string_vector_t tmp_new_outputs;
+        string_vector_t new_outputs;
 
         for (uint32_t i=0; i < prev_output_num; i++) {
             size_t output_string_chars = AiArrayGetStr( outputs, i).length();
@@ -836,12 +848,12 @@ private:
                 driver_cryptoMaterial_v.push_back(driver);
             } else if (this->user_cryptomattes.count != 0) {
                 for (size_t j=0; j < this->user_cryptomattes.count; j++) {
-                    const char * user_aov_name = this->user_cryptomattes.user_aovs[j].c_str();
+                    const char * user_aov_name = this->user_cryptomattes.aovs[j].c_str();
                     if (strcmp(aov_name, user_aov_name) == 0) {
                         cryptoAOVs = AiArrayAllocate(this->option_aov_depth, 1, AI_TYPE_STRING); // will be destroyed when cryptomatteData is
                         driver = AiNodeLookUpByName(driver_name);
                         tmp_uc_drivers_vv[j].push_back(driver);
-                        this->user_cryptomattes.user_aov_arrays[j] = cryptoAOVs;
+                        this->user_cryptomattes.aov_arrays[j] = cryptoAOVs;
                         break;
                     }
                 }
@@ -850,29 +862,29 @@ private:
             if (cryptoAOVs != NULL) {
                 for (uint32_t j=0; j<this->option_aov_depth; j++)
                     AiArraySetStr(cryptoAOVs, j, "");
-                this->create_AOV_array(driver, aov_name, filter_name, camera_name, cryptoAOVs, &tmp_new_outputs);
+                this->create_AOV_array(aov_name, filter_name, camera_name, driver, cryptoAOVs, &new_outputs);
             }
         }
 
 
-        if (tmp_new_outputs.size() > 0) {
+        if (new_outputs.size() > 0) {
             if (this->option_sidecar_manifests) {
                 if (this->manifest_driver == NULL) {
                     this->manifest_driver = AiNode("cryptomatte_manifest_driver");
                     AiNodeSetStr(this->manifest_driver, "name", "cryptomatte_manifest_driver");
                 }
                 AiNodeSetLocalData(this->manifest_driver, this);
-                tmp_new_outputs.push_back(AiNodeGetName(this->manifest_driver));
+                new_outputs.push_back(AiNodeGetName(this->manifest_driver));
             }
-            const uint32_t total_outputs = prev_output_num + (uint32_t) tmp_new_outputs.size();
+            const uint32_t total_outputs = prev_output_num + (uint32_t) new_outputs.size();
             AtArray * final_outputs = AiArrayAllocate(total_outputs, 1, AI_TYPE_STRING); // Does not need destruction
             for (uint32_t i=0; i < prev_output_num; i++) {
                 // Iterate through old outputs and add them
                 AiArraySetStr(final_outputs, i, AiArrayGetStr(outputs, i));
             }
-            for (int i=0; i < tmp_new_outputs.size(); i++)  {
+            for (int i=0; i < new_outputs.size(); i++)  {
                 // Iterate through new outputs and add them
-                AiArraySetStr(final_outputs, i + prev_output_num, tmp_new_outputs[i].c_str());
+                AiArraySetStr(final_outputs, i + prev_output_num, new_outputs[i].c_str());
             }
             AiNodeSetArray(renderOptions, "outputs", final_outputs );
         }
@@ -901,9 +913,9 @@ private:
     }
 
     void write_standard_sidecar_manifests() {
-        const bool do_md_asset = this->manif_asset_p.size() > 0;
-        const bool do_md_object = this->manif_object_p.size() > 0;
-        const bool do_md_material = this->manif_material_p.size() > 0;
+        const bool do_md_asset = this->manif_asset_paths.size() > 0;
+        const bool do_md_object = this->manif_object_paths.size() > 0;
+        const bool do_md_material = this->manif_material_paths.size() > 0;
 
         if (!do_md_asset && !do_md_object && !do_md_material)
             return;
@@ -912,16 +924,16 @@ private:
         this->compile_standard_manifests(do_md_asset, do_md_object, do_md_material, map_md_asset, map_md_object, map_md_material);
         
         if (do_md_asset)
-            write_manifest_sidecar_file(&map_md_asset, this->manif_asset_p);
+            write_manifest_sidecar_file(&map_md_asset, this->manif_asset_paths);
         if (do_md_object)
-            write_manifest_sidecar_file(&map_md_object, this->manif_object_p);
+            write_manifest_sidecar_file(&map_md_object, this->manif_object_paths);
         if (do_md_material)
-            write_manifest_sidecar_file(&map_md_material, this->manif_material_p);
+            write_manifest_sidecar_file(&map_md_material, this->manif_material_paths);
 
         // reset sidecar writers
-        this->manif_asset_p = string_vector_t();
-        this->manif_object_p = string_vector_t();
-        this->manif_material_p = string_vector_t();
+        this->manif_asset_paths = string_vector_t();
+        this->manif_object_paths = string_vector_t();
+        this->manif_material_paths = string_vector_t();
     }
 
     void compile_standard_manifests(bool do_md_asset, bool do_md_object, bool do_md_material, 
@@ -962,18 +974,18 @@ private:
     void write_user_sidecar_manifests() {
         bool do_metadata[MAX_USER_CRYPTOMATTES];
         manf_map_t map_md_user[MAX_USER_CRYPTOMATTES];
-        for (size_t i=0; i < this->manifs_user_p.size(); i++) {
+        for (size_t i=0; i < this->manifs_user_paths.size(); i++) {
             do_metadata[i] = true;
-            for (size_t j=0; j < this->manifs_user_p[i].size(); j++)
-                do_metadata[i] = do_metadata[i] && this->manifs_user_p[i][j].length() > 0;
+            for (size_t j=0; j < this->manifs_user_paths[i].size(); j++)
+                do_metadata[i] = do_metadata[i] && this->manifs_user_paths[i][j].length() > 0;
         }
         this->compile_user_manifests(do_metadata, map_md_user);
 
-        for (size_t i=0; i < this->manifs_user_p.size(); i++)
+        for (size_t i=0; i < this->manifs_user_paths.size(); i++)
             if (do_metadata[i])
-                write_manifest_sidecar_file(&map_md_user[i], this->manifs_user_p[i]);
+                write_manifest_sidecar_file(&map_md_user[i], this->manifs_user_paths[i]);
 
-        this->manifs_user_p = string_vector_vector_t();
+        this->manifs_user_paths = string_vector_vector_t();
     }
 
     void compile_user_manifests(bool do_metadata[MAX_USER_CRYPTOMATTES], manf_map_t map_md_user[MAX_USER_CRYPTOMATTES]) {
@@ -985,7 +997,7 @@ private:
             for (uint32_t i=0; i<this->user_cryptomattes.count; i++) {
                 if (!do_metadata[i])
                     continue;
-                AtString user_data_name = this->user_cryptomattes.user_srcs[i]; // should really be atstring
+                AtString user_data_name = this->user_cryptomattes.sources[i]; // should really be atstring
                 const AtUserParamEntry* pentry = AiNodeLookUpUserParameter(node, user_data_name);
                 if (pentry == NULL|| AiUserParamGetType(pentry) != AI_TYPE_STRING)
                     continue;
@@ -1032,19 +1044,19 @@ private:
             this->compile_standard_manifests(do_md_asset, do_md_object, do_md_material, map_md_asset, map_md_object, map_md_material);
 
         std::string manif_asset_m, manif_object_m, manif_material_m;
-        this->manif_asset_p.resize(driver_asset_v.size());
+        this->manif_asset_paths.resize(driver_asset_v.size());
         for (size_t i = 0; i<driver_asset_v.size(); i++) {
-            this->setup_deferred_manifest(driver_asset_v[i], this->aov_cryptoasset, this->manif_asset_p[i], manif_asset_m);
+            this->setup_deferred_manifest(driver_asset_v[i], this->aov_cryptoasset, this->manif_asset_paths[i], manif_asset_m);
             write_metadata_to_driver(driver_asset_v[i], this->aov_cryptoasset, &map_md_asset, manif_asset_m);
         }
-        this->manif_object_p.resize(driver_object_v.size());
+        this->manif_object_paths.resize(driver_object_v.size());
         for (size_t i = 0; i<driver_object_v.size(); i++) {
-            this->setup_deferred_manifest(driver_object_v[i], this->aov_cryptoobject, this->manif_object_p[i], manif_object_m);
+            this->setup_deferred_manifest(driver_object_v[i], this->aov_cryptoobject, this->manif_object_paths[i], manif_object_m);
             write_metadata_to_driver(driver_object_v[i], this->aov_cryptoobject, &map_md_object, manif_object_m);
         }
-        this->manif_material_p.resize(driver_material_v.size());
+        this->manif_material_paths.resize(driver_material_v.size());
         for (size_t i = 0; i<driver_material_v.size(); i++) {
-            this->setup_deferred_manifest(driver_material_v[i], this->aov_cryptomaterial, this->manif_material_p[i], manif_material_m);
+            this->setup_deferred_manifest(driver_material_v[i], this->aov_cryptomaterial, this->manif_material_paths[i], manif_material_m);
             write_metadata_to_driver(driver_material_v[i], this->aov_cryptomaterial, &map_md_material, manif_material_m);
         }
 
@@ -1056,9 +1068,9 @@ private:
 
     void build_user_metadata(std::vector<std::vector<AtNode *>> drivers_vv) {
         string_vector_vector_t manifs_user_m;
-        this->manifs_user_p = string_vector_vector_t();
+        this->manifs_user_paths = string_vector_vector_t();
         manifs_user_m.resize(drivers_vv.size());
-        this->manifs_user_p.resize(drivers_vv.size());
+        this->manifs_user_paths.resize(drivers_vv.size());
 
         const bool sidecar = this->option_sidecar_manifests;
         if (this->user_cryptomattes.count == 0 || drivers_vv.size() == 0)
@@ -1074,15 +1086,15 @@ private:
             do_metadata[i] = false;
             for (size_t j=0; j<drivers_vv[i].size(); j++) {
                 AtNode *driver = drivers_vv[i][j];
-                AtString user_aov = this->user_cryptomattes.user_aovs[i];
+                AtString user_aov = this->user_cryptomattes.aovs[i];
                 do_metadata[i] = do_metadata[i] || metadata_needed(driver, user_aov); // checks for null
                 do_anything = do_anything || do_metadata[i];
 
                 std::string manif_user_m;
                 if (sidecar) {
-                    std::string manif_asset_p;
-                    this->setup_deferred_manifest(driver, user_aov, manif_asset_p, manif_user_m);
-                    this->manifs_user_p[i].push_back( driver == NULL ? ""  : manif_asset_p);
+                    std::string manif_asset_paths;
+                    this->setup_deferred_manifest(driver, user_aov, manif_asset_paths, manif_user_m);
+                    this->manifs_user_paths[i].push_back( driver == NULL ? ""  : manif_asset_paths);
                 }
                 manifs_user_m[i].push_back( driver == NULL ? ""  : manif_user_m);
                 
@@ -1098,7 +1110,7 @@ private:
         for (uint32_t i=0; i<drivers_vv.size(); i++) {
             if (!do_metadata[i])
                 continue;
-            AtString aov_name = this->user_cryptomattes.user_aovs[i];
+            AtString aov_name = this->user_cryptomattes.aovs[i];
             for (size_t j=0; j<drivers_vv[i].size(); j++) {
                 AtNode *driver = drivers_vv[i][j];
                 if (driver) {
@@ -1111,8 +1123,8 @@ private:
                   float(clock() - metadata_start_time) / CLOCKS_PER_SEC);
     }
 
-    void create_AOV_array(AtNode *driver, const char *aov_name, const char *filter_name, const char *camera_name,
-                         AtArray *cryptoAOVs, string_vector_t *tmp_new_outputs) {
+    void create_AOV_array(const char *aov_name, const char *filter_name, const char *camera_name, 
+                          AtNode *driver, AtArray *cryptoAOVs, string_vector_t *new_ouputs) {
         // helper for setup_cryptomatte_nodes. Populates cryptoAOVs and returns the number of new outputs created. 
         if (!AiNodeIs(driver, AtString("driver_exr"))) {
             AiMsgWarning("Cryptomatte Error: Can only write Cryptomatte to EXR files.");
@@ -1204,7 +1216,7 @@ private:
 
             if (outputSet.find(new_output_str) == outputSet.end()) {
                 AiAOVRegister(aov_rank_name, AI_TYPE_FLOAT, AI_AOV_BLEND_NONE);
-                tmp_new_outputs->push_back(new_output_str.c_str());
+                new_ouputs->push_back(new_output_str.c_str());
             }
             AiArraySetStr(cryptoAOVs, i, aov_rank_name);
         }
@@ -1224,6 +1236,7 @@ private:
         this->aovArray_cryptoasset = NULL;
         this->aovArray_cryptoobject = NULL;
         this->aovArray_cryptomaterial = NULL;
+        this->user_cryptomattes = UserCryptomattes();
     }
 
 public:
