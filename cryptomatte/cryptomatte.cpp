@@ -664,8 +664,8 @@ private:
         if (aov_input == NULL && src_input == NULL)
             return;
 
-        const int num_inputs = std::min(AiArrayGetNumElements(aov_input), 
-                                        AiArrayGetNumElements(src_input));
+        const uint32_t num_inputs = std::min(AiArrayGetNumElements(aov_input), 
+                                             AiArrayGetNumElements(src_input));
         AtArray *uc_aov_array = AiArrayAllocate(MAX_USER_CRYPTOMATTES, 1, AI_TYPE_STRING);
         AtArray *uc_src_array = AiArrayAllocate(MAX_USER_CRYPTOMATTES, 1, AI_TYPE_STRING);
         int uc_count = 0;
@@ -795,7 +795,7 @@ private:
 
         std::vector<std::vector<AtNode *>> tmp_uc_drivers_vv;
 
-        const int prev_output_num = AiArrayGetNumElements(outputs);
+        const uint32_t prev_output_num = AiArrayGetNumElements(outputs);
         if (this->user_cryptomatte_info != NULL) {
             uc_aov_array = AiArrayGetArray(this->user_cryptomatte_info, 0);
             uc_src_array = AiArrayGetArray(this->user_cryptomatte_info, 1);
@@ -870,7 +870,7 @@ private:
                 AiNodeSetLocalData(this->manifest_driver, this);
                 tmp_new_outputs.push_back(AiNodeGetName(this->manifest_driver));
             }
-            const int total_outputs = prev_output_num + tmp_new_outputs.size();
+            const uint32_t total_outputs = prev_output_num + (uint32_t) tmp_new_outputs.size();
             AtArray * final_outputs = AiArrayAllocate(total_outputs, 1, AI_TYPE_STRING); // Does not need destruction
             for (uint32_t i=0; i < prev_output_num; i++) {
                 // Iterate through old outputs and add them
@@ -911,9 +911,9 @@ private:
     }
 
     void write_standard_sidecar_manifests() {
-        const bool do_md_asset = this->manif_asset_p.size();
-        const bool do_md_object = this->manif_object_p.size();
-        const bool do_md_material = this->manif_material_p.size();
+        const bool do_md_asset = this->manif_asset_p.size() > 0;
+        const bool do_md_object = this->manif_object_p.size() > 0;
+        const bool do_md_material = this->manif_material_p.size() > 0;
 
         if (!do_md_asset && !do_md_object && !do_md_material)
             return;
@@ -1172,7 +1172,7 @@ private:
         AtArray *outputs = AiNodeGetArray( AiUniverseGetOptions(), "outputs");
         
         std::unordered_set<std::string> outputSet;
-        for (int i=0; i < AiArrayGetNumElements(outputs); i++)
+        for (uint32_t i=0; i < AiArrayGetNumElements(outputs); i++)
             outputSet.insert( std::string(AiArrayGetStr(outputs, i)));
 
         std::unordered_set<std::string> splitAOVs;
