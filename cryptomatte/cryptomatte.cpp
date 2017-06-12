@@ -620,6 +620,10 @@ private:
 
 struct CryptomatteData {
     // Accessed during sampling, so hopefully in first cache line. 
+    AtString aov_cryptoasset;
+    AtString aov_cryptoobject;
+    AtString aov_cryptomaterial;
+
     AtArray * aov_array_cryptoasset;
     AtArray * aov_array_cryptoobject;
     AtArray * aov_array_cryptomaterial;
@@ -643,10 +647,6 @@ struct CryptomatteData {
     string_vector_t manif_material_paths;
     // Nested vector of paths for each user cryptomatte. 
     string_vector_vector_t manifs_user_paths;
-
-    AtString aov_cryptoasset;
-    AtString aov_cryptoobject;
-    AtString aov_cryptomaterial;
 
 public:
     CryptomatteData() {
