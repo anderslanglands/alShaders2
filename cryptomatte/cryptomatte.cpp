@@ -326,7 +326,7 @@ void offset_name(const AtShaderGlobals *sg, const AtNode *node, const int offset
     }
 }
 
-bool get_object_names(AtShaderGlobals *sg, AtNode *node, bool strip_obj_ns, 
+bool get_object_names(const AtShaderGlobals *sg, const AtNode *node, bool strip_obj_ns, 
                       char nsp_name_out[MAX_STRING_LENGTH], char obj_name_out[MAX_STRING_LENGTH]) {
     bool cachable = true;
 
@@ -356,7 +356,7 @@ bool get_object_names(AtShaderGlobals *sg, AtNode *node, bool strip_obj_ns,
 }
 
 
-bool get_material_name(AtShaderGlobals *sg, AtNode *node, AtNode *shader, bool strip_mat_ns, 
+bool get_material_name(const AtShaderGlobals *sg, const AtNode *node, const AtNode *shader, bool strip_mat_ns, 
                        char mat_name_out[MAX_STRING_LENGTH]) 
 {
     bool cachable = true;
@@ -381,7 +381,7 @@ bool get_material_name(AtShaderGlobals *sg, AtNode *node, AtNode *shader, bool s
 ///////////////////////////////////////////////
 
 
-void write_array_of_AOVs(AtShaderGlobals * sg, AtArray * names, float id) {
+void write_array_of_AOVs(AtShaderGlobals *sg, const AtArray *names, float id) {
     for (uint32_t i=0; i < AiArrayGetNumElements(names); i++) {
         AtString aovName = AiArrayGetStr( names, i);
         if (aovName.empty())
