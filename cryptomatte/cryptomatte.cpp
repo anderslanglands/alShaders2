@@ -259,7 +259,7 @@ float hash_to_float(uint32_t hash) {
 }
 
 
-void hash_name_rgb(const char * name, AtRGB* out_color) {
+void hash_name_rgb(const char *name, AtRGB *out_color) {
     // This puts the float ID into the red channel, and the human-readable
     // versions into the G and B channels. 
     uint32_t m3hash = 0;
@@ -519,7 +519,7 @@ void metadata_set_unneeded(AtNode* driver, const AtString aov_name) {
 }
 
 
-void add_hash_to_map(const char * c_str, manf_map_t * md_map) {
+void add_hash_to_map(const char *c_str, manf_map_t *md_map) {
     if (!string_has_content(c_str))
         return;
     AtRGB hash;
@@ -532,27 +532,25 @@ void add_hash_to_map(const char * c_str, manf_map_t * md_map) {
 
 
 void add_obj_to_manifest(const AtNode *node, char name[MAX_STRING_LENGTH], 
-                          const AtString offset_user_data, manf_map_t *hash_map ) {
-    {
-        add_hash_to_map(name, hash_map);
-        bool cachable = true;
-        get_offset_user_data(NULL, node, offset_user_data, &cachable);
-        if (!cachable) {
-            AtArray *offsets = AiNodeGetArray(node, offset_user_data);
-            if (offsets) {                    
-                std::unordered_set<int> visitedOffsets;
-                for (uint32_t i=0; i<AiArrayGetNumElements(offsets); i++) {
-                    int offset = AiArrayGetInt(offsets, i);
-                    if (visitedOffsets.find(offset) == visitedOffsets.end()) {
-                        visitedOffsets.insert(offset);
-                        char name_copy[MAX_STRING_LENGTH] = "";
-                        safe_copy_to_buffer(name_copy, name);
-                        offset_name(NULL, node, offset, name_copy);
-                        add_hash_to_map(name_copy, hash_map);
-                    }
+                         const AtString offset_user_data, manf_map_t *hash_map ) {
+    add_hash_to_map(name, hash_map);
+    bool cachable = true;
+    get_offset_user_data(NULL, node, offset_user_data, &cachable);
+    if (!cachable) {
+        AtArray *offsets = AiNodeGetArray(node, offset_user_data);
+        if (offsets) {                    
+            std::unordered_set<int> visitedOffsets;
+            for (uint32_t i=0; i<AiArrayGetNumElements(offsets); i++) {
+                int offset = AiArrayGetInt(offsets, i);
+                if (visitedOffsets.find(offset) == visitedOffsets.end()) {
+                    visitedOffsets.insert(offset);
+                    char name_copy[MAX_STRING_LENGTH] = "";
+                    safe_copy_to_buffer(name_copy, name);
+                    offset_name(NULL, node, offset, name_copy);
+                    add_hash_to_map(name_copy, hash_map);
                 }
-
             }
+
         }
     }
 }
@@ -705,7 +703,6 @@ public:
     }
 
     void write_sidecar_manifests() {
-        // Called by the cryptomatte_manifest_driver
         this->write_standard_sidecar_manifests();
         this->write_user_sidecar_manifests();
     }
@@ -725,9 +722,7 @@ private:
         if (this->aov_array_cryptomaterial)
             write_array_of_AOVs(sg, this->aov_array_cryptomaterial, mat_hash_clr.r);
         
-        nsp_hash_clr.r = 0.0f;
-        obj_hash_clr.r = 0.0f;
-        mat_hash_clr.r = 0.0f;
+        nsp_hash_clr.r = obj_hash_clr.r = mat_hash_clr.r = 0.0f;
 
         AiAOVSetRGBA(sg, this->aov_cryptoasset, nsp_hash_clr);      
         AiAOVSetRGBA(sg, this->aov_cryptoobject, obj_hash_clr);
@@ -735,9 +730,6 @@ private:
     }
 
     void do_user_cryptomattes(AtShaderGlobals * sg ) {
-        if (this->user_cryptomattes.count == 0)
-            return;
-
         for (uint32_t i=0; i<this->user_cryptomattes.count; i++) {
             AtArray * aovArray = this->user_cryptomattes.aov_arrays[i];
             if (aovArray != NULL) {
@@ -756,8 +748,7 @@ private:
         }
     }
 
-    void hash_object_rgb(AtShaderGlobals* sg, AtRGB * nsp_hash_clr, AtRGB * obj_hash_clr, AtRGB * mat_hash_clr) 
-    {
+    void hash_object_rgb(AtShaderGlobals* sg, AtRGB *nsp_hash_clr, AtRGB *obj_hash_clr, AtRGB *mat_hash_clr) {
         if (CRYPTOMATTE_CACHE[sg->tid].object == sg->Op) {
             *nsp_hash_clr = CRYPTOMATTE_CACHE[sg->tid].nsp_hash_clr;
             *obj_hash_clr = CRYPTOMATTE_CACHE[sg->tid].obj_hash_clr;
@@ -972,23 +963,27 @@ private:
     }
 
     void write_user_sidecar_manifests() {
-        bool do_metadata[MAX_USER_CRYPTOMATTES];
-        manf_map_t map_md_user[MAX_USER_CRYPTOMATTES];
-        for (size_t i=0; i < this->manifs_user_paths.size(); i++) {
+        std::vector<bool> do_metadata;
+        do_metadata.resize(this->user_cryptomattes.count);
+        std::vector<manf_map_t> manf_maps;
+        manf_maps.resize(this->user_cryptomattes.count);
+
+        for (size_t i=0; i < this->user_cryptomattes.count; i++) {
             do_metadata[i] = true;
             for (size_t j=0; j < this->manifs_user_paths[i].size(); j++)
                 do_metadata[i] = do_metadata[i] && this->manifs_user_paths[i][j].length() > 0;
         }
-        this->compile_user_manifests(do_metadata, map_md_user);
+        this->compile_user_manifests(do_metadata, manf_maps);
 
         for (size_t i=0; i < this->manifs_user_paths.size(); i++)
             if (do_metadata[i])
-                write_manifest_sidecar_file(&map_md_user[i], this->manifs_user_paths[i]);
+                write_manifest_sidecar_file(&manf_maps[i], this->manifs_user_paths[i]);
 
         this->manifs_user_paths = string_vector_vector_t();
     }
 
-    void compile_user_manifests(bool do_metadata[MAX_USER_CRYPTOMATTES], manf_map_t map_md_user[MAX_USER_CRYPTOMATTES]) {
+    // void compile_user_manifests(bool do_metadata[MAX_USER_CRYPTOMATTES], manf_map_t map_md_user[MAX_USER_CRYPTOMATTES]) {
+    void compile_user_manifests(std::vector<bool> &do_metadata, std::vector<manf_map_t> manf_maps) {
         if (!this->user_cryptomattes.count == 0)
             return;
         AtNodeIterator * shape_iterator = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
@@ -1004,12 +999,12 @@ private:
 
                 if ( AiUserParamGetCategory(pentry) == AI_USERDEF_CONSTANT) {
                     // not an array
-                    add_hash_to_map(AiNodeGetStr(node, user_data_name), &map_md_user[i]);
+                    add_hash_to_map(AiNodeGetStr(node, user_data_name), &manf_maps[i]);
                 } else {
                     AtArray * values = AiNodeGetArray(node, user_data_name);
                     if (values != NULL) {
                         for (uint32_t ai=0; ai<AiArrayGetNumElements(values); ai++)
-                            add_hash_to_map(AiArrayGetStr(values, ai), &map_md_user[i]);
+                            add_hash_to_map(AiArrayGetStr(values, ai), &manf_maps[i]);
                     }
                 }
             }
@@ -1078,8 +1073,13 @@ private:
 
 
         const clock_t metadata_start_time = clock();
-        bool do_metadata[MAX_USER_CRYPTOMATTES];
-        manf_map_t map_md_user[MAX_USER_CRYPTOMATTES];
+        std::vector<bool> do_metadata;
+        do_metadata.resize(this->user_cryptomattes.count);
+        std::vector<manf_map_t> manf_maps;
+        manf_maps.resize(this->user_cryptomattes.count);
+
+        // bool do_metadata[MAX_USER_CRYPTOMATTES];
+        // manf_map_t map_md_user[MAX_USER_CRYPTOMATTES];
 
         bool do_anything = false;
         for (uint32_t i=0; i<drivers_vv.size(); i++) {
@@ -1097,7 +1097,6 @@ private:
                     this->manifs_user_paths[i].push_back( driver == NULL ? ""  : manif_asset_paths);
                 }
                 manifs_user_m[i].push_back( driver == NULL ? ""  : manif_user_m);
-                
             }
         }
 
@@ -1105,7 +1104,7 @@ private:
             return;
 
         if (!sidecar)
-            this->compile_user_manifests(do_metadata, map_md_user);
+            this->compile_user_manifests(do_metadata, manf_maps);
 
         for (uint32_t i=0; i<drivers_vv.size(); i++) {
             if (!do_metadata[i])
@@ -1115,7 +1114,7 @@ private:
                 AtNode *driver = drivers_vv[i][j];
                 if (driver) {
                     metadata_set_unneeded(driver, aov_name);
-                    write_metadata_to_driver(driver, aov_name, &map_md_user[i], manifs_user_m[i][j]);
+                    write_metadata_to_driver(driver, aov_name, &manf_maps[i], manifs_user_m[i][j]);
                 }
             }
         }
