@@ -790,7 +790,6 @@ private:
     void setup_cryptomatte_nodes() {
         AtNode *renderOptions = AiUniverseGetOptions();
         const AtArray * outputs = AiNodeGetArray(renderOptions, "outputs");
-        AtArray *tmp_uc_drivers = NULL;
         AtArray *uc_aov_array = NULL, *uc_src_array = NULL;
 
         std::vector<std::vector<AtNode *>> tmp_uc_drivers_vv;
@@ -885,10 +884,6 @@ private:
 
         this->build_standard_metadata(driver_cryptoAsset_v, driver_cryptoObject_v, driver_cryptoMaterial_v);
         this->build_user_metadata(tmp_uc_drivers_vv);
-
-        // AiArrayDestroy(tmp_new_outputs);
-        // if (tmp_uc_drivers)
-        //     AiArrayDestroy(tmp_uc_drivers);
     }
 
     void setup_deferred_manifest(AtNode *driver, AtString token, std::string &path_out, std::string &metadata_path_out) {
@@ -1017,7 +1012,8 @@ private:
         AiNodeIteratorDestroy(shape_iterator);
     }
 
-    void build_standard_metadata(std::vector<AtNode*> driver_asset_v, std::vector<AtNode*> driver_object_v, std::vector<AtNode*> driver_material_v) {
+    void build_standard_metadata(std::vector<AtNode*> driver_asset_v, std::vector<AtNode*> driver_object_v, 
+                                 std::vector<AtNode*> driver_material_v) {
         const clock_t metadata_start_time = clock();
 
         bool do_md_asset = true, do_md_object = true, do_md_material = true;
@@ -1065,7 +1061,6 @@ private:
             AiMsgInfo("Cryptomatte manifest creation deferred - sidecar file written at end of render.");
     }
 
-    // void build_user_metadata(AtArray* drivers) {
     void build_user_metadata(std::vector<std::vector<AtNode *>> drivers_vv) {
         string_vector_vector_t manifs_user_m;
         this->manifs_user_p = string_vector_vector_t();
@@ -1073,7 +1068,6 @@ private:
         this->manifs_user_p.resize(drivers_vv.size());
 
         const bool sidecar = this->option_sidecar_manifests;
-        // if (this->user_cryptomatte_info == NULL || drivers == NULL)
         if (this->user_cryptomatte_info == NULL || drivers_vv.size() == 0)
             return;
 
@@ -1087,7 +1081,6 @@ private:
         for (uint32_t i=0; i<drivers_vv.size(); i++) {
             do_metadata[i] = false;
             for (size_t j=0; j<drivers_vv[i].size(); j++) {
-                // AtNode *driver = static_cast<AtNode*>(AiArrayGetPtr(drivers, i));
                 AtNode *driver = drivers_vv[i][j];
                 do_metadata[i] = do_metadata[i] || metadata_needed(driver, AiArrayGetStr(uc_aov_array, i)); // checks for null
                 do_anything = do_anything || do_metadata[i];
@@ -1109,13 +1102,11 @@ private:
         if (!sidecar)
             this->compile_user_manifests(do_metadata, map_md_user);
 
-        // for (uint32_t i=0; i<AiArrayGetNumElements(drivers); i++) {
         for (uint32_t i=0; i<drivers_vv.size(); i++) {
             if (!do_metadata[i])
                 continue;
             AtString aov_name = AiArrayGetStr(uc_aov_array, i);
             for (size_t j=0; j<drivers_vv[i].size(); j++) {
-                // AtNode *driver = static_cast<AtNode*>(AiArrayGetPtr(drivers, i));
                 AtNode *driver = drivers_vv[i][j];
                 if (driver) {
                     metadata_set_unneeded(driver, aov_name);
