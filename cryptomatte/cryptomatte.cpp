@@ -897,7 +897,6 @@ private:
             
             path_out = filepath + "." + token.c_str() + ".json";
             const size_t last_partition = path_out.find_last_of("/\\");
-            metadata_path_out = std::string("../");
             if (last_partition == std::string::npos)
                 metadata_path_out += path_out;
             else
