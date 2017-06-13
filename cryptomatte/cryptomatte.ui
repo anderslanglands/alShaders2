@@ -22,6 +22,8 @@ ui.shader({
 })
 
 with uigen.group(ui, 'Cryptomatte Globals', collapse=False):
+   ui.parameter('sidecar_manifests', 'bool', False, label='Sidecar Manifests', 
+      description='Sets whether Cryptomatte should write the manifest to a sidecar .json file instead of the EXR header.')
    ui.parameter('cryptomatte_depth', 'int', 6, label='Cryptomatte Depth', 
       description='Set the cryptomatte depth (number of cryptomatte AOVs)')
    ui.parameter('strip_obj_namespaces', 'bool', True, label='Strip Object Namespaces', 
