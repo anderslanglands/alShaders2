@@ -7,7 +7,7 @@ ui.shader({
    'output': 'rgb',
    'maya_name': 'cryptomatte',
    'maya_classification': 'shader/surface',
-   'maya_id':'0x00116421',
+   'maya_id':'0x00116422',
    'maya_swatch': False,
    'maya_matte': False,
    'maya_bump': False,
