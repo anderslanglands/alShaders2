@@ -1,6 +1,3 @@
-install(DIRECTORY nuke DESTINATION ${INSTALL_DIR})
-
-
 set(SRC cryptomatte.cpp cryptomatte_loader.cpp cryptomatte_shader.cpp cryptomatte_manifest_driver.cpp cryptomatte_filter.cpp MurmurHash3.cpp )
 set(SHADER cryptomatte)
 set(UI ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER}.ui)
