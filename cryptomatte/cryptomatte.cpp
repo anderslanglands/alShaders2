@@ -2,6 +2,7 @@
 #include <unordered_set>
 #include <cstring>
 #include <map>
+#include <vector>
 #include <ctime>
 #include "MurmurHash3.h"
 #include <cstdio>
@@ -582,7 +583,7 @@ struct UserCryptomattes {
             const AtString aov = AiArrayGetStr(aov_input, i);
             const AtString src = AiArrayGetStr(src_input, i);
             if (!aov.empty() && !src.empty()) {
-                AiMsgInfo("Adding user-Cryptomatte %d: AOV: %s Source user data: %s", 
+                AiMsgInfo("Adding user-Cryptomatte %lu: AOV: %s Source user data: %s",
                           this->aovs.size(), aov.c_str(), src.c_str());
                 this->aovs.push_back(aov);
                 this->sources.push_back(src);
