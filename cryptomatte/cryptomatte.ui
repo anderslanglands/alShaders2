@@ -6,7 +6,7 @@ ui.shader({
    'description': 'Cryptomatte AOV Shader',
    'output': 'rgb',
    'maya_name': 'cryptomatte',
-   'maya_classification': 'shader/surface',
+   'maya_classification': 'utility/aov',
    'maya_id':'0x00116422',
    'maya_swatch': False,
    'maya_matte': False,
