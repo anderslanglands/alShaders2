@@ -118,5 +118,11 @@ foreach(SUBDIR ${SUBDIRECTORIES})
     add_subdirectory(${SUBDIR})
 endforeach()
 
+# configure packaging script
+configure_file(
+    "${PROJECT_SOURCE_DIR}/package.in.py"
+    "${PROJECT_SOURCE_DIR}/package.py"
+)
+
 # add top-level files
 INSTALL(FILES README INSTALL DESTINATION ${INSTALL_DIR})
