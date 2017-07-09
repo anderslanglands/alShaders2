@@ -8,4 +8,5 @@ CTestTestfile.cmake
 build
 **/*.pyc
 .ycm_extra_conf.py
+package.in.py
 docs
