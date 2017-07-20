@@ -18,6 +18,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 set(CMAKE_CXX_STANDARD 11)
 
+# Statically link stdc++ to avoid GLILBC version clashes
+set(CMAKE_SHARED_LINKER_FLAGS "-static-libstdc++")
+
 # Compiler flags
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     # Disable some of the bullshit warnings MSVC wants to barf

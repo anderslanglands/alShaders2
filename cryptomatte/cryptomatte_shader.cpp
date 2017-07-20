@@ -65,11 +65,11 @@ node_update
                                                   AiNodeGetBool(node, "strip_mat_namespaces"));
 
    AtArray* uc_aov_array = AiArray(4, 1, AI_TYPE_STRING, 
-      AiNodeGetStr(node, "user_crypto_aov_0"), AiNodeGetStr(node, "user_crypto_aov_1"), 
-      AiNodeGetStr(node, "user_crypto_aov_2"), AiNodeGetStr(node, "user_crypto_aov_3"));
+      AiNodeGetStr(node, "user_crypto_aov_0").c_str(), AiNodeGetStr(node, "user_crypto_aov_1").c_str(), 
+      AiNodeGetStr(node, "user_crypto_aov_2").c_str(), AiNodeGetStr(node, "user_crypto_aov_3").c_str());
    AtArray* uc_src_array = AiArray(4, 1, AI_TYPE_STRING, 
-      AiNodeGetStr(node, "user_crypto_src_0"), AiNodeGetStr(node, "user_crypto_src_1"), 
-      AiNodeGetStr(node, "user_crypto_src_2"), AiNodeGetStr(node, "user_crypto_src_3"));
+      AiNodeGetStr(node, "user_crypto_src_0").c_str(), AiNodeGetStr(node, "user_crypto_src_1").c_str(), 
+      AiNodeGetStr(node, "user_crypto_src_2").c_str(), AiNodeGetStr(node, "user_crypto_src_3").c_str());
    
    CryptomatteData_setup_all(data, AiNodeGetStr(node, "aov_crypto_asset"),
                           AiNodeGetStr(node, "aov_crypto_object"),
