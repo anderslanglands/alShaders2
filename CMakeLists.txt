@@ -16,6 +16,11 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
+set(CMAKE_CXX_STANDARD 11)
+
+# Statically link stdc++ to avoid GLILBC version clashes
+set(CMAKE_SHARED_LINKER_FLAGS "-static-libstdc++")
+
 # Compiler flags
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     # Disable some of the bullshit warnings MSVC wants to barf
@@ -79,12 +84,19 @@ include(cmake/shader.cmake)
 set(SUBDIRECTORIES 
     cryptomatte
     a2_uber
+    common
 )
 
 # loop over subdirectories
 foreach(SUBDIR ${SUBDIRECTORIES})
     add_subdirectory(${SUBDIR})
 endforeach()
+
+# configure packaging script
+configure_file(
+    "${PROJECT_SOURCE_DIR}/package.in.py"
+    "${PROJECT_SOURCE_DIR}/package.py"
+)
 
 # add top-level files
 INSTALL(FILES README INSTALL DESTINATION ${INSTALL_DIR})

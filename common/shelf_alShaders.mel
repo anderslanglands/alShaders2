@@ -1,0 +1,179 @@
+/// file shelf_alShaders.mel
+/// Create a shelf with buttons for assigning light groups and object ids
+
+source "alsUtil.mel";
+source "alsIdWindow";
+
+global proc shelf_alShaders()
+{
+	shelfButton -command "als_setLightGroupOnSelection(0)" -ann "Disable light groups on selected lights" -label "Disable light groups"
+        -enable 1
+        -manage 1
+        -visible 1
+        -width 35
+        -height 35
+        -preventOverride 0
+        -enableBackground 0
+        -align center
+        -labelOffset 0
+        -image "als_lg_0.png"
+        -font "plainLabelFont"
+        -marginWidth 1
+        -marginHeight 1
+        ;
+    shelfButton -command "als_setLightGroupOnSelection(1)" -ann "Add selected lights to light group 1" -label "Light group 1"
+        -enable 1
+        -manage 1
+        -visible 1
+        -width 35
+        -height 35
+        -preventOverride 0
+        -enableBackground 0
+        -align center
+        -labelOffset 0
+        -image "als_lg_1.png"
+        -font "plainLabelFont"
+        -marginWidth 1
+        -marginHeight 1
+        ;
+    shelfButton -command "als_setLightGroupOnSelection(2)" -ann "Add selected lights to light group 2" -label "Light group 2"
+        -enable 1
+        -manage 1
+        -visible 1
+        -width 35
+        -height 35
+        -preventOverride 0
+        -enableBackground 0
+        -align center
+        -labelOffset 0
+        -image "als_lg_2.png"
+        -font "plainLabelFont"
+        -marginWidth 1
+        -marginHeight 1
+        ;
+    shelfButton -command "als_setLightGroupOnSelection(3)" -ann "Add selected lights to light group 3" -label "Light group 3"
+        -enable 1
+        -manage 1
+        -visible 1
+        -width 35
+        -height 35
+        -preventOverride 0
+        -enableBackground 0
+        -align center
+        -labelOffset 0
+        -image "als_lg_3.png"
+        -font "plainLabelFont"
+        -marginWidth 1
+        -marginHeight 1
+        ;
+    shelfButton -command "als_setLightGroupOnSelection(4)" -ann "Add selected lights to light group 4" -label "Light group 4"
+        -enable 1
+        -manage 1
+        -visible 1
+        -width 35
+        -height 35
+        -preventOverride 0
+        -enableBackground 0
+        -align center
+        -labelOffset 0
+        -image "als_lg_4.png"
+        -font "plainLabelFont"
+        -marginWidth 1
+        -marginHeight 1
+        ;
+    shelfButton -command "als_setLightGroupOnSelection(5)" -ann "Add selected lights to light group 5" -label "Light group 5"
+        -enable 1
+        -manage 1
+        -visible 1
+        -width 35
+        -height 35
+        -preventOverride 0
+        -enableBackground 0
+        -align center
+        -labelOffset 0
+        -image "als_lg_5.png"
+        -font "plainLabelFont"
+        -marginWidth 1
+        -marginHeight 1
+        ;
+    shelfButton -command "als_setLightGroupOnSelection(6)" -ann "Add selected lights to light group 6" -label "Light group 6"
+        -enable 1
+        -manage 1
+        -visible 1
+        -width 35
+        -height 35
+        -preventOverride 0
+        -enableBackground 0
+        -align center
+        -labelOffset 0
+        -image "als_lg_6.png"
+        -font "plainLabelFont"
+        -marginWidth 1
+        -marginHeight 1
+        ;
+    shelfButton -command "als_setLightGroupOnSelection(7)" -ann "Add selected lights to light group 7" -label "Light group 7"
+        -enable 1
+        -manage 1
+        -visible 1
+        -width 35
+        -height 35
+        -preventOverride 0
+        -enableBackground 0
+        -align center
+        -labelOffset 0
+        -image "als_lg_7.png"
+        -font "plainLabelFont"
+        -marginWidth 1
+        -marginHeight 1
+        ;
+    shelfButton -command "als_setLightGroupOnSelection(8)" -ann "Add selected lights to light group 8" -label "Light group 8"
+        -enable 1
+        -manage 1
+        -visible 1
+        -width 35
+        -height 35
+        -preventOverride 0
+        -enableBackground 0
+        -align center
+        -labelOffset 0
+        -image "als_lg_8.png"
+        -font "plainLabelFont"
+        -marginWidth 1
+        -marginHeight 1
+        ;
+    shelfButton -command "als_idWindow" -ann "Open Object ID Window" -label "ID window"
+        -enable 1
+        -manage 1
+        -visible 1
+        -width 35
+        -height 35
+        -preventOverride 0
+        -enableBackground 0
+        -align center
+        -labelOffset 0
+        -image "als_id.png"
+        -font "plainLabelFont"
+        -marginWidth 1
+        -marginHeight 1
+        ;
+}
+
+global proc als_buildShelf()
+{
+    if(about("-batch"))
+    {
+        return;
+    }
+
+    if(!`shelfLayout -ex shelf_alShaders`) 
+    {
+        loadNewShelf "shelf_alShaders";
+    }
+}
+
+global proc als_init()
+{
+    evalDeferred als_buildShelf;
+}
+
+als_init;
