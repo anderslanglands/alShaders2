@@ -1049,12 +1049,12 @@ private:
             metadata_set_unneeded(driver_asset_v[i], this->aov_cryptoasset);
         }
         for (size_t i = 0; i<driver_object_v.size(); i++) {
-            do_md_object = do_md_object && metadata_needed(driver_object_v[i], this->aov_cryptoasset);
-            metadata_set_unneeded(driver_object_v[i], this->aov_cryptoasset);
+            do_md_object = do_md_object && metadata_needed(driver_object_v[i], this->aov_cryptoobject);
+            metadata_set_unneeded(driver_object_v[i], this->aov_cryptoobject);
         }
         for (size_t i = 0; i<driver_material_v.size(); i++) {
-            do_md_material = do_md_material && metadata_needed(driver_material_v[i], this->aov_cryptoasset);
-            metadata_set_unneeded(driver_material_v[i], this->aov_cryptoasset);
+            do_md_material = do_md_material && metadata_needed(driver_material_v[i], this->aov_cryptomaterial);
+            metadata_set_unneeded(driver_material_v[i], this->aov_cryptomaterial);
         }
 
         if (!do_md_asset && !do_md_object && !do_md_material)
