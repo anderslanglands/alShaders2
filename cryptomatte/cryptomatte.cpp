@@ -211,7 +211,20 @@ void get_clean_material_name(const char *mat_full_name, char mat_name_out[MAX_ST
     // Example: 
     //      Softimage: Sources.Materials.myLibrary_ref_library.myMaterialName.Standard_Mattes.uBasic.SITOA.25000....
     //      Maya: namespace:my_material_sg
+
     safe_copy_to_buffer(mat_name_out, mat_full_name);
+
+    // C4DtoA: c4d|mat_name|root_node_name
+    if (strstr(mat_name_out, "c4d|") == mat_name_out) {
+        // Chop first element
+        char *str_cut = mat_name_out + 4;
+        // Snip second element
+        char *mat_name_start = strtok(str_cut, "|");
+        if (mat_name_start != NULL) {
+            memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
+        }
+        return;
+    }
 
     char *mat_postfix = strstr(mat_name_out, ".SItoA.");
     if (mat_postfix != NULL) {
@@ -254,7 +267,7 @@ void get_clean_material_name(const char *mat_full_name, char mat_name_out[MAX_ST
         ns_separator[0] = '\0';
         char *mat_name_start = ns_separator + 1;
         memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
-    } 
+    }
 }
 
 
