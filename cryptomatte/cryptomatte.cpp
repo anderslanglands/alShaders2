@@ -962,6 +962,12 @@ private:
             AtNode *node = AiNodeIteratorGetNext(shape_iterator);
             if (!node)
                 continue;
+
+            // skip the root node
+            static const AtString listAggregate("list_aggregate");
+            if (AiNodeIs(node, listAggregate) && !strcmp(AiNodeGetName(node), "root"))
+                continue;
+
             char nsp_name[MAX_STRING_LENGTH] = "";
             char obj_name[MAX_STRING_LENGTH] = "";
 
