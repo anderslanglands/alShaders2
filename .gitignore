@@ -10,3 +10,4 @@ build
 .ycm_extra_conf.py
 package.py
 docs
+config/config.h
