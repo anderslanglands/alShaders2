@@ -1,0 +1,6 @@
+#pragma once
+
+inline const char* als_version() {
+    return "@ALS_MAJOR_VERSION@.@ALS_MINOR_VERSION@.@ALS_PATCH_VERSION@";
+}
+
