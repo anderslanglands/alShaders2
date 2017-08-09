@@ -1049,18 +1049,27 @@ private:
                                  std::vector<AtNode*> driver_material_v) {
         const clock_t metadata_start_time = clock();
 
-        bool do_md_asset = true, do_md_object = true, do_md_material = true;
+        bool do_md_asset = false, do_md_object = false, do_md_material = false;
         for (size_t i = 0; i<driver_asset_v.size(); i++) {
-            do_md_asset = do_md_asset && metadata_needed(driver_asset_v[i], this->aov_cryptoasset);
-            metadata_set_unneeded(driver_asset_v[i], this->aov_cryptoasset);
+            if (metadata_needed(driver_asset_v[i], this->aov_cryptoasset)) {
+                do_md_asset = true;
+                metadata_set_unneeded(driver_asset_v[i], this->aov_cryptoasset);
+                break;
+            }
         }
         for (size_t i = 0; i<driver_object_v.size(); i++) {
-            do_md_object = do_md_object && metadata_needed(driver_object_v[i], this->aov_cryptoobject);
-            metadata_set_unneeded(driver_object_v[i], this->aov_cryptoobject);
+            if (metadata_needed(driver_object_v[i], this->aov_cryptoobject)) {
+                do_md_object = true;
+                metadata_set_unneeded(driver_object_v[i], this->aov_cryptoobject);
+                break;
+            }
         }
         for (size_t i = 0; i<driver_material_v.size(); i++) {
-            do_md_material = do_md_material && metadata_needed(driver_material_v[i], this->aov_cryptomaterial);
-            metadata_set_unneeded(driver_material_v[i], this->aov_cryptomaterial);
+            if (metadata_needed(driver_material_v[i], this->aov_cryptomaterial)) {
+                do_md_material = true;
+                metadata_set_unneeded(driver_material_v[i], this->aov_cryptomaterial);
+                break;
+            }
         }
 
         if (!do_md_asset && !do_md_object && !do_md_material)
