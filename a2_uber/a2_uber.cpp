@@ -1,5 +1,6 @@
 #include "bsdf_diffuse.hpp"
 #include "bsdf_microfacet.hpp"
+#include "bsdf_microfacet_refraction.hpp"
 #include "bsdf_stack.hpp"
 #include <ai.h>
 #include <iostream>
@@ -24,29 +25,28 @@ node_update {}
 node_finish {}
 
 shader_evaluate {
-    AtClosureList closures;
-
-    AtVector U = sg->dPdu;
-    AtVector V = sg->dPdv;
+    auto U = sg->dPdu;
+    auto V = sg->dPdv;
     if (AiV3IsSmall(U)) {
         AiV3BuildLocalFrame(U, V, sg->Nf);
     }
 
-    AtBSDF* bsdf_microfacet_wrap = a2::BsdfMicrofacet::create(
+    auto bsdf_microfacet_wrap = a2::BsdfMicrofacet::create(
         sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, 0, 0);
 
-    AtBSDF* bsdf_oren_nayar =
+    auto bsdf_microfacet_refraction = a2::BsdfMicrofacetRefraction::create(
+        sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, 0, 0);
+
+    auto bsdf_oren_nayar =
         a2::BsdfDiffuse::create(sg, AtRGB(0.18f), sg->Nf, sg->dPdu, 0.0f);
 
-    AtBSDF* bsdf_stack_ai = a2::BsdfStack::create(sg);
-    a2::BsdfStack* bsdf_stack = a2::BsdfStack::get(bsdf_stack_ai);
+    auto bsdf_stack_ai = a2::BsdfStack::create(sg);
+    auto bsdf_stack = a2::BsdfStack::get(bsdf_stack_ai);
     bsdf_stack->add_bsdf(a2::BsdfMicrofacet::get(bsdf_microfacet_wrap));
-    bsdf_stack->add_bsdf(a2::BsdfDiffuse::get(bsdf_oren_nayar));
+    // bsdf_stack->add_bsdf(a2::BsdfDiffuse::get(bsdf_oren_nayar));
+    bsdf_stack->add_bsdf(
+        a2::BsdfMicrofacetRefraction::get(bsdf_microfacet_refraction));
     sg->out.CLOSURE() = bsdf_stack_ai;
-
-    // closures.add(bsdf_microfacet_wrap);
-    // closures.add(bsdf_oren_nayar);
-    // sg->out.CLOSURE() = closures;
 }
 
 node_loader {

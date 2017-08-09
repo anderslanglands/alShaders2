@@ -1,16 +1,18 @@
 #pragma once
 
 #include "bsdf_microfacet.hpp"
+#include <boost/container/static_vector.hpp>
 #include <memory>
 
 namespace a2 {
 
+template <class T> using stack_array = boost::container::static_vector<T, 8>;
+
 class BsdfStack : public Bsdf {
-    static constexpr int C_max_bsdfs = 8;
-    Bsdf* _bsdfs[C_max_bsdfs];
-    AtRGB _layer_transmission[C_max_bsdfs];
-    AtBSDFLobeInfo _lobe_info[C_max_bsdfs];
-    int _num_bsdfs;
+    stack_array<Bsdf*> _bsdfs;
+    stack_array<AtRGB> _layer_transmission_bsdf;
+    stack_array<AtRGB> _layer_transmission_light;
+    stack_array<AtBSDFLobeInfo> _lobe_info;
     AtShaderGlobals* _sg;
 
 public:
@@ -32,8 +34,8 @@ public:
                           AtBSDFLobeSample out_lobes[],
                           AtRGB& transmission) override;
     AtBSDFLobeMask eval(const AtVector& wi, const AtBSDFLobeMask lobe_mask,
-                        const bool need_pdf,
-                        AtBSDFLobeSample out_lobes[]) override;
+                        const bool need_pdf, AtBSDFLobeSample out_lobes[],
+                        AtRGB& transmission) override;
     const AtBSDFLobeInfo* get_lobes() override;
     int get_num_lobes() override;
 };

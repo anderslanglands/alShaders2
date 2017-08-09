@@ -4,6 +4,7 @@
 AI_BSDF_EXPORT_METHODS(A2BsdfDiffuseMtd);
 
 namespace a2 {
+static const AtString str_diffuse("diffuse");
 AtBSDF* BsdfDiffuse::create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
                             AtVector U, float roughness) {
     AtBSDF* bsdf = AiBSDF(sg, weight, A2BsdfDiffuseMtd, sizeof(BsdfDiffuse));
@@ -11,7 +12,8 @@ AtBSDF* BsdfDiffuse::create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
     new (bsdf_diff) BsdfDiffuse;
     bsdf_diff->N = N;
     bsdf_diff->U = U;
-    bsdf_diff->arnold_bsdf = AiOrenNayarBSDF(sg, weight, N, roughness);
+    bsdf_diff->arnold_bsdf =
+        AiOrenNayarBSDF(sg, weight, N, roughness, false, str_diffuse);
     bsdf_diff->arnold_methods = AiBSDFGetMethods(bsdf_diff->arnold_bsdf);
     bsdf_diff->_sg = sg;
     bsdf_diff->_weight = weight;
@@ -30,6 +32,8 @@ AtBSDFLobeMask BsdfDiffuse::sample(const AtVector u, const float wavelength,
     auto out_lobe_mask =
         arnold_methods->Sample(arnold_bsdf, u, wavelength, 0x1, need_pdf,
                                out_wi, out_lobe_index, out_lobes);
+    if (out_lobe_mask == AI_BSDF_LOBE_MASK_NONE)
+        return AI_BSDF_LOBE_MASK_NONE;
     out_lobes[0].weight *= _weight;
     transmission = AI_RGB_BLACK;
     return out_lobe_mask;
@@ -37,10 +41,14 @@ AtBSDFLobeMask BsdfDiffuse::sample(const AtVector u, const float wavelength,
 AtBSDFLobeMask BsdfDiffuse::eval(const AtVector& wi,
                                  const AtBSDFLobeMask lobe_mask,
                                  const bool need_pdf,
-                                 AtBSDFLobeSample out_lobes[]) {
+                                 AtBSDFLobeSample out_lobes[],
+                                 AtRGB& transmission) {
     auto out_lobe_mask =
         arnold_methods->Eval(arnold_bsdf, wi, 0x1, need_pdf, out_lobes);
+    if (out_lobe_mask == AI_BSDF_LOBE_MASK_NONE)
+        return AI_BSDF_LOBE_MASK_NONE;
     out_lobes[0].weight *= _weight;
+    transmission = AI_RGB_BLACK;
     return out_lobe_mask;
 }
 const AtBSDFLobeInfo* BsdfDiffuse::get_lobes() {
@@ -72,5 +80,6 @@ static AtBSDFLobeMask Eval(const AtBSDF* bsdf, const AtVector& wi,
                            AtBSDFLobeSample out_lobes[]) {
     a2::BsdfDiffuse* bsdf_mf =
         reinterpret_cast<a2::BsdfDiffuse*>(AiBSDFGetData(bsdf));
-    return bsdf_mf->eval(wi, lobe_mask, need_pdf, out_lobes);
+    AtRGB transmission;
+    return bsdf_mf->eval(wi, lobe_mask, need_pdf, out_lobes, transmission);
 }

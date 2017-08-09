@@ -16,7 +16,8 @@ public:
     virtual AtBSDFLobeMask eval(const AtVector& wi,
                                 const AtBSDFLobeMask lobe_mask,
                                 const bool need_pdf,
-                                AtBSDFLobeSample out_lobes[]) = 0;
+                                AtBSDFLobeSample out_lobes[],
+                                AtRGB& transmission) = 0;
     virtual const AtBSDFLobeInfo* get_lobes() = 0;
     virtual int get_num_lobes() = 0;
 };

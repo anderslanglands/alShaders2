@@ -1,21 +1,30 @@
 #pragma once
 
 #include "bsdf.hpp"
+#include "util.hpp"
 #include <ai.h>
 
 namespace a2 {
-
-class BsdfDiffuse : public Bsdf {
+class BsdfMicrofacetRefraction : public Bsdf {
+    AtVector2 _roughness;
+    float _eta;
+    AtRGB _weight;
+    uint8_t _distribution;
     AtShaderGlobals* _sg;
+    AtVector _omega_o;
+
+public:
     const AtBSDFMethods* arnold_methods;
     AtBSDF* arnold_bsdf;
     AtVector N;
     AtVector U;
-    AtRGB _weight;
 
-public:
-    static BsdfDiffuse* get(const AtBSDF* bsdf) {
-        return reinterpret_cast<BsdfDiffuse*>(AiBSDFGetData(bsdf));
+    static AtBSDF* create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
+                          AtVector U, float medium_ior, float ior, float rx,
+                          float ry);
+
+    static BsdfMicrofacetRefraction* get(const AtBSDF* bsdf) {
+        return reinterpret_cast<BsdfMicrofacetRefraction*>(AiBSDFGetData(bsdf));
     }
 
     void init(const AtShaderGlobals* sg) override;
@@ -29,8 +38,5 @@ public:
                         AtRGB& transmission) override;
     const AtBSDFLobeInfo* get_lobes() override;
     int get_num_lobes() override;
-
-    static AtBSDF* create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
-                          AtVector U, float roughness);
 };
-}
+} // namespace a2

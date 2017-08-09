@@ -19,7 +19,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_CXX_STANDARD 11)
 
 # Statically link stdc++ to avoid GLILBC version clashes
-set(CMAKE_SHARED_LINKER_FLAGS "-static-libstdc++")
+#set(CMAKE_SHARED_LINKER_FLAGS "-static-libstdc++")
 
 # Compiler flags
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -44,6 +44,12 @@ endif()
 find_package(Arnold REQUIRED)
 include_directories(${ARNOLD_INCLUDE_DIR})
 link_directories(${ARNOLD_LIBRARY_DIR})
+
+include_directories(/Users/anders/vfx/platform/2015/include)
+
+include_directories(${CMAKE_SOURCE_DIR}/thirdparty/spdlog)
+
+add_definitions(-DALS_ASSERTIONS_ENABLED -DALS_ASSERTIONS_ABORT)
 
 if (NOT DEFINED INSTALL_DIR)
     if (DEFINED INSTALL_ROOT)
@@ -80,6 +86,11 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 include(cmake/shader.cmake)
 
+configure_file(
+    "${CMAKE_SOURCE_DIR}/config/config.h.in"
+    "${CMAKE_SOURCE_DIR}/config/config.h"
+)
+
 # Set the list of subdirectories to recurse into to find stuff to build
 set(SUBDIRECTORIES 
     cryptomatte
@@ -94,7 +105,7 @@ endforeach()
 
 # configure packaging script
 configure_file(
-    "${PROJECT_SOURCE_DIR}/package.in.py"
+    "${PROJECT_SOURCE_DIR}/config/package.in.py"
     "${PROJECT_SOURCE_DIR}/package.py"
 )
 
