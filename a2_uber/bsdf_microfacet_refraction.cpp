@@ -2,8 +2,10 @@
 #include "common/a2_assert.hpp"
 #include "util.hpp"
 #include <new>
+#include <spdlog/fmt/fmt.h>
 
 AI_BSDF_EXPORT_METHODS(A2BsdfMicrofacetRefractionMtd);
+#include <spdlog/fmt/fmt.h>
 
 namespace a2 {
 static const AtString str_refraction("refraction");
@@ -21,8 +23,10 @@ AtBSDF* BsdfMicrofacetRefraction::create(AtShaderGlobals* sg, AtRGB weight,
     bsdf_mf->_omega_o = -sg->Rd;
     auto eta = ior / medium_ior;
     bsdf_mf->_eta = eta;
-    auto ext = AtRGB(100.0f);
-    auto hg = AiClosureVolumeHenyeyGreenstein(sg, ext, ext, AtRGB(0), 0);
+    auto sigma_s = AtRGB(1.09f, 1.59f, 1.79f);
+    auto sigma_a = AtRGB(0.013f, 0.070f, 0.145f);
+    auto hg = AiClosureVolumeHenyeyGreenstein(sg, sigma_a * 10, sigma_s * 10,
+                                              AtRGB(0), 0);
     bsdf_mf->arnold_bsdf = AiMicrofacetRefractionBSDF(
         sg, weight, AI_MICROFACET_GGX, N, &U, eta, rx, ry, 0.0f, false, hg,
         AI_BSDF_LOBE_EXIT_BACKGROUND, str_refraction);
@@ -75,11 +79,20 @@ AtBSDFLobeMask BsdfMicrofacetRefraction::eval(const AtVector& wi,
     return out_lobe_mask;
 }
 
-const AtBSDFLobeInfo* BsdfMicrofacetRefraction::get_lobes() {
+const AtBSDFLobeInfo* BsdfMicrofacetRefraction::get_lobes() const {
     return AiBSDFGetLobes(arnold_bsdf);
 }
 
-int BsdfMicrofacetRefraction::get_num_lobes() { return 1; }
+int BsdfMicrofacetRefraction::get_num_lobes() const {
+    return AiBSDFGetNumLobes(arnold_bsdf);
+}
+
+bool BsdfMicrofacetRefraction::has_interior() const { return true; }
+
+AtClosureList
+BsdfMicrofacetRefraction::get_interior(const AtShaderGlobals* sg) {
+    return arnold_methods->Interior(sg, arnold_bsdf);
+}
 
 } // namespace a2
 
@@ -108,4 +121,10 @@ static AtBSDFLobeMask Eval(const AtBSDF* bsdf, const AtVector& wi,
         reinterpret_cast<a2::BsdfMicrofacetRefraction*>(AiBSDFGetData(bsdf));
     AtRGB transmission;
     return bsdf_mf->eval(wi, lobe_mask, need_pdf, out_lobes, transmission);
+}
+
+bsdf_interior {
+    auto bsdf_mf =
+        reinterpret_cast<a2::BsdfMicrofacetRefraction*>(AiBSDFGetData(bsdf));
+    return bsdf_mf->get_interior(sg);
 }

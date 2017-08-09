@@ -2,6 +2,7 @@
 #include "common/a2_assert.hpp"
 #include "util.hpp"
 #include <new>
+#include <spdlog/fmt/fmt.h>
 
 AI_BSDF_EXPORT_METHODS(A2BsdfMicrofacetMtd);
 
@@ -88,11 +89,13 @@ AtBSDFLobeMask BsdfMicrofacet::eval(const AtVector& wi,
     return out_lobe_mask;
 }
 
-const AtBSDFLobeInfo* BsdfMicrofacet::get_lobes() {
+const AtBSDFLobeInfo* BsdfMicrofacet::get_lobes() const {
     return AiBSDFGetLobes(arnold_bsdf);
 }
 
-int BsdfMicrofacet::get_num_lobes() { return 1; }
+int BsdfMicrofacet::get_num_lobes() const { return 1; }
+
+bool BsdfMicrofacet::has_interior() const { return false; }
 
 } // namespace a2
 

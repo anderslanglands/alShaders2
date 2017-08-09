@@ -36,7 +36,12 @@ public:
     AtBSDFLobeMask eval(const AtVector& wi, const AtBSDFLobeMask lobe_mask,
                         const bool need_pdf, AtBSDFLobeSample out_lobes[],
                         AtRGB& transmission) override;
-    const AtBSDFLobeInfo* get_lobes() override;
-    int get_num_lobes() override;
+    const AtBSDFLobeInfo* get_lobes() const override;
+    int get_num_lobes() const override;
+    bool has_interior() const override;
+    const AtBSDF* get_arnold_bsdf() const override { return arnold_bsdf; }
+    AtClosureList get_interior(const AtShaderGlobals* sg) override {
+        return AtClosureList();
+    }
 };
 } // namespace a2

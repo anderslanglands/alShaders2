@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bsdf_microfacet.hpp"
+#include "common/a2_assert.hpp"
 #include <boost/container/static_vector.hpp>
 #include <memory>
 
@@ -36,7 +37,13 @@ public:
     AtBSDFLobeMask eval(const AtVector& wi, const AtBSDFLobeMask lobe_mask,
                         const bool need_pdf, AtBSDFLobeSample out_lobes[],
                         AtRGB& transmission) override;
-    const AtBSDFLobeInfo* get_lobes() override;
-    int get_num_lobes() override;
+    const AtBSDFLobeInfo* get_lobes() const override;
+    int get_num_lobes() const override;
+    bool has_interior() const override;
+    AtClosureList get_interior(const AtShaderGlobals* sg) override;
+    const AtBSDF* get_arnold_bsdf() const override {
+        a2assert("tried to get arnold bsdf from a stack");
+        return nullptr;
+    }
 };
 }

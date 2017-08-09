@@ -3,6 +3,7 @@
 #include "util.hpp"
 #include <iostream>
 #include <new>
+#include <spdlog/fmt/fmt.h>
 
 AI_BSDF_EXPORT_METHODS(A2BsdfStackMtd);
 std::ostream& operator<<(std::ostream& os, AtRGB v) {
@@ -108,8 +109,24 @@ AtBSDFLobeMask BsdfStack::eval(const AtVector& wi,
     transmission = AI_RGB_BLACK;
     return 1 << index;
 }
-const AtBSDFLobeInfo* BsdfStack::get_lobes() { return _lobe_info.data(); }
-int BsdfStack::get_num_lobes() { return _bsdfs.size(); }
+const AtBSDFLobeInfo* BsdfStack::get_lobes() const { return _lobe_info.data(); }
+int BsdfStack::get_num_lobes() const { return _bsdfs.size(); }
+bool BsdfStack::has_interior() const {
+    for (const auto bsdf : _bsdfs) {
+        if (bsdf->has_interior())
+            return true;
+    }
+    return false;
+}
+
+AtClosureList BsdfStack::get_interior(const AtShaderGlobals* sg) {
+    for (auto bsdf : _bsdfs) {
+        if (bsdf->has_interior()) {
+            return bsdf->get_interior(sg);
+        }
+    }
+    return AtClosureList();
+}
 }
 
 static void Init(const AtShaderGlobals* sg, AtBSDF* bsdf) {
@@ -134,4 +151,9 @@ static AtBSDFLobeMask Eval(const AtBSDF* bsdf, const AtVector& wi,
     auto bsdf_stack = reinterpret_cast<a2::BsdfStack*>(AiBSDFGetData(bsdf));
     AtRGB dummy;
     return bsdf_stack->eval(wi, lobe_mask, need_pdf, out_lobes, dummy);
+}
+
+bsdf_interior {
+    auto bsdf_stack = reinterpret_cast<a2::BsdfStack*>(AiBSDFGetData(bsdf));
+    return bsdf_stack->get_interior(sg);
 }

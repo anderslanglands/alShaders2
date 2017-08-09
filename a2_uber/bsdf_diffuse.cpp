@@ -51,10 +51,11 @@ AtBSDFLobeMask BsdfDiffuse::eval(const AtVector& wi,
     transmission = AI_RGB_BLACK;
     return out_lobe_mask;
 }
-const AtBSDFLobeInfo* BsdfDiffuse::get_lobes() {
+const AtBSDFLobeInfo* BsdfDiffuse::get_lobes() const {
     return AiBSDFGetLobes(arnold_bsdf);
 }
-int BsdfDiffuse::get_num_lobes() { return 1; }
+int BsdfDiffuse::get_num_lobes() const { return 1; }
+bool BsdfDiffuse::has_interior() const { return false; }
 }
 
 static void Init(const AtShaderGlobals* sg, AtBSDF* bsdf) {

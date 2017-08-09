@@ -47,7 +47,7 @@ link_directories(${ARNOLD_LIBRARY_DIR})
 
 include_directories(/Users/anders/vfx/platform/2015/include)
 
-include_directories(${CMAKE_SOURCE_DIR}/thirdparty/spdlog)
+include_directories(${CMAKE_SOURCE_DIR}/thirdparty/spdlog/include)
 
 add_definitions(-DALS_ASSERTIONS_ENABLED -DALS_ASSERTIONS_ABORT)
 
@@ -95,6 +95,7 @@ configure_file(
 set(SUBDIRECTORIES 
     cryptomatte
     a2_uber
+    #a2_simpleglass
     common
 )
 
