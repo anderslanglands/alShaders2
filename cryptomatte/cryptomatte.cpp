@@ -156,13 +156,15 @@ void get_clean_object_name(const char *obj_full_name, char obj_name_out[MAX_STRI
     // C4DtoA: c4d|obj_hierarchy|...
     if (strstr(nsp_name, "c4d|") == nsp_name) {
         // Chop first element
-        char *obj_name_start = nsp_name + 4;
-        memmove(obj_name_out, obj_name_start, strlen(obj_name_start));
-        // Snip second element
-        char *nsp_name_start = strtok(obj_name_start, "|");
-        if (nsp_name_start != NULL) {
-            strcpy(nsp_name_out, nsp_name_start);
+        char *nsp = nsp_name + 4;
+        memmove(obj_name_out, nsp, strlen(nsp));
+        char *obj = strrchr(nsp_name, '|');
+        if (obj != NULL) {
+            // Everything before last element is namespace
+            size_t nsp_len = strlen(nsp) - strlen(obj);
+            nsp[nsp_len] = '\0';
         }
+        memmove(nsp_name_out, nsp, strlen(nsp));
         return;
     }
 
