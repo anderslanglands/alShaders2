@@ -153,6 +153,21 @@ void get_clean_object_name(const char *obj_full_name, char obj_name_out[MAX_STRI
     safe_copy_to_buffer(nsp_name, obj_full_name);
     bool preempt_object_name = false;
 
+    // C4DtoA: c4d|obj_hierarchy|...
+    if (strstr(nsp_name, "c4d|") == nsp_name) {
+        // Chop first element
+        char *nsp = nsp_name + 4;
+        memmove(obj_name_out, nsp, strlen(nsp));
+        char *obj = strrchr(nsp_name, '|');
+        if (obj != NULL) {
+            // Everything before last element is namespace
+            size_t nsp_len = strlen(nsp) - strlen(obj);
+            nsp[nsp_len] = '\0';
+        }
+        memmove(nsp_name_out, nsp, strlen(nsp));
+        return;
+    }
+
     char *obj_postfix = strstr(nsp_name, ".SItoA.");
     if (obj_postfix != NULL) {
         // in Softimage mode
@@ -198,7 +213,20 @@ void get_clean_material_name(const char *mat_full_name, char mat_name_out[MAX_ST
     // Example: 
     //      Softimage: Sources.Materials.myLibrary_ref_library.myMaterialName.Standard_Mattes.uBasic.SITOA.25000....
     //      Maya: namespace:my_material_sg
+
     safe_copy_to_buffer(mat_name_out, mat_full_name);
+
+    // C4DtoA: c4d|mat_name|root_node_name
+    if (strstr(mat_name_out, "c4d|") == mat_name_out) {
+        // Chop first element
+        char *str_cut = mat_name_out + 4;
+        // Snip second element
+        char *mat_name_start = strtok(str_cut, "|");
+        if (mat_name_start != NULL) {
+            memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
+        }
+        return;
+    }
 
     char *mat_postfix = strstr(mat_name_out, ".SItoA.");
     if (mat_postfix != NULL) {
@@ -241,7 +269,7 @@ void get_clean_material_name(const char *mat_full_name, char mat_name_out[MAX_ST
         ns_separator[0] = '\0';
         char *mat_name_start = ns_separator + 1;
         memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
-    } 
+    }
 }
 
 
@@ -936,6 +964,12 @@ private:
             AtNode *node = AiNodeIteratorGetNext(shape_iterator);
             if (!node)
                 continue;
+
+            // skip the root node
+            static const AtString listAggregate("list_aggregate");
+            if (AiNodeIs(node, listAggregate) && !strcmp(AiNodeGetName(node), "root"))
+                continue;
+
             char nsp_name[MAX_STRING_LENGTH] = "";
             char obj_name[MAX_STRING_LENGTH] = "";
 
@@ -1017,18 +1051,27 @@ private:
                                  std::vector<AtNode*> driver_material_v) {
         const clock_t metadata_start_time = clock();
 
-        bool do_md_asset = true, do_md_object = true, do_md_material = true;
+        bool do_md_asset = false, do_md_object = false, do_md_material = false;
         for (size_t i = 0; i<driver_asset_v.size(); i++) {
-            do_md_asset = do_md_asset && metadata_needed(driver_asset_v[i], this->aov_cryptoasset);
-            metadata_set_unneeded(driver_asset_v[i], this->aov_cryptoasset);
+            if (metadata_needed(driver_asset_v[i], this->aov_cryptoasset)) {
+                do_md_asset = true;
+                metadata_set_unneeded(driver_asset_v[i], this->aov_cryptoasset);
+                break;
+            }
         }
         for (size_t i = 0; i<driver_object_v.size(); i++) {
-            do_md_object = do_md_object && metadata_needed(driver_object_v[i], this->aov_cryptoasset);
-            metadata_set_unneeded(driver_object_v[i], this->aov_cryptoasset);
+            if (metadata_needed(driver_object_v[i], this->aov_cryptoobject)) {
+                do_md_object = true;
+                metadata_set_unneeded(driver_object_v[i], this->aov_cryptoobject);
+                break;
+            }
         }
         for (size_t i = 0; i<driver_material_v.size(); i++) {
-            do_md_material = do_md_material && metadata_needed(driver_material_v[i], this->aov_cryptoasset);
-            metadata_set_unneeded(driver_material_v[i], this->aov_cryptoasset);
+            if (metadata_needed(driver_material_v[i], this->aov_cryptomaterial)) {
+                do_md_material = true;
+                metadata_set_unneeded(driver_material_v[i], this->aov_cryptomaterial);
+                break;
+            }
         }
 
         if (!do_md_asset && !do_md_object && !do_md_material)
