@@ -1,7 +1,19 @@
 #pragma once
 #include <ai.h>
+#include <iostream>
+
+inline std::ostream& operator<<(std::ostream& os, AtRGB c) {
+    os << "(" << c.r << ", " << c.g << ", " << c.b << ")";
+    return os;
+}
+
+inline std::ostream& operator<<(std::ostream& os, AtVector v) {
+    os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+    return os;
+}
 
 namespace a2 {
+
 inline bool is_finite(float f) { return AiIsFinite(f); }
 
 inline bool is_finite(AtRGB c) {

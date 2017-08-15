@@ -1,8 +1,9 @@
 #include "bsdf_microfacet.hpp"
 #include "common/a2_assert.hpp"
-#include "util.hpp"
 #include <new>
-#include <spdlog/fmt/fmt.h>
+
+#include "util.hpp"
+#include <spdlog/fmt/ostr.h>
 
 AI_BSDF_EXPORT_METHODS(A2BsdfMicrofacetMtd);
 
@@ -39,6 +40,7 @@ AtBSDFLobeMask BsdfMicrofacet::sample(const AtVector u, const float wavelength,
                                       int& out_lobe_index,
                                       AtBSDFLobeSample out_lobes[],
                                       AtRGB& transmission) {
+    transmission = AI_RGB_WHITE;
     auto out_lobe_mask =
         arnold_methods->Sample(arnold_bsdf, u, wavelength, 0x1, need_pdf,
                                out_wi, out_lobe_index, out_lobes);
@@ -67,6 +69,7 @@ AtBSDFLobeMask BsdfMicrofacet::eval(const AtVector& wi,
                                     const bool need_pdf,
                                     AtBSDFLobeSample out_lobes[],
                                     AtRGB& transmission) {
+    transmission = AI_RGB_WHITE;
     auto out_lobe_mask =
         arnold_methods->Eval(arnold_bsdf, wi, 0x1, need_pdf, out_lobes);
     if (out_lobe_mask == AI_BSDF_LOBE_MASK_NONE)

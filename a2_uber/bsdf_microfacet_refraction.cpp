@@ -2,10 +2,9 @@
 #include "common/a2_assert.hpp"
 #include "util.hpp"
 #include <new>
-#include <spdlog/fmt/fmt.h>
+#include <spdlog/fmt/ostr.h>
 
 AI_BSDF_EXPORT_METHODS(A2BsdfMicrofacetRefractionMtd);
-#include <spdlog/fmt/fmt.h>
 
 namespace a2 {
 static const AtString str_refraction("refraction");
@@ -25,8 +24,9 @@ AtBSDF* BsdfMicrofacetRefraction::create(AtShaderGlobals* sg, AtRGB weight,
     bsdf_mf->_eta = eta;
     auto sigma_s = AtRGB(1.09f, 1.59f, 1.79f);
     auto sigma_a = AtRGB(0.013f, 0.070f, 0.145f);
-    auto hg = AiClosureVolumeHenyeyGreenstein(sg, sigma_a * 10, sigma_s * 10,
-                                              AtRGB(0), 0);
+    auto hg = AtClosureList();
+    // auto hg = AiClosureVolumeHenyeyGreenstein(sg, sigma_a * 10, sigma_s * 10,
+    // AtRGB(0), 0);
     bsdf_mf->arnold_bsdf = AiMicrofacetRefractionBSDF(
         sg, weight, AI_MICROFACET_GGX, N, &U, eta, rx, ry, 0.0f, false, hg,
         AI_BSDF_LOBE_EXIT_BACKGROUND, str_refraction);

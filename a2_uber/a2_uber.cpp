@@ -46,7 +46,7 @@ shader_evaluate {
     // bsdf_stack->add_bsdf(a2::BsdfDiffuse::get(bsdf_oren_nayar));
     bsdf_stack->add_bsdf(
         a2::BsdfMicrofacetRefraction::get(bsdf_microfacet_refraction));
-    sg->out.CLOSURE() = AtClosureList(bsdf_stack_ai);
+    sg->out.CLOSURE() = bsdf_stack_ai;
 }
 
 node_loader {

@@ -42,7 +42,7 @@ public:
     bool has_interior() const override;
     AtClosureList get_interior(const AtShaderGlobals* sg) override;
     const AtBSDF* get_arnold_bsdf() const override {
-        a2assert("tried to get arnold bsdf from a stack");
+        a2assert(false, "tried to get arnold bsdf from a stack");
         return nullptr;
     }
 };
