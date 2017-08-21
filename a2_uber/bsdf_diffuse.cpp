@@ -5,8 +5,8 @@ AI_BSDF_EXPORT_METHODS(A2BsdfDiffuseMtd);
 
 namespace a2 {
 static const AtString str_diffuse("diffuse");
-AtBSDF* BsdfDiffuse::create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
-                            AtVector U, float roughness) {
+BsdfDiffuse* BsdfDiffuse::create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
+                                 AtVector U, float roughness) {
     AtBSDF* bsdf = AiBSDF(sg, weight, A2BsdfDiffuseMtd, sizeof(BsdfDiffuse));
     BsdfDiffuse* bsdf_diff = BsdfDiffuse::get(bsdf);
     new (bsdf_diff) BsdfDiffuse;
@@ -17,7 +17,7 @@ AtBSDF* BsdfDiffuse::create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
     bsdf_diff->arnold_methods = AiBSDFGetMethods(bsdf_diff->arnold_bsdf);
     bsdf_diff->_sg = sg;
     bsdf_diff->_weight = weight;
-    return bsdf;
+    return bsdf_diff;
 }
 
 void BsdfDiffuse::init(const AtShaderGlobals* sg) {

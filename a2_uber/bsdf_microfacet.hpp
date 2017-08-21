@@ -1,7 +1,8 @@
 #pragma once
 
 #include "bsdf.hpp"
-#include "util.hpp"
+#include "common/util.hpp"
+#include "lut.hpp"
 #include <ai.h>
 
 namespace a2 {
@@ -19,9 +20,9 @@ public:
     AtVector N;
     AtVector U;
 
-    static AtBSDF* create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
-                          AtVector U, float medium_ior, float ior, float rx,
-                          float ry);
+    static BsdfMicrofacet* create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
+                                  AtVector U, float medium_ior, float ior,
+                                  float rx, float ry);
 
     static BsdfMicrofacet* get(const AtBSDF* bsdf) {
         return reinterpret_cast<BsdfMicrofacet*>(AiBSDFGetData(bsdf));
@@ -39,7 +40,7 @@ public:
     const AtBSDFLobeInfo* get_lobes() const override;
     int get_num_lobes() const override;
     bool has_interior() const override;
-    const AtBSDF* get_arnold_bsdf() const override { return arnold_bsdf; }
+    AtBSDF* get_arnold_bsdf() override { return arnold_bsdf; }
     AtClosureList get_interior(const AtShaderGlobals* sg) override {
         return AtClosureList();
     }

@@ -30,7 +30,7 @@ else()
     # set(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=address -fno-omit-frame-pointer")
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 # check if we have a local cmake include file and include it if we do
 # this is useful for setting our arnold location as an alternative to
@@ -46,6 +46,7 @@ include_directories(${ARNOLD_INCLUDE_DIR})
 link_directories(${ARNOLD_LIBRARY_DIR})
 
 include_directories(/Users/anders/vfx/platform/2015/include)
+link_directories(/Users/anders/vfx/platform/2015/lib)
 
 include_directories(${CMAKE_SOURCE_DIR}/thirdparty/spdlog/include)
 
@@ -96,6 +97,7 @@ set(SUBDIRECTORIES
     cryptomatte
     a2_uber
     #a2_simpleglass
+    a2_integrator
     common
 )
 

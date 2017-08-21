@@ -9,9 +9,9 @@ AI_BSDF_EXPORT_METHODS(A2BsdfMicrofacetMtd);
 
 namespace a2 {
 static const AtString str_specular("specular");
-AtBSDF* BsdfMicrofacet::create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
-                               AtVector U, float medium_ior, float ior,
-                               float rx, float ry) {
+BsdfMicrofacet* BsdfMicrofacet::create(AtShaderGlobals* sg, AtRGB weight,
+                                       AtVector N, AtVector U, float medium_ior,
+                                       float ior, float rx, float ry) {
     auto bsdf = AiBSDF(sg, weight, A2BsdfMicrofacetMtd, sizeof(BsdfMicrofacet));
     auto bsdf_mf = BsdfMicrofacet::get(bsdf);
     // Don't forget to call new() on the memory or the vtable won't be set up...
@@ -27,7 +27,8 @@ AtBSDF* BsdfMicrofacet::create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
     bsdf_mf->arnold_methods = AiBSDFGetMethods(bsdf_mf->arnold_bsdf);
     bsdf_mf->_sg = sg;
     bsdf_mf->_weight = weight;
-    return bsdf;
+
+    return bsdf_mf;
 }
 
 void BsdfMicrofacet::init(const AtShaderGlobals* sg) {
@@ -56,7 +57,10 @@ AtBSDFLobeMask BsdfMicrofacet::sample(const AtVector u, const float wavelength,
     transmission = AtRGB(1 - kr);
     a2assert(is_positive(transmission), "transmission is not positive: {}",
              transmission);
-    out_lobes[0].weight *= _weight * kr;
+    // out_lobes[0].weight *= _weight * kr;
+    // out_lobes[0].weight +=
+    //_roughness_lut->lookup(_roughness.x, 1.0f - dot(_omega_o, N)) *
+    // out_lobes[0].pdf;
     a2assert(is_finite(out_lobes[0].weight), "weight was not finite: {}",
              out_lobes[0].weight);
     a2assert(is_positive(out_lobes[0].weight), "weight was not finite: {}",
@@ -84,7 +88,10 @@ AtBSDFLobeMask BsdfMicrofacet::eval(const AtVector& wi,
     transmission = AtRGB(1 - kr);
     a2assert(is_positive(transmission), "transmission is not positive: {}",
              transmission);
-    out_lobes[0].weight *= _weight * kr;
+    // out_lobes[0].weight *= _weight * kr;
+    // out_lobes[0].weight +=
+    //_roughness_lut->lookup(_roughness.x, 1.0f - dot(_omega_o, N)) *
+    // out_lobes[0].pdf;
     a2assert(is_finite(out_lobes[0].weight), "weight was not finite: {}",
              out_lobes[0].weight);
     a2assert(is_positive(out_lobes[0].weight), "weight was not finite: {}",

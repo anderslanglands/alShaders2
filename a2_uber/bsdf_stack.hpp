@@ -15,35 +15,40 @@ class BsdfStack : public Bsdf {
     stack_array<AtRGB> _layer_transmission_light;
     stack_array<AtBSDFLobeInfo> _lobe_info;
     AtShaderGlobals* _sg;
+    AtBSDF* _arnold_bsdf;
 
 public:
     BsdfStack();
     ~BsdfStack();
 
-    static AtBSDF* create(AtShaderGlobals* sg);
+    static auto create(AtShaderGlobals* sg) -> BsdfStack*;
 
-    static BsdfStack* get(const AtBSDF* bsdf) {
+    static auto get(const AtBSDF* bsdf) -> BsdfStack* {
         return reinterpret_cast<BsdfStack*>(AiBSDFGetData(bsdf));
     }
 
     void add_bsdf(Bsdf* bsdf);
 
     void init(const AtShaderGlobals* sg) override;
-    AtBSDFLobeMask sample(const AtVector u, const float wavelength,
-                          const AtBSDFLobeMask lobe_mask, const bool need_pdf,
-                          AtVectorDv& out_wi, int& out_lobe_index,
-                          AtBSDFLobeSample out_lobes[],
-                          AtRGB& transmission) override;
-    AtBSDFLobeMask eval(const AtVector& wi, const AtBSDFLobeMask lobe_mask,
-                        const bool need_pdf, AtBSDFLobeSample out_lobes[],
-                        AtRGB& transmission) override;
-    const AtBSDFLobeInfo* get_lobes() const override;
-    int get_num_lobes() const override;
-    bool has_interior() const override;
-    AtClosureList get_interior(const AtShaderGlobals* sg) override;
-    const AtBSDF* get_arnold_bsdf() const override {
-        a2assert(false, "tried to get arnold bsdf from a stack");
-        return nullptr;
-    }
+
+    auto sample(const AtVector u, const float wavelength,
+                const AtBSDFLobeMask lobe_mask, const bool need_pdf,
+                AtVectorDv& out_wi, int& out_lobe_index,
+                AtBSDFLobeSample out_lobes[], AtRGB& transmission)
+        -> AtBSDFLobeMask override;
+
+    auto eval(const AtVector& wi, const AtBSDFLobeMask lobe_mask,
+              const bool need_pdf, AtBSDFLobeSample out_lobes[],
+              AtRGB& transmission) -> AtBSDFLobeMask override;
+
+    auto get_lobes() const -> const AtBSDFLobeInfo* override;
+
+    auto get_num_lobes() const -> int override;
+
+    auto has_interior() const -> bool override;
+
+    auto get_interior(const AtShaderGlobals* sg) -> AtClosureList override;
+
+    auto get_arnold_bsdf() -> AtBSDF* override { return _arnold_bsdf; }
 };
 }

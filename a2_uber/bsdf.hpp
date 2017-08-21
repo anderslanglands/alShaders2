@@ -22,6 +22,6 @@ public:
     virtual int get_num_lobes() const = 0;
     virtual bool has_interior() const = 0;
     virtual AtClosureList get_interior(const AtShaderGlobals* sg) = 0;
-    virtual const AtBSDF* get_arnold_bsdf() const = 0;
+    virtual AtBSDF* get_arnold_bsdf() = 0;
 };
 }

@@ -30,12 +30,12 @@ public:
     const AtBSDFLobeInfo* get_lobes() const override;
     int get_num_lobes() const override;
     bool has_interior() const override;
-    const AtBSDF* get_arnold_bsdf() const override { return arnold_bsdf; }
+    AtBSDF* get_arnold_bsdf() override { return arnold_bsdf; }
     AtClosureList get_interior(const AtShaderGlobals* sg) override {
         return AtClosureList();
     }
 
-    static AtBSDF* create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
-                          AtVector U, float roughness);
+    static BsdfDiffuse* create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
+                               AtVector U, float roughness);
 };
 }

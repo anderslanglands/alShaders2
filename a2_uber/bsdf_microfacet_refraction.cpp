@@ -8,10 +8,10 @@ AI_BSDF_EXPORT_METHODS(A2BsdfMicrofacetRefractionMtd);
 
 namespace a2 {
 static const AtString str_refraction("refraction");
-AtBSDF* BsdfMicrofacetRefraction::create(AtShaderGlobals* sg, AtRGB weight,
-                                         AtVector N, AtVector U,
-                                         float medium_ior, float ior, float rx,
-                                         float ry) {
+auto BsdfMicrofacetRefraction::create(AtShaderGlobals* sg, AtRGB weight,
+                                      AtVector N, AtVector U, float medium_ior,
+                                      float ior, float rx, float ry)
+    -> BsdfMicrofacetRefraction* {
     auto bsdf = AiBSDF(sg, weight, A2BsdfMicrofacetRefractionMtd,
                        sizeof(BsdfMicrofacetRefraction));
     auto bsdf_mf = BsdfMicrofacetRefraction::get(bsdf);
@@ -34,7 +34,7 @@ AtBSDF* BsdfMicrofacetRefraction::create(AtShaderGlobals* sg, AtRGB weight,
     bsdf_mf->arnold_methods = AiBSDFGetMethods(bsdf_mf->arnold_bsdf);
     bsdf_mf->_sg = sg;
     bsdf_mf->_weight = weight;
-    return bsdf;
+    return bsdf_mf;
 }
 
 void BsdfMicrofacetRefraction::init(const AtShaderGlobals* sg) {

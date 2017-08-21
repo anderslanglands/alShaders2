@@ -4,7 +4,7 @@ include(CMakeParseArguments)
 function(build_shader)
     set(options)
     set(one_value_args NAME)
-    set(multi_value_args SOURCES FLAGS)
+    set(multi_value_args SOURCES FLAGS LIBRARIES)
     cmake_parse_arguments(
         shader
         "${options}"
@@ -14,6 +14,7 @@ function(build_shader)
     )
     message("NAME: ${shader_NAME}")
     message("SOURCES: ${shader_SOURCES}")
+    message("LIBRARIES: ${shader_LIBRARIES}")
     set(UI ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.ui)
     #set(MTD ${CMAKE_CURRENT_BINARY_DIR}/${SHADER}.mtd)
     #set(AE ${CMAKE_CURRENT_BINARY_DIR}/${SHADER}Template.py)
@@ -26,7 +27,7 @@ function(build_shader)
 
     add_library(${shader_NAME} SHARED ${shader_SOURCES})
 
-    target_link_libraries(${shader_NAME} ai)
+    target_link_libraries(${shader_NAME} ai ${shader_LIBRARIES})
     set_target_properties(${shader_NAME} PROPERTIES PREFIX "")
     target_compile_options(${shader_NAME} PRIVATE "-Wno-unknown-attributes" "${shader_FLAGS}")
 

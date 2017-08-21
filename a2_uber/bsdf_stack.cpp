@@ -11,15 +11,16 @@ namespace a2 {
 BsdfStack::BsdfStack()
     : _layer_transmission_bsdf{}, _layer_transmission_light{} {}
 
-AtBSDF* BsdfStack::create(AtShaderGlobals* sg) {
+auto BsdfStack::create(AtShaderGlobals* sg) -> BsdfStack* {
     auto bsdf = AiBSDF(sg, AI_RGB_WHITE, A2BsdfStackMtd, sizeof(BsdfStack));
     auto bsdf_stack = BsdfStack::get(bsdf);
     // Don't forget to call new() on the memory or the vtable won't be set up...
     new (bsdf_stack) BsdfStack;
 
     bsdf_stack->_sg = sg;
+    bsdf_stack->_arnold_bsdf = bsdf;
 
-    return bsdf;
+    return bsdf_stack;
 }
 
 void BsdfStack::add_bsdf(Bsdf* bsdf) {
