@@ -2,6 +2,8 @@
 
 #include "common/util.hpp"
 #include <functional>
+#include <spdlog/fmt/ostr.h>
+#include <thread>
 #include <vector>
 
 namespace a2 {
@@ -63,12 +65,33 @@ public:
           const Dimension& dim_y)
         : _dim_x(dim_x), _dim_y(dim_y) {
         _data.resize(_dim_x.resolution * _dim_y.resolution);
-        for (int j = 0; j < _dim_y.resolution; ++j) {
-            for (int i = 0; i < _dim_x.resolution; ++i) {
-                int idx = j * _dim_x.resolution + i;
-                _data[idx] = fun(i, j, _dim_x.resolution, _dim_y.resolution);
+
+        auto thread_fun = [=](int j0, int j1) {
+            fmt::print("[{}:{}]\n", j0, j1);
+            for (int j = j0; j < j1; ++j) {
+                for (int i = 0; i < dim_x.resolution; ++i) {
+                    int idx = j * dim_x.resolution + i;
+                    this->_data[idx] =
+                        fun(i, j, dim_x.resolution, dim_y.resolution);
+                }
+            }
+        };
+        std::vector<std::thread> thread_grp;
+        auto n_threads = std::thread::hardware_concurrency();
+        fmt::print("[lut2d] Starting {} threads\n", n_threads);
+        int work_size = dim_y.resolution / n_threads;
+        for (int t = 0; t < dim_y.resolution; t += work_size) {
+            thread_grp.emplace_back(thread_fun, t,
+                                    std::min(t + work_size, dim_y.resolution));
+        }
+
+        for (auto& t : thread_grp) {
+            if (t.joinable()) {
+                t.join();
             }
         }
+
+        // thread_fun(0, dim_y.resolution);
     }
 
     auto lookup(float x, float y) -> T {

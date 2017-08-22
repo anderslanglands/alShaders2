@@ -24,6 +24,7 @@ shader_evaluate {
     AtRGB display = AI_RGB_RED;
     if (sg->x == 0 && sg->y == 0 && getenv("A2_INTEGRATE") != nullptr) {
         auto sg_copy = *sg;
+        constexpr int RES = 32;
         auto fun_ggx_roughness_mu = [&](int i, int j, int lut_resolution_i,
                                         int lut_resolution_j) {
 
@@ -38,9 +39,8 @@ shader_evaluate {
                                  sg_copy.Nf, &U, 0.0f, r, r);
             auto mtd = AiBSDFGetMethods(bsdf_mf);
             mtd->Init(&sg_copy, bsdf_mf);
-            float result = 0.0f;
-            int samples = 100;
-            int ns = 0;
+            double result = 0.0f;
+            int samples = 1000;
             for (int x = 0; x < samples; ++x) {
                 for (int y = 0; y < samples; ++y) {
                     float xx = float(x) / float(samples);
@@ -53,32 +53,32 @@ shader_evaluate {
                                     true, out_wi, out_lobe_index, &lobe_sample);
                     if (lobe_mask != AI_BSDF_LOBE_MASK_NONE) {
                         result += lobe_sample.weight.r;
-                        ns++;
                     }
                 }
             }
-            result /= float(samples * samples);
-            result = 1.0f - result;
-            return result;
+            result /= double(samples * samples);
+            return 1.0f - result;
         };
 
-        auto lut_out = a2::LUT2D<float>(fun_ggx_roughness_mu,
-                                        a2::Dimension{32, 0.0f, 1.0f, true},
-                                        a2::Dimension{32, 0.0f, 1.0f, false});
+        auto lut_out = a2::LUT2D<double>(fun_ggx_roughness_mu,
+                                         a2::Dimension{RES, 0.0f, 1.0f, true},
+                                         a2::Dimension{RES, 0.0f, 1.0f, false});
         write(lut_out, "ggx_E");
 
         auto fun_E_avg = [&](int i, int n) {
-            float result = 0.0f;
+            double result = 0.0f;
             for (int j = 0; j < n; ++j) {
-                result += 1.0f -
-                          lut_out.lookup(float(i) / float(n - 1),
-                                         float(j) / float(n));
+                float mu = float(j) / float(n);
+                result += (1.0 - lut_out.lookup(float(i) / float(n - 1), mu)) *
+                          (1.0f - mu);
             }
-            return result / float(n);
+            // n+1 in the denom here because we need to include mu = 0, which
+            // is an implicit extra 0 sample
+            return result * 2. / double(n + 1);
         };
 
         auto lut_E_avg =
-            a2::LUT1D<float>(fun_E_avg, a2::Dimension{32, 0.0f, 1.0f, true});
+            a2::LUT1D<double>(fun_E_avg, a2::Dimension{RES, 0.0f, 1.0f, true});
         write(lut_E_avg, "ggx_E_avg");
         display = AI_RGB_GREEN;
     }

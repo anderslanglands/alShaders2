@@ -1,12 +1,15 @@
 #include "bsdf_ggx_multiscatter.hpp"
 #include "common/util.hpp"
 #include "lut_ggx_E.hpp"
+#include "lut_ggx_E_avg.hpp"
 #include <new>
 
 AI_BSDF_EXPORT_METHODS(A2BsdfGGXMultiscatterMtd);
 namespace a2 {
 
 std::unique_ptr<LUT2D<float>> BsdfGGXMultiscatter::_lut_ggx_E(get_lut_ggx_E());
+std::unique_ptr<LUT1D<float>>
+    BsdfGGXMultiscatter::_lut_ggx_E_avg(get_lut_ggx_E_avg());
 
 auto BsdfGGXMultiscatter::create(AtShaderGlobals* sg, AtVector N,
                                  float roughness) -> BsdfGGXMultiscatter* {
@@ -35,12 +38,18 @@ auto BsdfGGXMultiscatter::get_lobes() const -> const AtBSDFLobeInfo* {
 }
 
 auto BsdfGGXMultiscatter::get_num_lobes() const -> int { return 1; }
+
+#define BIDIR
+
 auto BsdfGGXMultiscatter::sample(const AtVector u, const float wavelength,
                                  const AtBSDFLobeMask lobe_mask,
                                  const bool need_pdf, AtVectorDv& out_wi,
                                  int& out_lobe_index,
                                  AtBSDFLobeSample out_lobes[],
                                  AtRGB& transmission) -> AtBSDFLobeMask {
+
+    if (_roughness == 0)
+        return AI_BSDF_LOBE_MASK_NONE;
 
     // sample cosine weighted incoming light direction
     AtVector U, V;
@@ -55,12 +64,24 @@ auto BsdfGGXMultiscatter::sample(const AtVector u, const float wavelength,
     if (!(dot(wi, _Ng) > 0))
         return AI_BSDF_LOBE_MASK_NONE;
 
-    // since we have perfect importance sampling, the weight (BRDF / pdf) is 1
-    // except for the bump shadowing, which is used to avoid artifacts when the
+    const float mu_o = dot(_N, _omega_o);
+    const float E_mu_o = _lut_ggx_E->lookup(_roughness, 1.0f - mu_o);
+    float f_ms = E_mu_o;
+#ifdef BIDIR
+    // This will handle bidir correctly but we run into numerical instability
+    // issues. For now, just ignore it. I guarantee I will spend an hour
+    // debugging this at some point.
+    const float E_mu_i = _lut_ggx_E->lookup(_roughness, 1.0f - mu_i);
+    const float E_avg = _lut_ggx_E_avg->lookup(_roughness);
+    if (E_avg < 1)
+        f_ms = ((E_mu_i) * (E_mu_o)) / (1.0f - E_avg);
+#endif
+    // since we have perfect importance sampling, the weight (BRDF / pdf) is
+    // 1
+    // except for the bump shadowing, which is used to avoid artifacts when
+    // the
     // shading normal differs significantly from the smooth surface normal
-    const AtRGB weight =
-        AtRGB(AiBSDFBumpShadow(_Ns, _N, wi) *
-              _lut_ggx_E->lookup(_roughness, 1.0f - dot(_N, _omega_o)));
+    const float weight = AiBSDFBumpShadow(_Ns, _N, wi) * f_ms;
 
     // pdf for cosine weighted importance sampling
     const float pdf = mu_i * AI_ONEOVERPI;
@@ -72,7 +93,7 @@ auto BsdfGGXMultiscatter::sample(const AtVector u, const float wavelength,
     out_lobe_index = 0;
 
     // return weight and pdf
-    out_lobes[0] = AtBSDFLobeSample(weight, 0.0f, pdf);
+    out_lobes[0] = AtBSDFLobeSample(AtRGB(weight), 0.0f, pdf);
 
     // indicate that we have valid lobe samples for all the requested lobes,
     // which is just one lobe in this case
@@ -84,14 +105,28 @@ auto BsdfGGXMultiscatter::eval(const AtVector& wi,
                                const bool need_pdf,
                                AtBSDFLobeSample out_lobes[],
                                AtRGB& transmission) -> AtBSDFLobeMask {
+    if (_roughness == 0)
+        return AI_BSDF_LOBE_MASK_NONE;
     // discard rays below the hemisphere
-    const float mu = dot(_N, wi);
-    if (mu <= 0.f)
+    const float mu_i = dot(_N, wi);
+    if (mu_i <= 0.f)
         return AI_BSDF_LOBE_MASK_NONE;
 
+    const float mu_o = dot(_N, _omega_o);
+    const float E_mu_o = _lut_ggx_E->lookup(_roughness, 1.0f - mu_o);
+    float f_ms = E_mu_o;
+#ifdef BIDIR
+    // This should handle bidir, but it doesn't give the same result as just
+    // doing the out direction
+    const float E_mu_i = _lut_ggx_E->lookup(_roughness, 1.0f - mu_i);
+    const float E_avg = _lut_ggx_E_avg->lookup(_roughness);
+    if (E_avg < 1)
+        f_ms = ((E_mu_i) * (E_mu_o)) / (1.0f - E_avg);
+#endif
+
     // return weight and pdf, same as in bsdf_sample
-    const float weight = AiBSDFBumpShadow(_Ns, _N, wi);
-    const float pdf = mu * AI_ONEOVERPI;
+    const float weight = AiBSDFBumpShadow(_Ns, _N, wi) * f_ms;
+    const float pdf = mu_i * AI_ONEOVERPI;
     out_lobes[0] = AtBSDFLobeSample(AtRGB(weight), 0.0f, pdf);
 
     return lobe_mask;

@@ -31,14 +31,16 @@ inline void write(const LUT1D<T>& lut, const std::string& name) {
 
     for (int i = 0; i < lut._dim_x.resolution; ++i) {
         fmt::print(fs_src, "{}", lut._data[i]);
-        output_img->setpixel(i, 0, &lut._data[i]);
+        float px = lut._data[i];
+        output_img->setpixel(i, 0, &px);
         if (i != lut._dim_x.resolution - 1)
             fmt::print(fs_src, ", ");
     }
     fmt::print(fs_src, "\n");
     fmt::print(fs_src, "}},\n");
-    fmt::print(fs_src, "a2::Dimension({}, {}, {}, {})", lut._dim_x.resolution,
-               lut._dim_x.start, lut._dim_x.end, lut._dim_x.inclusive);
+    fmt::print(fs_src, "a2::Dimension({}, {}, {}, {}));\n",
+               lut._dim_x.resolution, lut._dim_x.start, lut._dim_x.end,
+               lut._dim_x.inclusive);
 
     fmt::print(fs_src, "}}\n");
 
@@ -71,7 +73,8 @@ inline void write(const LUT2D<T>& lut, const std::string& name) {
         for (int i = 0; i < lut._dim_x.resolution; ++i) {
             auto idx = j * lut._dim_x.resolution + i;
             fmt::print(fs_src, "{}", lut._data[idx]);
-            output_img->setpixel(i, j, &lut._data[idx]);
+            float px = lut._data[idx];
+            output_img->setpixel(i, j, &px);
             if (idx != lut._dim_x.resolution * lut._dim_y.resolution - 1)
                 fmt::print(fs_src, ", ");
         }

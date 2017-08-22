@@ -16,6 +16,7 @@ class BsdfGGXMultiscatter : public Bsdf {
     float _roughness;
 
     static std::unique_ptr<LUT2D<float>> _lut_ggx_E;
+    static std::unique_ptr<LUT1D<float>> _lut_ggx_E_avg;
 
 public:
     static BsdfGGXMultiscatter* create(AtShaderGlobals* sg, AtVector N,
