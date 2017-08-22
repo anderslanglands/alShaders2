@@ -1,4 +1,5 @@
 #include "bsdf_diffuse.hpp"
+#include "bsdf_ggx_multiscatter.hpp"
 #include "bsdf_microfacet.hpp"
 #include "bsdf_microfacet_refraction.hpp"
 #include "bsdf_stack.hpp"
@@ -6,8 +7,6 @@
 #include <ai.h>
 #include <iostream>
 #include <spdlog/fmt/ostr.h>
-
-#include "lut_ggx_E.hpp"
 
 AI_SHADER_NODE_EXPORT_METHODS(A2UberMtd);
 
@@ -35,7 +34,6 @@ shader_evaluate {
         AiV3BuildLocalFrame(U, V, sg->Nf);
     }
 
-    auto roughness_lut = get_lut_ggx_E();
     float roughness = AiShaderEvalParamFlt(0);
 
     auto bsdf_microfacet_wrap = a2::BsdfMicrofacet::create(
@@ -43,9 +41,6 @@ shader_evaluate {
 
     auto bsdf_microfacet_refraction = a2::BsdfMicrofacetRefraction::create(
         sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, 0, 0);
-
-    float ms_compensation =
-        roughness_lut->lookup(roughness, 1.0f - a2::dot(sg->Nf, -sg->Rd));
 
     auto bsdf_oren_nayar =
         a2::BsdfDiffuse::create(sg, AtRGB(0.18f), sg->Nf, sg->dPdu, 0.0f);
@@ -57,7 +52,9 @@ shader_evaluate {
     // sg->out.CLOSURE() = bsdf_stack->get_arnold_bsdf();
     auto clist = AtClosureList();
     clist.add(bsdf_microfacet_wrap->get_arnold_bsdf());
-    clist.add(AiOrenNayarBSDF(sg, AtRGB(ms_compensation), sg->Nf));
+    auto bsdf_ms = a2::BsdfGGXMultiscatter::create(sg, sg->Nf, roughness);
+    // clist.add(AiOrenNayarBSDF(sg, AtRGB(ms_compensation), sg->Nf));
+    clist.add(bsdf_ms->get_arnold_bsdf());
     sg->out.CLOSURE() = clist;
 }
 
