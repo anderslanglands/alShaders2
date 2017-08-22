@@ -1,0 +1,162 @@
+### exported: Thu Aug 17 13:41:36 2017
+### from:     Arnold 5.0.1.1 [8b0ed0d7] darwin clang-4.0.0 oiio-1.7.15 osl-1.9.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.2.2 2017/07/27 14:36:58
+### host app: MtoA 2.0.1.1 8bf10171 (master) Maya 2017
+
+
+
+options
+{
+ outputs "RGBA RGBA defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.RGBA"
+ xres 5
+ yres 5
+ texture_per_file_stats on
+ texture_searchpath "/Users/anders/Documents/maya/projects/a2/sourceimages"
+ texture_automip off
+ texture_specular_blur 0
+ camera "cameraShape1"
+ #color_manager "defaultColorMgtGlobals"
+ #procedural_searchpath "/Users/anders/Documents/maya/projects/a2/"
+ GI_diffuse_depth 1
+ GI_specular_depth 1
+ GI_transmission_depth 8
+ GI_diffuse_samples 1
+ GI_specular_samples 1
+ GI_transmission_samples 1
+ GI_sss_samples 1
+ GI_volume_samples 1
+ declare frame constant FLOAT
+ frame 1
+ declare render_layer constant STRING
+ render_layer "defaultRenderLayer"
+ declare fps constant FLOAT
+ fps 24
+}
+
+gaussian_filter
+{
+ name defaultArnoldFilter@gaussian_filter
+ width 2
+}
+
+driver_exr
+{
+ name defaultArnoldDriver@driver_exr.RGBA
+ filename "integrator.exr"
+ compression "zip"
+ half_precision off
+ tiled off
+ color_space ""
+ preserve_layer_name off
+ autocrop off
+ append off
+}
+
+#color_manager_syncolor
+#{
+ #name defaultColorMgtGlobals
+ #native_catalog_path "/Applications/Autodesk/maya2017/synColor"
+ #custom_catalog_path "/Users/anders/Library/Preferences/Autodesk/maya/synColor/Shared/"
+ #rendering_color_space "scene-linear Rec 709/sRGB"
+#}
+
+persp_camera
+{
+ name perspShape
+ matrix
+ 0.99999392 -2.16840434e-19 -0.00349065149 0
+ -0.00348240836 -0.0686831102 -0.997632444 0
+ -0.000239748784 0.997638524 -0.0686826855 0
+ -0.00151995791 6.3248229 -0.435434103 1
+ near_clip 0.100000001
+ far_clip 10000
+ screen_window_min -1 -1
+ screen_window_max 1 1
+ shutter_start 0
+ shutter_end 0
+ shutter_type "box"
+ rolling_shutter "off"
+ rolling_shutter_duration 0
+ motion_start 0
+ motion_end 0
+ exposure 0
+ fov 54.4322243
+ focus_distance 1
+ aperture_size 0
+ aperture_blades 0
+ aperture_rotation 0
+ aperture_blade_curvature 0
+ aperture_aspect_ratio 1
+ uv_remap 0 0 0 0
+ radial_distortion 0
+}
+
+polymesh
+{
+ name pPlaneShape1
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 1 0 0 0
+ 0 1 0 0
+ 0 0 1 0
+ 0 0 0 1
+ shader "aiA2Uber1"
+ opaque on
+ matte off
+ id 141609554
+ nsides 100 1 b85UINT
+B!%<_l4$$$$=
+ vidxs 400 1 b85UINT
+B'Rg(<'n6:@(4ZLD(P)^H(kMpL)1r-P)MA?T)heQX*/4c\*JXu`+,LDh+GpVl+c?hp,)d%t,E37x,`WJ'-'&\+-BJn/-]o+3.$>=7.[1a?.vUsC/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc24l(k2P;:o2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:5cQEB6)uWF6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9=6an9XZsr9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z=<kq)E=2@;I=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@EVEq@a%WuA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@Ct;bHD:_tLDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGMv)tGiE;xH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ nidxs 400 1 b85UINT
+B$v2N*$[2`0%XA8:&:4\B&q(+J'RpOR(4csZ(kWBb)MJfj*/>5r+G^)V+,U5Y+c?Sa,)chg,E3(m,`W=s-'&S$-BJh*-]o(0.$>=6.vCa?.[:jA/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc2P)(k24u1m2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:6)cEB5cZND6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9XHan9=?jp9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z==2.)E<l%2G=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@`hEq@E_NsA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@D:MbHCtDkJDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGi3)tGN*2vH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ uvidxs 400 1 b85UINT
+B'Rg(<'n6:@(4ZLD(P)^H(kMpL)1r-P)MA?T)heQX*/4c\*JXu`+,LDh+GpVl+c?hp,)d%t,E37x,`WJ'-'&\+-BJn/-]o+3.$>=7.[1a?.vUsC/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc24l(k2P;:o2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:5cQEB6)uWF6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9=6an9XZsr9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z=<kq)E=2@;I=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@EVEq@a%WuA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@Ct;bHD:_tLDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGMv)tGiE;xH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ vlist 121 1 b85VECTOR
+aDq99Y&XMt89+]ca?IjJY&XMt89+]ca9wF[Y&XMt89+]ca1fesY&XMt89+]ca$.aHY&XMt89+]czY&XMt89+]c7m>0vY&XMt89+]c8%v5HY&XMt89+]c8.1k0Y&XMt89+]c83Y9uY&XMt89+]c89+]cY&XMt89+]caDq99Xv1*083Y9ta?IjJXv1*083Y9ta9wF[Xv1*083Y9ta1fesXv1*083Y9ta$.aHXv1*083Y9tzXv1*083Y9t7m>0vXv1*083Y9t8%v5HXv1*083Y9t8.1k0Xv1*083Y9t83Y9uXv1*083Y9t89+]cXv1*083Y9taDq99Xp^[A8.1k0a?IjJXp^[A8.1k0a9wF[Xp^[A8.1k0a1fesXp^[A8.1k0a$.aHXp^[A8.1k0zXp^[A8.1k07m>0vXp^[A8.1k08%v5HXp^[A8.1k08.1k0Xp^[A8.1k083Y9uXp^[A8.1k089+]cXp^[A8.1k0aDq99XhN%Y8%v5Ha?IjJXhN%Y8%v5Ha9wF[XhN%Y8%v5Ha1fesXhN%Y8%v5Ha$.aHXhN%Y8%v5HzXhN%Y8%v5H7m>0vXhN%Y8%v5H8%v5HXhN%Y8%v5H8.1k0XhN%Y8%v5H83Y9uXhN%Y8%v5H89+]cXhN%Y8%v5HaDq99XZjv.7m>0ra?IjJXZjv.7m>0ra9wF[XZjv.7m>0ra1fesXZjv.7m>0ra$.aHXZjv.7m>0rzXZjv.7m>0r7m>0vXZjv.7m>0r8%v5HXZjv.7m>0r8.1k0XZjv.7m>0r83Y9uXZjv.7m>0r89+]cXZjv.7m>0raDq99zza?IjJzza9wF[zza1feszza$.aH!$$$$$$$$$)7m>0vzz8%v5Hzz8.1k0zz83Y9uzz89+]czzaDq99/O%E\a$.aLa?IjJ/O%E\a$.aLa9wF[/O%E\a$.aLa1fes/O%E\a$.aLa$.aH/O%E\a$.aLz/O%E\a$.aL7m>0v/O%E\a$.aL8%v5H/O%E\a$.aL8.1k0/O%E\a$.aL83Y9u/O%E\a$.aL89+]c/O%E\a$.aLaDq99/\]J.a1fesa?IjJ/\]J.a1fesa9wF[/\]J.a1fesa1fes/\]J.a1fesa$.aH/\]J.a1fesz/\]J.a1fes7m>0v/\]J.a1fes8%v5H/\]J.a1fes8.1k0/\]J.a1fes83Y9u/\]J.a1fes89+]c/\]J.a1fesaDq99/dn*ka9wF[a?IjJ/dn*ka9wF[a9wF[/dn*ka9wF[a1fes/dn*ka9wF[a$.aH/dn*ka9wF[z/dn*ka9wF[7m>0v/dn*ka9wF[8%v5H/dn*ka9wF[8.1k0/dn*ka9wF[83Y9u/dn*ka9wF[89+]c/dn*ka9wF[aDq99/j@N[a?IjKa?IjJ/j@N[a?IjKa9wF[/j@N[a?IjKa1fes/j@N[a?IjKa$.aH/j@N[a?IjKz/j@N[a?IjK7m>0v/j@N[a?IjK8%v5H/j@N[a?IjK8.1k0/j@N[a?IjK83Y9u/j@N[a?IjK89+]c/j@N[a?IjKaDq99/ogrIaDq99a?IjJ/ogrIaDq99a9wF[/ogrIaDq99a1fes/ogrIaDq99a$.aH/ogrIaDq99z/ogrIaDq997m>0v/ogrIaDq998%v5H/ogrIaDq998.1k0/ogrIaDq9983Y9u/ogrIaDq9989+]c/ogrIaDq99
+ nlist 121 1 b85VECTOR
+zy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvuz8Fcb70(Jvnz8Fcb70(Jvnz8Fcb80(Jvrz8Fcb80(Jvszy0(Jvrzy0(Jvtz8Fcb80(Jvrz8Fcb80(Jvrzy0(Jvrzy0(Jvtzy0(Jvrzy0(Jvtz8Fcb70(Jvrz8Fcb70(Jvrzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvvz8Fcb80(Jvuzy0(Jvvz8Fcb70(Jvrz8Fcb70(Jvrz8Fcb80(Jvuz8Fcb70(Jvtz8Fcb80(Jvsz8Fcb80(Jvsz8Fcb70(Jvrz8Fcb80(Jvszy0(Jvuz8Fcb80(Jvszy0(Jvuz8Fcb70(Jvrz8Fcb70(Jvrz8Fcb80(Jvsz8Fcb70(Jvrz8Fcb80(Jvsz8Fcb70(Jvrz8Fcb70(Jvrz8Fcb80(Jvszy0(Jvtzy0(Jvtzy0(Jvuz8Fcb70(Jvnz8Fcb80(Jvszy0(Jvtz8Fcb80(Jvszy0(Jvtzy0(Jvtz8Fcb70(Jvrzy0(Jvtzy0(Jvvz8Fcb80(Jvszy0(Jvuz8Fcb70(Jvpz8Fcb70(Jvrz8Fcb80(Jvsz8Fcb70(Jvrz8Fcb80(Jvsz8Fcb80(Jvsz8Fcb70(Jvrz8Fcb80(Jvszy0(Jvuzy0(Jvtzy0(Jvuz8Fcb70(Jvpz8Fcb70(Jvpz8Fcb80(Jvsz8Fcb70(Jvrzy0(Jvtzy0(Jvtz8Fcb70(Jvrzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuz8Fcb80(Jvsz8Fcb70(Jvrzy0(Jvtz8Fcb70(Jvrzy0(Jvtzy0(Jvtz8Fcb70(Jvrzy0(Jvtzy0(Jvrz8Fcb70(Jvtz8Fcb70(Jvtz8Fcb70(Jvrz8Fcb70(Jvrz8Fcb70(Jvtz8Fcb70(Jvrz8Fcb70(Jvrz8Fcb70(Jvrz8Fcb70(Jvrz8Fcb70(Jvrzy0(Jvtzy0(Jvtzy0(Jvuz8Fcb70(Jvpz8Fcb70(Jvpz8Fcb80(Jvrz8Fcb70(Jvpzy0(Jvtzy0(Jvtz8Fcb70(Jvrzy0(Jvtzy0(Jvtzy0(Jvpzy0(Jvtzy0(Jvrzy0(Jvrzy0(Jvnzy0(Jvpzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvt
+ uvlist 121 1 b85VECTOR2
+zz7m>0sz8%v5Iz8.1k0z83Y9tz89+]cz8;io[z8>S,Rz8A<>Jz8D%PBzyzz!7m>0s$$$$'8%v5I7m>0s8.1k07m>0s83Y9t7m>0s89+]c7m>0s8;io[7m>0s8>S,R7m>0s8A<>J7m>0s8D%PB7m>0sy7m>0sz8%v5I7m>0s!8%v5I$$$$'8.1k08%v5I83Y9t8%v5I89+]c8%v5I8;io[8%v5I8>S,R8%v5I8A<>J8%v5I8D%PB8%v5Iy8%v5Iz8.1k07m>0s8.1k08%v5I!8.1k0$$$$'83Y9t8.1k089+]c8.1k08;io[8.1k08>S,R8.1k08A<>J8.1k08D%PB8.1k0y8.1k0z83Y9t7m>0s83Y9t8%v5I83Y9t8.1k0!83Y9t$$$$'89+]c83Y9t8;io[83Y9t8>S,R83Y9t8A<>J83Y9t8D%PB83Y9ty83Y9tz89+]c7m>0s89+]c8%v5I89+]c8.1k089+]c83Y9t89+]c89+]c89+]c8;io[89+]c8>S,R89+]c8A<>J89+]c8D%PB89+]cy89+]cz8;io[7m>0s8;io[8%v5I8;io[8.1k08;io[83Y9t8;io[89+]c!8;io[$$$$'8>S,R8;io[8A<>J8;io[8D%PB8;io[y8;io[z8>S,R7m>0s8>S,R8%v5I8>S,R8.1k08>S,R83Y9t8>S,R89+]c8>S,R8;io[!8>S,R$$$$'8A<>J8>S,R8D%PB8>S,Ry8>S,Rz8A<>J7m>0s8A<>J8%v5I8A<>J8.1k08A<>J83Y9t8A<>J89+]c8A<>J8;io[8A<>J8>S,R!8A<>J$$$$'8D%PB8A<>Jy8A<>Jz8D%PB7m>0s8D%PB8%v5I8D%PB8.1k08D%PB83Y9t8D%PB89+]c8D%PB8;io[8D%PB8>S,R8D%PB8A<>J!8D%PB$$$$'y8D%PBzy7m>0sy8%v5Iy8.1k0y83Y9ty89+]cy8;io[y8>S,Ry8A<>Jy8D%PB!8Fcb9$$$$'
+ smoothing on
+ step_size 0
+ volume_padding 0
+ #declare mtoa_shading_groups constant ARRAY NODE
+ #mtoa_shading_groups "aiA2Uber1SG"
+}
+
+ortho_camera
+{
+ name cameraShape1
+ matrix
+ 1 0 -0 0
+ -0 2.22044605e-16 -1 0
+ 0 1 2.22044605e-16 0
+ 0 1.79999995 0 1
+ near_clip 0.100000001
+ far_clip 10000
+ screen_window_min -0.5 -0.5
+ screen_window_max 0.5 0.5
+ shutter_start 0
+ shutter_end 0
+ shutter_type "box"
+ rolling_shutter "off"
+ rolling_shutter_duration 0
+ motion_start 0
+ motion_end 0
+ exposure 0
+}
+
+#MayaShadingEngine
+#{
+ #name aiA2Uber1SG
+ #beauty aiA2Uber1
+#}
+
+a2_integrator
+{
+ name aiA2Uber1
+}
+
