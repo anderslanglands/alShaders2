@@ -1,1 +1,5 @@
-build_shader(NAME a2_uber SOURCES a2_uber.cpp bsdf_microfacet.cpp bsdf_microfacet_refraction.cpp bsdf_diffuse.cpp bsdf_stack.cpp bsdf_ggx_multiscatter.cpp)
+build_shader(NAME a2_uber SOURCES a2_uber.cpp bsdf_microfacet_dielectric.cpp bsdf_microfacet_conductor.cpp bsdf_microfacet_refraction.cpp bsdf_diffuse.cpp bsdf_stack.cpp bsdf_ggx_multiscatter_dielectric.cpp bsdf_ggx_multiscatter_conductor.cpp bsdf_ggx_multiscatter.cpp)
+
+build_shader(NAME a2_conductor SOURCES a2_conductor.cpp bsdf_microfacet_conductor.cpp bsdf_ggx_multiscatter.cpp bsdf_ggx_multiscatter_conductor.cpp)
+
+build_shader(NAME a2_dielectric SOURCES a2_dielectric.cpp bsdf_microfacet_dielectric.cpp bsdf_ggx_multiscatter.cpp bsdf_ggx_multiscatter_dielectric.cpp)

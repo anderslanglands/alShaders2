@@ -170,18 +170,18 @@ inline AtRGB F_avg_ole(AtRGB r, AtRGB g) {
            g * r * r * 0.2586;
 }
 
-inline float F_avg_dielectric(float eta) {
-    if (eta == 1.0f)
+inline float F_avg_dielectric(float ior) {
+    if (ior == 1.0f)
         return 0.0f;
-    if (eta <= 0.0f)
+    if (ior <= 0.0f)
         return 1.0f;
-    if (eta > 400.0f)
+    if (ior > 400.0f)
         return 1.0f;
-    if (eta < 1) {
-        return 0.997118 + 0.1014 * eta - 0.965241 * eta * eta -
-               0.130607 * eta * eta * eta;
+    if (ior < 1) {
+        return 0.997118 + 0.1014 * ior - 0.965241 * ior * ior -
+               0.130607 * ior * ior * ior;
     } else {
-        return (eta - 1) / (4.08567 + 1.00071 * eta);
+        return (ior - 1) / (4.08567 + 1.00071 * ior);
     }
 }
 

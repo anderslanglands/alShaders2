@@ -19,7 +19,10 @@ public:
     float param_1;
 };
 
-node_parameters { AiParameterFlt("roughness", 0.0f); }
+node_parameters {
+    AiParameterFlt("roughness", 0.0f);
+    AiParameterBool("compensate", true);
+}
 
 node_initialize {}
 
@@ -36,26 +39,36 @@ shader_evaluate {
     }
 
     float roughness = sqr(AiShaderEvalParamFlt(0));
+    bool compensate = AiShaderEvalParamBool(1);
 
-    auto bsdf_microfacet_wrap = BsdfMicrofacet::create(
-        sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, roughness, roughness);
+    // auto bsdf_microfacet_reflection = create_microfacet_dielectric(
+    // sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, roughness, roughness);
+    auto reflectivity = AtRGB(0.99, 0.791587, 0.3465);
+    AtRGB edgetint = AtRGB(0.99, 0.9801, 0.792);
 
-    auto bsdf_microfacet_refraction = BsdfMicrofacetRefraction::create(
-        sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, 0, 0);
+    auto bsdf_microfacet_reflection = create_microfacet_conductor(
+        sg, AtRGB(1), sg->Nf, sg->dPdu, reflectivity, edgetint, roughness,
+        roughness);
 
-    auto bsdf_oren_nayar =
-        BsdfDiffuse::create(sg, AtRGB(0.18f), sg->Nf, sg->dPdu, 0.0f);
+    // auto bsdf_microfacet_refraction = BsdfMicrofacetRefraction::create(
+    // sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, 0, 0);
 
-    auto bsdf_stack = BsdfStack::create(sg);
-    bsdf_stack->add_bsdf(bsdf_microfacet_wrap);
+    // auto bsdf_oren_nayar =
+    // BsdfDiffuse::create(sg, AtRGB(0.18f), sg->Nf, sg->dPdu, 0.0f);
+
+    // auto bsdf_stack = BsdfStack::create(sg);
+    // bsdf_stack->add_bsdf(bsdf_microfacet_dielectric);
     // bsdf_stack->add_bsdf(bsdf_oren_nayar);
     // bsdf_stack->add_bsdf(bsdf_microfacet_refraction);
     // sg->out.CLOSURE() = bsdf_stack->get_arnold_bsdf();
     auto clist = AtClosureList();
-    clist.add(bsdf_microfacet_wrap->get_arnold_bsdf());
-    auto bsdf_ms = BsdfGGXMultiscatter::create(sg, sg->Nf, roughness);
-    // clist.add(AiOrenNayarBSDF(sg, AtRGB(ms_compensation), sg->Nf));
-    clist.add(bsdf_ms->get_arnold_bsdf());
+    clist.add(bsdf_microfacet_reflection->get_arnold_bsdf());
+    if (compensate) {
+        auto bsdf_ms = create_ggx_ms_conductor(sg, sg->Nf, roughness,
+                                               reflectivity, edgetint);
+        // clist.add(AiOrenNayarBSDF(sg, AtRGB(ms_compensation), sg->Nf));
+        clist.add(bsdf_ms->get_arnold_bsdf());
+    }
     sg->out.CLOSURE() = clist;
 }
 
