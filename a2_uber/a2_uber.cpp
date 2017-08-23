@@ -28,31 +28,32 @@ node_update {}
 node_finish {}
 
 shader_evaluate {
+    using namespace a2;
     auto U = sg->dPdu;
     auto V = sg->dPdv;
     if (AiV3IsSmall(U)) {
         AiV3BuildLocalFrame(U, V, sg->Nf);
     }
 
-    float roughness = AiShaderEvalParamFlt(0);
+    float roughness = sqr(AiShaderEvalParamFlt(0));
 
-    auto bsdf_microfacet_wrap = a2::BsdfMicrofacet::create(
+    auto bsdf_microfacet_wrap = BsdfMicrofacet::create(
         sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, roughness, roughness);
 
-    auto bsdf_microfacet_refraction = a2::BsdfMicrofacetRefraction::create(
+    auto bsdf_microfacet_refraction = BsdfMicrofacetRefraction::create(
         sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, 0, 0);
 
     auto bsdf_oren_nayar =
-        a2::BsdfDiffuse::create(sg, AtRGB(0.18f), sg->Nf, sg->dPdu, 0.0f);
+        BsdfDiffuse::create(sg, AtRGB(0.18f), sg->Nf, sg->dPdu, 0.0f);
 
-    auto bsdf_stack = a2::BsdfStack::create(sg);
+    auto bsdf_stack = BsdfStack::create(sg);
     bsdf_stack->add_bsdf(bsdf_microfacet_wrap);
     // bsdf_stack->add_bsdf(bsdf_oren_nayar);
     // bsdf_stack->add_bsdf(bsdf_microfacet_refraction);
     // sg->out.CLOSURE() = bsdf_stack->get_arnold_bsdf();
     auto clist = AtClosureList();
     clist.add(bsdf_microfacet_wrap->get_arnold_bsdf());
-    auto bsdf_ms = a2::BsdfGGXMultiscatter::create(sg, sg->Nf, roughness);
+    auto bsdf_ms = BsdfGGXMultiscatter::create(sg, sg->Nf, roughness);
     // clist.add(AiOrenNayarBSDF(sg, AtRGB(ms_compensation), sg->Nf));
     clist.add(bsdf_ms->get_arnold_bsdf());
     sg->out.CLOSURE() = clist;
