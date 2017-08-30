@@ -1,9 +1,11 @@
 #include "bsdf_diffuse.hpp"
 #include "bsdf_ggx_multiscatter.hpp"
+#include "bsdf_hapke.hpp"
 #include "bsdf_microfacet.hpp"
 #include "bsdf_microfacet_refraction.hpp"
 #include "bsdf_stack.hpp"
 #include "common/util.hpp"
+#include "layer_dielectric.hpp"
 #include <ai.h>
 #include <iostream>
 #include <spdlog/fmt/ostr.h>
@@ -22,6 +24,7 @@ public:
 node_parameters {
     AiParameterFlt("roughness", 0.0f);
     AiParameterBool("compensate", true);
+    AiParameterRGB("albedo", 0.05, 0.2, 0.5);
 }
 
 node_initialize {}
@@ -40,36 +43,51 @@ shader_evaluate {
 
     float roughness = sqr(AiShaderEvalParamFlt(0));
     bool compensate = AiShaderEvalParamBool(1);
+    AtRGB albedo = AiShaderEvalParamRGB(2);
 
-    // auto bsdf_microfacet_reflection = create_microfacet_dielectric(
-    // sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, roughness, roughness);
-    auto reflectivity = AtRGB(0.99, 0.791587, 0.3465);
-    AtRGB edgetint = AtRGB(0.99, 0.9801, 0.792);
+    AtRGB alpha = color_to_albedo(albedo);
 
-    auto bsdf_microfacet_reflection = create_microfacet_conductor(
-        sg, AtRGB(1), sg->Nf, sg->dPdu, reflectivity, edgetint, roughness,
-        roughness);
+    auto bsdf_microfacet_reflection = create_microfacet_dielectric(
+        sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, roughness, roughness);
+    // auto reflectivity = AtRGB(0.99, 0.791587, 0.3465);
+    // AtRGB edgetint = AtRGB(0.99, 0.9801, 0.792);
 
-    // auto bsdf_microfacet_refraction = BsdfMicrofacetRefraction::create(
-    // sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, 0, 0);
+    // auto bsdf_microfacet_reflection = create_microfacet_conductor(
+    // sg, AtRGB(1), sg->Nf, sg->dPdu, reflectivity, edgetint, roughness,
+    // roughness);
+
+    // auto bsdf_hapke = BsdfHapke::create(sg, alpha, sg->Nf);
+
+    auto bsdf_microfacet_refraction = BsdfMicrofacetRefraction::create(
+        sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, 1.5f, 0, 0);
 
     // auto bsdf_oren_nayar =
     // BsdfDiffuse::create(sg, AtRGB(0.18f), sg->Nf, sg->dPdu, 0.0f);
 
-    // auto bsdf_stack = BsdfStack::create(sg);
+    auto bsdf_stack = BsdfStack::create(sg);
     // bsdf_stack->add_bsdf(bsdf_microfacet_dielectric);
     // bsdf_stack->add_bsdf(bsdf_oren_nayar);
-    // bsdf_stack->add_bsdf(bsdf_microfacet_refraction);
+    bsdf_stack->add_bsdf(bsdf_microfacet_reflection);
+    bsdf_stack->add_bsdf(bsdf_microfacet_refraction);
     // sg->out.CLOSURE() = bsdf_stack->get_arnold_bsdf();
     auto clist = AtClosureList();
     clist.add(bsdf_microfacet_reflection->get_arnold_bsdf());
     if (compensate) {
-        auto bsdf_ms = create_ggx_ms_conductor(sg, sg->Nf, roughness,
-                                               reflectivity, edgetint);
-        // clist.add(AiOrenNayarBSDF(sg, AtRGB(ms_compensation), sg->Nf));
+        auto bsdf_ms =
+            create_ggx_ms_dielectric(sg, sg->Nf, roughness, 1.0f, 1.5f);
+        // auto bsdf_ms = create_ggx_ms_conductor(sg, sg->Nf, roughness,
+        // reflectivity, edgetint);
         clist.add(bsdf_ms->get_arnold_bsdf());
     }
-    sg->out.CLOSURE() = clist;
+
+    // clist.add(bsdf_hapke->get_arnold_bsdf());
+
+    auto lyr = LayerDielectric::create(sg, sg->Nf, sg->dPdu, 1.0f, 1.5f,
+                                       roughness, roughness);
+
+    sg->out.CLOSURE() = lyr->get_arnold_bsdf();
+    // sg->out.CLOSURE() = clist;
+    // sg->out.CLOSURE() = bsdf_stack->get_arnold_bsdf();
 }
 
 node_loader {

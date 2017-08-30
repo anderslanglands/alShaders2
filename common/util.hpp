@@ -186,4 +186,30 @@ inline float F_avg_dielectric(float ior) {
 }
 
 inline float dot(AtVector v1, AtVector v2) { return AiV3Dot(v1, v2); }
+
+inline auto split_roughness(float roughness, float anisotropy) -> AtVector2 {
+    float rx = roughness;
+    float ry = roughness;
+    if (anisotropy != 0.5f) {
+        float aniso_t = sqr(fabsf(2.0f * anisotropy - 1.0f));
+        rx = (anisotropy >= 0.5f)
+                 ? std::max(0.0001f, roughness)
+                 : lerp(std::max(0.0001f, roughness), 1.0f, aniso_t);
+        ry = (anisotropy <= 0.5f)
+                 ? std::max(0.0001f, roughness)
+                 : lerp(std::max(0.0001f, roughness), 1.0f, aniso_t);
+    }
+    return AtVector2(rx, ry);
+}
+
+inline float reflectivity_to_albedo(float r, float g) {
+    float s =
+        4.09712 + 4.20863 * r - sqrtf(9.59217 + 41.6808 * r + 17.7126 * r * r);
+    return (1.0f - s * s) / (1.0f - g * s * s);
+}
+
+inline AtRGB color_to_albedo(AtRGB c, float g = 0.0f) {
+    return AtRGB(reflectivity_to_albedo(c.r, g), reflectivity_to_albedo(c.g, g),
+                 reflectivity_to_albedo(c.b, g));
+}
 }

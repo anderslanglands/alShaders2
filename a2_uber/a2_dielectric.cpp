@@ -37,26 +37,16 @@ shader_evaluate {
     auto ior = AiShaderEvalParamFlt(2);
 
     auto anisotropy = AiShaderEvalParamFlt(3);
-    float rx = roughness;
-    float ry = roughness;
-    if (anisotropy != 0.5f) {
-        float aniso_t = sqr(fabsf(2.0f * anisotropy - 1.0f));
-        rx = (anisotropy >= 0.5f)
-                 ? std::max(0.0001f, roughness)
-                 : lerp(std::max(0.0001f, roughness), 1.0f, aniso_t);
-        ry = (anisotropy <= 0.5f)
-                 ? std::max(0.0001f, roughness)
-                 : lerp(std::max(0.0001f, roughness), 1.0f, aniso_t);
-    }
+    AtVector2 r = split_roughness(roughness, anisotropy);
 
     auto bsdf_microfacet_reflection = create_microfacet_dielectric(
-        sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, ior, rx, ry);
+        sg, AtRGB(1), sg->Nf, sg->dPdu, 1.0f, ior, r.x, r.y);
 
     auto clist = AtClosureList();
     clist.add(bsdf_microfacet_reflection->get_arnold_bsdf());
     if (compensate) {
         auto bsdf_ms =
-            create_ggx_ms_dielectric(sg, sg->Nf, std::max(rx, ry), 1.0f, ior);
+            create_ggx_ms_dielectric(sg, sg->Nf, std::max(r.x, r.y), 1.0f, ior);
         clist.add(bsdf_ms->get_arnold_bsdf());
     }
     sg->out.CLOSURE() = clist;

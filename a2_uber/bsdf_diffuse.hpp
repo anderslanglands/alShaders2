@@ -22,11 +22,11 @@ public:
     AtBSDFLobeMask sample(const AtVector u, const float wavelength,
                           const AtBSDFLobeMask lobe_mask, const bool need_pdf,
                           AtVectorDv& out_wi, int& out_lobe_index,
-                          AtBSDFLobeSample out_lobes[],
-                          AtRGB& transmission) override;
+                          AtBSDFLobeSample out_lobes[], AtRGB& kr,
+                          AtRGB& kt) override;
     AtBSDFLobeMask eval(const AtVector& wi, const AtBSDFLobeMask lobe_mask,
                         const bool need_pdf, AtBSDFLobeSample out_lobes[],
-                        AtRGB& transmission) override;
+                        AtRGB& kr, AtRGB& kt) override;
     const AtBSDFLobeInfo* get_lobes() const override;
     int get_num_lobes() const override;
     bool has_interior() const override;

@@ -58,15 +58,16 @@ AtBSDFLobeMask BsdfStack::sample(const AtVector u, const float wavelength,
                                  const AtBSDFLobeMask lobe_mask,
                                  const bool need_pdf, AtVectorDv& out_wi,
                                  int& out_lobe_index,
-                                 AtBSDFLobeSample out_lobes[],
-                                 AtRGB& transmission) {
+                                 AtBSDFLobeSample out_lobes[], AtRGB& k_r,
+                                 AtRGB& k_t) {
     auto index = get_lobe_index(lobe_mask);
     a2assert(index < get_num_lobes(),
              "index was greater than lobe count: {} ({})", index,
              get_num_lobes());
     AtBSDFLobeSample tmp_lobes[1];
+    AtRGB layer_k_r;
     auto mask = _bsdfs[index]->sample(u, wavelength, 0x1, need_pdf, out_wi,
-                                      out_lobe_index, tmp_lobes,
+                                      out_lobe_index, tmp_lobes, layer_k_r,
                                       _layer_transmission_bsdf[index]);
     if (mask == AI_BSDF_LOBE_MASK_NONE)
         return AI_BSDF_LOBE_MASK_NONE;
@@ -85,22 +86,24 @@ AtBSDFLobeMask BsdfStack::sample(const AtVector u, const float wavelength,
     a2assert(is_positive(out_lobes[index].weight), "weight was not finite: {}",
              out_lobes[index].weight);
     out_lobe_index = index;
-    transmission = AI_RGB_BLACK;
+    k_t = AI_RGB_BLACK;
     return 1 << index;
 }
 
 AtBSDFLobeMask BsdfStack::eval(const AtVector& wi,
                                const AtBSDFLobeMask lobe_mask,
                                const bool need_pdf,
-                               AtBSDFLobeSample out_lobes[],
-                               AtRGB& transmission) {
+                               AtBSDFLobeSample out_lobes[], AtRGB& k_r,
+                               AtRGB& k_t) {
     int index = get_lobe_index(lobe_mask);
     a2assert(index < get_num_lobes(),
              "index was greater than lobe count: {} ({})", index,
              get_num_lobes());
     AtBSDFLobeSample tmp_lobes[1];
-    auto mask = _bsdfs[index]->eval(wi, lobe_mask, need_pdf, tmp_lobes,
-                                    _layer_transmission_light[index]);
+    AtRGB layer_k_r;
+    auto mask =
+        _bsdfs[index]->eval(wi, lobe_mask, need_pdf, tmp_lobes, layer_k_r,
+                            _layer_transmission_light[index]);
     if (mask == AI_BSDF_LOBE_MASK_NONE)
         return AI_BSDF_LOBE_MASK_NONE;
     auto stack_transmission = AI_RGB_WHITE;
@@ -117,7 +120,7 @@ AtBSDFLobeMask BsdfStack::eval(const AtVector& wi,
              out_lobes[index].weight);
     a2assert(is_positive(out_lobes[index].weight), "weight was not finite: {}",
              out_lobes[index].weight);
-    transmission = AI_RGB_BLACK;
+    k_t = AI_RGB_BLACK;
     return 1 << index;
 }
 const AtBSDFLobeInfo* BsdfStack::get_lobes() const { return _lobe_info.data(); }
@@ -151,17 +154,17 @@ Sample(const AtBSDF* bsdf, const AtVector rnd, const float wavelength,
        const AtBSDFLobeMask lobe_mask, const bool need_pdf, AtVectorDv& out_wi,
        int& out_lobe_index, AtBSDFLobeSample out_lobes[]) {
     auto bsdf_stack = reinterpret_cast<a2::BsdfStack*>(AiBSDFGetData(bsdf));
-    AtRGB dummy;
+    AtRGB k_r, k_t;
     return bsdf_stack->sample(rnd, wavelength, lobe_mask, need_pdf, out_wi,
-                              out_lobe_index, out_lobes, dummy);
+                              out_lobe_index, out_lobes, k_r, k_t);
 }
 
 static AtBSDFLobeMask Eval(const AtBSDF* bsdf, const AtVector& wi,
                            const AtBSDFLobeMask lobe_mask, const bool need_pdf,
                            AtBSDFLobeSample out_lobes[]) {
     auto bsdf_stack = reinterpret_cast<a2::BsdfStack*>(AiBSDFGetData(bsdf));
-    AtRGB dummy;
-    return bsdf_stack->eval(wi, lobe_mask, need_pdf, out_lobes, dummy);
+    AtRGB k_r, k_t;
+    return bsdf_stack->eval(wi, lobe_mask, need_pdf, out_lobes, k_r, k_t);
 }
 
 bsdf_interior {

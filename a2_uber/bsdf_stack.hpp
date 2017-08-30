@@ -34,12 +34,12 @@ public:
     auto sample(const AtVector u, const float wavelength,
                 const AtBSDFLobeMask lobe_mask, const bool need_pdf,
                 AtVectorDv& out_wi, int& out_lobe_index,
-                AtBSDFLobeSample out_lobes[], AtRGB& transmission)
+                AtBSDFLobeSample out_lobes[], AtRGB& kr, AtRGB& kt)
         -> AtBSDFLobeMask override;
 
     auto eval(const AtVector& wi, const AtBSDFLobeMask lobe_mask,
-              const bool need_pdf, AtBSDFLobeSample out_lobes[],
-              AtRGB& transmission) -> AtBSDFLobeMask override;
+              const bool need_pdf, AtBSDFLobeSample out_lobes[], AtRGB& kr,
+              AtRGB& kt) -> AtBSDFLobeMask override;
 
     auto get_lobes() const -> const AtBSDFLobeInfo* override;
 

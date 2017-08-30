@@ -42,9 +42,9 @@ Sample(const AtBSDF* bsdf, const AtVector rnd, const float wavelength,
        int& out_lobe_index, AtBSDFLobeSample out_lobes[]) {
     auto bsdf_mf =
         reinterpret_cast<a2::BsdfMicrofacetDielectric*>(AiBSDFGetData(bsdf));
-    AtRGB transmission;
+    AtRGB k_r, k_t;
     return bsdf_mf->sample(rnd, wavelength, lobe_mask, need_pdf, out_wi,
-                           out_lobe_index, out_lobes, transmission);
+                           out_lobe_index, out_lobes, k_r, k_t);
 }
 
 static AtBSDFLobeMask Eval(const AtBSDF* bsdf, const AtVector& wi,
@@ -52,6 +52,6 @@ static AtBSDFLobeMask Eval(const AtBSDF* bsdf, const AtVector& wi,
                            AtBSDFLobeSample out_lobes[]) {
     auto bsdf_mf =
         reinterpret_cast<a2::BsdfMicrofacetDielectric*>(AiBSDFGetData(bsdf));
-    AtRGB transmission;
-    return bsdf_mf->eval(wi, lobe_mask, need_pdf, out_lobes, transmission);
+    AtRGB k_r, k_t;
+    return bsdf_mf->eval(wi, lobe_mask, need_pdf, out_lobes, k_r, k_t);
 }

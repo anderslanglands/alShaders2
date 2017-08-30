@@ -44,13 +44,13 @@ void BsdfMicrofacetRefraction::init(const AtShaderGlobals* sg) {
 AtBSDFLobeMask BsdfMicrofacetRefraction::sample(
     const AtVector u, const float wavelength, const AtBSDFLobeMask lobe_mask,
     const bool need_pdf, AtVectorDv& out_wi, int& out_lobe_index,
-    AtBSDFLobeSample out_lobes[], AtRGB& transmission) {
+    AtBSDFLobeSample out_lobes[], AtRGB& k_r, AtRGB& k_t) {
+    k_t = AtRGB(1);
     auto out_lobe_mask =
         arnold_methods->Sample(arnold_bsdf, u, wavelength, 0x1, need_pdf,
                                out_wi, out_lobe_index, out_lobes);
     if (out_lobe_mask == AI_BSDF_LOBE_MASK_NONE)
         return AI_BSDF_LOBE_MASK_NONE;
-    transmission = AtRGB(1);
     a2assert(is_positive(transmission), "transmission is not positive: {}",
              transmission);
     out_lobes[0].weight *= _weight;
@@ -65,12 +65,12 @@ AtBSDFLobeMask BsdfMicrofacetRefraction::eval(const AtVector& wi,
                                               const AtBSDFLobeMask lobe_mask,
                                               const bool need_pdf,
                                               AtBSDFLobeSample out_lobes[],
-                                              AtRGB& transmission) {
+                                              AtRGB& k_r, AtRGB& k_t) {
     auto out_lobe_mask =
         arnold_methods->Eval(arnold_bsdf, wi, 0x1, need_pdf, out_lobes);
+    k_t = AtRGB(1);
     if (out_lobe_mask == AI_BSDF_LOBE_MASK_NONE)
         return AI_BSDF_LOBE_MASK_NONE;
-    transmission = AtRGB(1);
     out_lobes[0].weight *= _weight;
     a2assert(is_finite(out_lobes[0].weight), "weight was not finite: {}",
              out_lobes[0].weight);
@@ -109,9 +109,9 @@ Sample(const AtBSDF* bsdf, const AtVector rnd, const float wavelength,
        int& out_lobe_index, AtBSDFLobeSample out_lobes[]) {
     auto bsdf_mf =
         reinterpret_cast<a2::BsdfMicrofacetRefraction*>(AiBSDFGetData(bsdf));
-    AtRGB transmission;
+    AtRGB k_r, k_t;
     return bsdf_mf->sample(rnd, wavelength, lobe_mask, need_pdf, out_wi,
-                           out_lobe_index, out_lobes, transmission);
+                           out_lobe_index, out_lobes, k_r, k_t);
 }
 
 static AtBSDFLobeMask Eval(const AtBSDF* bsdf, const AtVector& wi,
@@ -119,8 +119,8 @@ static AtBSDFLobeMask Eval(const AtBSDF* bsdf, const AtVector& wi,
                            AtBSDFLobeSample out_lobes[]) {
     auto bsdf_mf =
         reinterpret_cast<a2::BsdfMicrofacetRefraction*>(AiBSDFGetData(bsdf));
-    AtRGB transmission;
-    return bsdf_mf->eval(wi, lobe_mask, need_pdf, out_lobes, transmission);
+    AtRGB k_r, k_t;
+    return bsdf_mf->eval(wi, lobe_mask, need_pdf, out_lobes, k_r, k_t);
 }
 
 bsdf_interior {

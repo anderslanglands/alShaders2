@@ -43,7 +43,7 @@ public:
     auto sample(const AtVector u, const float wavelength,
                 const AtBSDFLobeMask lobe_mask, const bool need_pdf,
                 AtVectorDv& out_wi, int& out_lobe_index,
-                AtBSDFLobeSample out_lobes[], AtRGB& transmission)
+                AtBSDFLobeSample out_lobes[], AtRGB& k_r, AtRGB& k_t)
         -> AtBSDFLobeMask override {
 
         if (_roughness == 0)
@@ -73,15 +73,14 @@ public:
         const float E_avg = _lut_ggx_E_avg->lookup(_roughness);
         AtRGB f_ms = (AtRGB(E_mu_i) * AtRGB(E_mu_o)) / (1.0f - E_avg);
         AtRGB F_avg = _fresnel.F_avg();
-        AtRGB fresnel_factor =
-            F_avg * (AI_RGB_WHITE - E_avg) / (AI_RGB_WHITE - F_avg * E_avg);
+        k_r = F_avg * (AI_RGB_WHITE - E_avg) / (AI_RGB_WHITE - F_avg * E_avg);
+        k_t = AI_RGB_WHITE - k_r;
         // since we have perfect importance sampling, the weight (BRDF / pdf) is
         // 1
         // except for the bump shadowing, which is used to avoid artifacts when
         // the
         // shading normal differs significantly from the smooth surface normal
-        const AtRGB weight =
-            AiBSDFBumpShadow(_Ns, _N, wi) * f_ms * fresnel_factor;
+        const AtRGB weight = AiBSDFBumpShadow(_Ns, _N, wi) * f_ms * k_r;
 
         // pdf for cosine weighted importance sampling
         const float pdf = mu_i * AI_ONEOVERPI;
@@ -101,8 +100,8 @@ public:
     }
 
     auto eval(const AtVector& wi, const AtBSDFLobeMask lobe_mask,
-              const bool need_pdf, AtBSDFLobeSample out_lobes[],
-              AtRGB& transmission) -> AtBSDFLobeMask override {
+              const bool need_pdf, AtBSDFLobeSample out_lobes[], AtRGB& k_r,
+              AtRGB& k_t) -> AtBSDFLobeMask override {
         if (_roughness == 0)
             return AI_BSDF_LOBE_MASK_NONE;
         // discard rays below the hemisphere
@@ -118,12 +117,11 @@ public:
         const float E_avg = _lut_ggx_E_avg->lookup(_roughness);
         AtRGB f_ms = (AtRGB(E_mu_i) * AtRGB(E_mu_o)) / (1.0f - E_avg);
         AtRGB F_avg = _fresnel.F_avg();
-        AtRGB fresnel_factor =
-            F_avg * (AI_RGB_WHITE - E_avg) / (AI_RGB_WHITE - F_avg * E_avg);
+        k_r = F_avg * (AI_RGB_WHITE - E_avg) / (AI_RGB_WHITE - F_avg * E_avg);
+        k_t = AI_RGB_WHITE - k_r;
 
         // return weight and pdf, same as in bsdf_sample
-        const AtRGB weight =
-            AiBSDFBumpShadow(_Ns, _N, wi) * f_ms * fresnel_factor;
+        const AtRGB weight = AiBSDFBumpShadow(_Ns, _N, wi) * f_ms * k_r;
         const float pdf = mu_i * AI_ONEOVERPI;
         out_lobes[0] = AtBSDFLobeSample(weight, 0.0f, pdf);
 
