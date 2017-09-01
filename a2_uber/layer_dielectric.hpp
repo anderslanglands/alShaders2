@@ -12,6 +12,7 @@ class LayerDielectric : public Bsdf {
     int _sampled_lobe;
     AtVector _omega_o;
     float _p_c;
+    float _roughness;
 
 public:
     static auto create(AtShaderGlobals* sg, AtVector N, AtVector U,

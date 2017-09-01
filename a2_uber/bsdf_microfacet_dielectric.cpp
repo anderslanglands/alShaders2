@@ -19,7 +19,7 @@ create_microfacet_dielectric(AtShaderGlobals* sg, AtRGB weight, AtVector N,
     bsdf_mf->_omega_o = -sg->Rd;
     bsdf_mf->at_bsdf = bsdf;
     bsdf_mf->arnold_bsdf = AiMicrofacetBSDF(sg, weight, AI_MICROFACET_GGX, N,
-                                            &U, 0, rx, ry, 0, str_specular);
+                                            &U, 0.0f, rx, ry, 0, str_specular);
     bsdf_mf->_roughness = AtVector2(rx, ry);
     bsdf_mf->arnold_methods = AiBSDFGetMethods(bsdf_mf->arnold_bsdf);
     bsdf_mf->_sg = sg;

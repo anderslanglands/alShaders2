@@ -21,7 +21,8 @@ public:
 
     static auto create(AtShaderGlobals* sg, AtRGB weight, AtVector N,
                        AtVector U, float medium_ior, float ior, float rx,
-                       float ry) -> BsdfMicrofacetRefraction*;
+                       float ry, bool use_fresnel = false)
+        -> BsdfMicrofacetRefraction*;
 
     static auto get(const AtBSDF* bsdf) -> BsdfMicrofacetRefraction* {
         return reinterpret_cast<BsdfMicrofacetRefraction*>(AiBSDFGetData(bsdf));

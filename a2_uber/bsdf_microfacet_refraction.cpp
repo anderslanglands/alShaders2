@@ -10,7 +10,8 @@ namespace a2 {
 static const AtString str_refraction("refraction");
 auto BsdfMicrofacetRefraction::create(AtShaderGlobals* sg, AtRGB weight,
                                       AtVector N, AtVector U, float medium_ior,
-                                      float ior, float rx, float ry)
+                                      float ior, float rx, float ry,
+                                      bool use_fresnel)
     -> BsdfMicrofacetRefraction* {
     auto bsdf = AiBSDF(sg, weight, A2BsdfMicrofacetRefractionMtd,
                        sizeof(BsdfMicrofacetRefraction));
@@ -28,8 +29,8 @@ auto BsdfMicrofacetRefraction::create(AtShaderGlobals* sg, AtRGB weight,
     // auto hg = AiClosureVolumeHenyeyGreenstein(sg, sigma_a * 10, sigma_s * 10,
     // AtRGB(0), 0);
     bsdf_mf->arnold_bsdf = AiMicrofacetRefractionBSDF(
-        sg, weight, AI_MICROFACET_GGX, N, &U, eta, rx, ry, 0.0f, false, hg,
-        AI_BSDF_LOBE_EXIT_BACKGROUND, str_refraction);
+        sg, weight, AI_MICROFACET_GGX, N, &U, eta, rx, ry, 0.0f, use_fresnel,
+        hg, AI_BSDF_LOBE_EXIT_BACKGROUND, str_refraction);
     bsdf_mf->_roughness = AtVector2(rx, ry);
     bsdf_mf->arnold_methods = AiBSDFGetMethods(bsdf_mf->arnold_bsdf);
     bsdf_mf->_sg = sg;

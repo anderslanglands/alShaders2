@@ -25,6 +25,7 @@ shader_evaluate {
     if (sg->x == 0 && sg->y == 0 && getenv("A2_INTEGRATE") != nullptr) {
         auto sg_copy = *sg;
         constexpr int RES = 32;
+#if 0
         auto fun_ggx_roughness_mu = [&](int i, int j, int lut_resolution_i,
                                         int lut_resolution_j) {
 
@@ -80,6 +81,58 @@ shader_evaluate {
         auto lut_E_avg =
             a2::LUT1D<double>(fun_E_avg, a2::Dimension{RES, 0.0f, 1.0f, true});
         write(lut_E_avg, "ggx_E_avg");
+#endif
+
+        auto fun_ggx_roughness_mu_ior = [&](
+            int i, int j, int k, int lut_resolution_i, int lut_resolution_j,
+            int lut_resolution_k) {
+
+            // k: ior in range [3,1)
+            auto ior = 3.0f - 2.0f * float(k) / float(lut_resolution_k);
+
+            // j: mu in range [1, 0)
+            auto mu = 1.0f - float(j) / float(lut_resolution_j);
+            auto sin_theta = cosf(asinf(mu));
+            auto omega_o = AtVector(sin_theta, mu, 0.0f);
+            sg_copy.Rd = -omega_o;
+
+            // i: roughness in range [0, 1]
+            float r = float(i) / float(lut_resolution_i - 1);
+            auto idx = j * lut_resolution_i + i;
+            auto bsdf_mf =
+                AiMicrofacetBSDF(&sg_copy, AI_RGB_WHITE, AI_MICROFACET_GGX,
+                                 sg_copy.Nf, &U, 0.0f, r, r);
+            auto mtd = AiBSDFGetMethods(bsdf_mf);
+            mtd->Init(&sg_copy, bsdf_mf);
+            double result = 0.0f;
+            int samples = 1000;
+            for (int x = 0; x < samples; ++x) {
+                for (int y = 0; y < samples; ++y) {
+                    float xx = float(x) / float(samples);
+                    float yy = float(y) / float(samples);
+                    AtVectorDv out_wi;
+                    int out_lobe_index;
+                    AtBSDFLobeSample lobe_sample;
+                    auto lobe_mask =
+                        mtd->Sample(bsdf_mf, AtVector(xx, yy, 0), 550, 0x1,
+                                    true, out_wi, out_lobe_index, &lobe_sample);
+                    if (lobe_mask != AI_BSDF_LOBE_MASK_NONE) {
+                        float k_r = a2::fresnel(a2::dot(out_wi.val, sg->Nf),
+                                                1.0f / ior);
+                        result += k_r;
+                    }
+                }
+            }
+            result /= double(samples * samples);
+            return result;
+        };
+
+        auto lut_ggx_roughness_mu_ior = a2::LUT3D<float>(
+            fun_ggx_roughness_mu_ior, a2::Dimension{RES, 0.0f, 1.0f, true},
+            a2::Dimension{RES, 0.0f, 1.0f, false},
+            a2::Dimension{RES, 3.0f, 1.0f, false});
+        write(lut_ggx_roughness_mu_ior, "ggx_F");
+
         display = AI_RGB_GREEN;
     }
 

@@ -1,10 +1,13 @@
 #include "layer_dielectric.hpp"
+#include "lut_ggx_F.hpp"
 #include <new>
 #include <spdlog/fmt/ostr.h>
 
 AI_BSDF_EXPORT_METHODS(A2LayerDielectricMtd);
 
 namespace a2 {
+
+auto lut_ggx_F = get_lut_ggx_F();
 
 auto LayerDielectric::create(AtShaderGlobals* sg, AtVector N, AtVector U,
                              float medium_ior, float ior, float rx, float ry)
@@ -16,10 +19,11 @@ auto LayerDielectric::create(AtShaderGlobals* sg, AtVector N, AtVector U,
     auto mr = AiBSDFMinRoughness(sg);
     rx = std::max(mr, rx);
     ry = std::max(mr, ry);
+    lyr->_roughness = std::min(rx, ry);
     lyr->_refl = create_microfacet_dielectric(sg, AtRGB(1), N, U, medium_ior,
                                               ior, rx, ry);
-    lyr->_refr = BsdfMicrofacetRefraction::create(sg, AtRGB(1), N, U,
-                                                  medium_ior, ior, rx, ry);
+    lyr->_refr = BsdfMicrofacetRefraction::create(
+        sg, AtRGB(1), N, U, medium_ior, ior, rx, ry, false);
     lyr->_arnold_bsdf = bsdf;
     return lyr;
 }
@@ -49,6 +53,7 @@ auto LayerDielectric::sample(const AtVector u, const float wavelength,
     float kr_avg = fresnel(mu_o, eta);
 
     AtRGB k_r, k_t;
+    AtBSDFLobeMask out_lobe_mask = AI_BSDF_LOBE_MASK_NONE;
 
     if (_sg->bounces > 100) {
         if (_sampled_lobe == -1) {
@@ -66,7 +71,6 @@ auto LayerDielectric::sample(const AtVector u, const float wavelength,
 
         if (lobe_mask & (1 << _sampled_lobe)) {
 
-            AtBSDFLobeMask out_lobe_mask;
             if (lobe_mask & (1 << 0)) {
                 AtBSDFLobeSample tmp_out_lobes[1];
                 out_lobe_mask =
@@ -82,21 +86,25 @@ auto LayerDielectric::sample(const AtVector u, const float wavelength,
                 out_lobes[1] = tmp_out_lobes[0];
                 out_lobe_index = 1;
             }
-            return 1 << out_lobe_index;
+            return out_lobe_mask;
         } else {
             return AI_BSDF_LOBE_MASK_NONE;
         }
     } else {
 
-        AtBSDFLobeMask out_lobe_mask;
         if (lobe_mask & (1 << 0)) {
             AtBSDFLobeSample tmp_out_lobes[1];
             out_lobe_mask =
                 _refl->sample(u, wavelength, lobe_mask, need_pdf, out_wi,
                               out_lobe_index, tmp_out_lobes, k_r, k_t);
-            // tmp_out_lobes[0].weight /= _p_c;
+            if (out_lobe_mask != AI_BSDF_LOBE_MASK_NONE) {
+                out_lobe_mask = (1 << 0);
+            }
+            auto mu = fabsf(dot(_sg->N, _omega_o));
+            k_r = lut_ggx_F->lookup(_roughness, 1.0f - mu, 1.5f);
+            a2assert(is_finite(k_r), "k_r was not finite: {}", k_r);
+            a2assert(is_positive(k_r), "k_r was not positive: {}", k_r);
             tmp_out_lobes[0].weight *= k_r;
-            // tmp_out_lobes[0].pdf *= _p_c;
             out_lobes[0] = tmp_out_lobes[0];
             out_lobe_index = 0;
         } else {
@@ -104,17 +112,21 @@ auto LayerDielectric::sample(const AtVector u, const float wavelength,
             out_lobe_mask =
                 _refr->sample(u, wavelength, lobe_mask, need_pdf, out_wi,
                               out_lobe_index, tmp_out_lobes, k_r, k_t);
+            if (out_lobe_mask != AI_BSDF_LOBE_MASK_NONE) {
+                out_lobe_mask = (1 << 1);
+            }
             auto H = AiV3Normalize(out_wi.val + _omega_o);
             auto mu = fabsf(dot(_sg->N, _omega_o));
-            k_t = _refl->f_t(mu);
-            // tmp_out_lobes[0].weight /= _p_c;
+            k_t = 1.0f - lut_ggx_F->lookup(_roughness, 1.0f - mu, 1.5f);
+            a2assert(is_finite(k_t), "k_t was not finite: {}", k_t);
+            a2assert(is_positive(k_t), "k_t was not positive: {}", k_t);
             tmp_out_lobes[0].weight *= k_t;
-            // tmp_out_lobes[0].pdf *= _p_c;
             out_lobes[1] = tmp_out_lobes[0];
             out_lobe_index = 1;
         }
-        return 1 << out_lobe_index;
     }
+
+    return out_lobe_mask;
 }
 auto LayerDielectric::eval(const AtVector& wi, const AtBSDFLobeMask lobe_mask,
                            const bool need_pdf, AtBSDFLobeSample out_lobes[],
@@ -161,17 +173,33 @@ auto LayerDielectric::eval(const AtVector& wi, const AtBSDFLobeMask lobe_mask,
 
     AtBSDFLobeMask out_lobe_mask = AI_BSDF_LOBE_MASK_NONE;
     AtBSDFLobeSample tmp_out_lobes[1];
-    if ((lobe_mask & (1 << 0)) &&
-        _refl->eval(wi, lobe_mask, need_pdf, tmp_out_lobes, k_r, k_t)) {
-        tmp_out_lobes[0].weight *= k_r;
-        out_lobes[0] = tmp_out_lobes[0];
-        out_lobe_mask |= 1 << 0;
+    if ((lobe_mask & (1 << 0))) {
+        if (_refl->eval(wi, lobe_mask, need_pdf, tmp_out_lobes, k_r, k_t) !=
+            AI_BSDF_LOBE_MASK_NONE) {
+            auto mu = fabsf(dot(_sg->N, _omega_o));
+            k_r = lut_ggx_F->lookup(_roughness, 1.0f - mu, 1.5f);
+            a2assert(is_finite(k_r), "k_r was not finite: {}", k_r);
+            a2assert(is_positive(k_r), "k_r was not positive: {}", k_r);
+            tmp_out_lobes[0].weight *= k_r;
+            out_lobes[0] = tmp_out_lobes[0];
+            out_lobe_mask |= 1 << 0;
+        } else {
+            out_lobe_mask &= ~(1 << 0);
+        }
     }
-    if ((lobe_mask & (1 << 1)) &&
-        _refr->eval(wi, lobe_mask, need_pdf, tmp_out_lobes, k_r, k_t)) {
-        tmp_out_lobes[0].weight *= k_t;
-        out_lobes[1] = tmp_out_lobes[0];
-        out_lobe_mask |= 1 << 1;
+    if ((lobe_mask & (1 << 1))) {
+        if (_refr->eval(wi, lobe_mask, need_pdf, tmp_out_lobes, k_r, k_t) !=
+            AI_BSDF_LOBE_MASK_NONE) {
+            auto mu = fabsf(dot(_sg->N, _omega_o));
+            k_r = lut_ggx_F->lookup(_roughness, 1.0f - mu, 1.5f);
+            a2assert(is_finite(k_r), "k_r was not finite: {}", k_r);
+            a2assert(is_positive(k_r), "k_r was not positive: {}", k_r);
+            tmp_out_lobes[0].weight *= (1.0f - k_r);
+            out_lobes[1] = tmp_out_lobes[0];
+            out_lobe_mask |= 1 << 1;
+        } else {
+            out_lobe_mask &= ~(1 << 1);
+        }
     }
     return out_lobe_mask;
 }
