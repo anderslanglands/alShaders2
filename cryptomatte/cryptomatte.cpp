@@ -155,7 +155,7 @@ void get_clean_object_name(const char *obj_full_name, char obj_name_out[MAX_STRI
     bool preempt_object_name = false;
 
     // C4DtoA: c4d|obj_hierarchy|...
-    if (strstr(nsp_name, "c4d|") == nsp_name) {
+    if (strncmp(nsp_name, "c4d|", 4) == 0) {
         // Chop first element
         char *nsp = nsp_name + 4;
         memmove(obj_name_out, nsp, strlen(nsp));
@@ -218,7 +218,7 @@ void get_clean_material_name(const char *mat_full_name, char mat_name_out[MAX_ST
     safe_copy_to_buffer(mat_name_out, mat_full_name);
 
     // C4DtoA: c4d|mat_name|root_node_name
-    if (strstr(mat_name_out, "c4d|") == mat_name_out) {
+    if (strncmp(mat_name_out, "c4d|", 4) == 0) {
         // Chop first element
         char *str_cut = mat_name_out + 4;
         // Snip second element
