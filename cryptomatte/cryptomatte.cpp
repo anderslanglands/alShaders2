@@ -41,6 +41,7 @@ static const AtString CRYPTO_MATERIAL_OFFSET_UDATA("crypto_material_offset");
 
 // Some static AtStrings to cache
 const static AtString aStr_shader("shader");
+const static AtString aStr_listAggregate("list_aggregate");
 
 unsigned char g_pointcloud_instance_verbosity = 0;  // to do: remove this.
 
@@ -965,9 +966,8 @@ private:
             if (!node)
                 continue;
 
-            // skip the root node
-            static const AtString listAggregate("list_aggregate");
-            if (AiNodeIs(node, listAggregate) && !strcmp(AiNodeGetName(node), "root"))
+            // skip any list aggregate nodes
+            if (AiNodeIs(node, aStr_listAggregate))
                 continue;
 
             char nsp_name[MAX_STRING_LENGTH] = "";
