@@ -494,7 +494,7 @@ bool check_driver(AtNode *driver) {
     return driver != NULL && AiNodeIs(driver, AtString("driver_exr"));
 }
 
-void write_metadata_to_driver(AtNode * driver, AtString cryptomatte_name, manf_map_t *map, std::string sidecar_manif_file) {
+void write_metadata_to_driver(AtNode *driver, AtString cryptomatte_name, manf_map_t *map, std::string sidecar_manif_file) {
     if (!check_driver(driver))
         return;
 
@@ -534,7 +534,7 @@ void write_metadata_to_driver(AtNode * driver, AtString cryptomatte_name, manf_m
     AiArraySetStr(combined_md, orig_num_entries + 2, metadata_conv.c_str());
     AiArraySetStr(combined_md, orig_num_entries + 3, metadata_name.c_str());
 
-    AiNodeSetArray( driver, "custom_attributes", combined_md);
+    AiNodeSetArray(driver, "custom_attributes", combined_md);
 }
 
 
@@ -544,7 +544,7 @@ bool metadata_needed(AtNode* driver, const AtString aov_name) {
 }
 
 
-void metadata_set_unneeded(AtNode* driver, const AtString aov_name) {
+void metadata_set_unneeded(AtNode *driver, const AtString aov_name) {
     if (driver == NULL)
         return;
     std::string flag = std::string(CRYPTOMATTE_METADATA_SET_FLAG) + aov_name.c_str();
