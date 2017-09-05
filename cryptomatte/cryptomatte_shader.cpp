@@ -60,7 +60,8 @@ node_update
    CryptomatteData *data = (CryptomatteData*) AiNodeGetLocalData(node);
 
    CryptomatteData_set_option_sidecar_manifests(data, AiNodeGetBool(node, "sidecar_manifests"));
-   CryptomatteData_set_option_depth(data, AiNodeGetInt(node, "cryptomatte_depth"));
+   CryptomatteData_set_option_channels(data, AiNodeGetInt(node, "cryptomatte_depth"), 
+                                       CRYPTO_PREVIEWINEXR_DEFAULT);
    CryptomatteData_set_option_namespace_stripping(data, AiNodeGetBool(node, "strip_obj_namespaces"), 
                                                   AiNodeGetBool(node, "strip_mat_namespaces"));
 

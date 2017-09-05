@@ -69,6 +69,7 @@ How to add cryptomatte to a shader:
 #define CRYPTO_STRIPMATNS_DEFAULT true
 #define CRYPTO_ICEPCLOUDVERB_DEFAULT 1
 #define CRYPTO_SIDECARMANIFESTS_DEFAULT false
+#define CRYPTO_PREVIEWINEXR_DEFAULT true
 
 
 
@@ -85,7 +86,7 @@ void CryptomatteData_setup_all(CryptomatteData *data, const AtString aov_cryptoa
                                const AtString aov_cryptoobject, const AtString aov_cryptomaterial,
                                AtArray *uc_aov_array, AtArray *uc_src_array);
 void CryptomatteData_set_option_sidecar_manifests(CryptomatteData *data, bool sidecar);
-void CryptomatteData_set_option_depth(CryptomatteData *data, int depth);
+void CryptomatteData_set_option_channels(CryptomatteData *data, int depth, bool previewchannels);
 void CryptomatteData_set_option_namespace_stripping(CryptomatteData *data, bool strip_obj, bool strip_mat);
 void CryptomatteData_set_option_ice_pcloud_verbosity(CryptomatteData *data, int verbosity);
 void CryptomatteData_set_manifest_sidecar(CryptomatteData *data, bool sidecar);

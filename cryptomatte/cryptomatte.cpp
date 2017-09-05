@@ -664,6 +664,7 @@ struct CryptomatteData {
     // User options. 
     uint8_t option_depth;
     uint8_t option_aov_depth;
+    bool    option_preview_channels;
     bool    option_strip_obj_ns;
     bool    option_strip_mat_ns;
     uint8_t option_pcloud_ice_verbosity;
@@ -684,7 +685,7 @@ public:
         this->aov_array_cryptomaterial = NULL;
         this->user_cryptomattes = UserCryptomattes();
         init_cryptomatte_cache();
-        this->set_option_depth(CRYPTO_DEPTH_DEFAULT);
+        this->set_option_channels(CRYPTO_DEPTH_DEFAULT, CRYPTO_PREVIEWINEXR_DEFAULT);
         this->set_option_namespace_stripping(CRYPTO_STRIPOBJNS_DEFAULT, CRYPTO_STRIPMATNS_DEFAULT);
         this->set_option_ice_pcloud_verbosity(CRYPTO_ICEPCLOUDVERB_DEFAULT);
     }
@@ -701,9 +702,10 @@ public:
         this->setup_cryptomatte_nodes();
     }
 
-    void set_option_depth(int depth) {
+    void set_option_channels(int depth, bool previewchannels) {
         depth = std::min(std::max(depth, 1), MAX_CRYPTOMATTE_DEPTH);
         this->option_depth = depth;
+        this->option_preview_channels = previewchannels;
         if ( this->option_depth % 2 == 0 )
             this->option_aov_depth = this->option_depth/2;
         else
@@ -752,11 +754,13 @@ private:
         if (this->aov_array_cryptomaterial)
             write_array_of_AOVs(sg, this->aov_array_cryptomaterial, mat_hash_clr.r);
         
-        nsp_hash_clr.r = obj_hash_clr.r = mat_hash_clr.r = 0.0f;
+        if (this->option_preview_channels) {
+            nsp_hash_clr.r = obj_hash_clr.r = mat_hash_clr.r = 0.0f;
 
-        AiAOVSetRGBA(sg, this->aov_cryptoasset, nsp_hash_clr);      
-        AiAOVSetRGBA(sg, this->aov_cryptoobject, obj_hash_clr);
-        AiAOVSetRGBA(sg, this->aov_cryptomaterial, mat_hash_clr);
+            AiAOVSetRGBA(sg, this->aov_cryptoasset, nsp_hash_clr);      
+            AiAOVSetRGBA(sg, this->aov_cryptoobject, obj_hash_clr);
+            AiAOVSetRGBA(sg, this->aov_cryptomaterial, mat_hash_clr);
+        }
     }
 
     void do_user_cryptomattes(AtShaderGlobals * sg ) {
@@ -773,7 +777,10 @@ private:
                     hash_name_rgb(result.c_str(), &hash);
 
                 write_array_of_AOVs(sg, aovArray, hash.r);
-                AiAOVSetRGBA(sg, aov_name, hash);
+                if (this->option_preview_channels) {
+                    hash.r = 0.0f;
+                    AiAOVSetRGBA(sg, aov_name, hash);
+                }
             }
         }
     }
@@ -1115,7 +1122,6 @@ private:
         if (this->user_cryptomattes.count == 0 || drivers_vv.size() == 0)
             return;
 
-
         const clock_t metadata_start_time = clock();
         std::vector<bool> do_metadata;
         do_metadata.resize(this->user_cryptomattes.count);
@@ -1301,8 +1307,8 @@ void CryptomatteData_setup_all(CryptomatteData *data, const AtString aov_cryptoa
                                AtArray *uc_aov_array, AtArray *uc_src_array) {
     data->setup_all(aov_cryptoasset, aov_cryptoobject, aov_cryptomaterial, uc_aov_array, uc_src_array);
 }
-void CryptomatteData_set_option_depth(CryptomatteData *data, int depth) {
-    data->set_option_depth(depth);
+void CryptomatteData_set_option_channels(CryptomatteData *data, int depth, bool previewchannels) {
+    data->set_option_channels(depth, previewchannels);
 }
 void CryptomatteData_set_option_namespace_stripping(CryptomatteData *data, bool strip_obj, bool strip_mat) {
     data->set_option_namespace_stripping(strip_obj, strip_mat);
