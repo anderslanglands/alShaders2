@@ -8,6 +8,7 @@ ui.shader({
    'maya_name': 'cryptomatte',
    'maya_classification': 'utility/aov',
    'maya_id':'0x00116422',
+   'aov_shader': True,
    'maya_swatch': False,
    'maya_matte': False,
    'maya_bump': False,

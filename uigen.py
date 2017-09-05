@@ -154,6 +154,7 @@ class ShaderDef:
    intro = None
    description = None
    output = None
+   aov_shader = False
    c4d_classification = None
    c4d_menu = None
    c4d_command_id = None
@@ -236,6 +237,7 @@ class ShaderDef:
       self.intro = d['intro']
       self.description = d['description']
       self.output = d['output']
+      self.aov_shader = d.get('aov_shader')
       self.c4d_classification = d.get('c4d_classification')
       self.c4d_menu = d.get('c4d_menu')
       self.c4d_command_id = d.get('c4d_command_id')
@@ -858,6 +860,7 @@ def WriteHoudiniHeader(sd, f):
 def WriteMDTHeader(sd, f): 
    writei(f, '[node %s]' % sd.name, 0)
    writei(f, 'desc STRING "%s"' % sd.description, 1)
+   if sd.aov_shader: WriteMTDParam(f, 'aov_shader', 'bool', sd.aov_shader, 1)
    if sd.c4d_classification: writei(f, 'c4d.classification STRING "%s"' % sd.c4d_classification, 1)
    if sd.c4d_menu: writei(f, 'c4d.menu STRING "%s"' % sd.c4d_menu, 1)
    if sd.c4d_command_id: writei(f, 'c4d.command_id INT %s' % sd.c4d_command_id, 1)
