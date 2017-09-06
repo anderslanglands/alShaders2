@@ -1,6 +1,6 @@
-00:00:00    36MB         | log started Wed Sep  6 13:49:16 2017
+00:00:00    36MB         | log started Wed Sep  6 16:26:12 2017
 00:00:00    36MB         | Arnold 5.0.1.0 [8ea063c7] windows icc-17.0.2 oiio-1.7.15 osl-1.9.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.2.2 2017/06/27 18:48:44
-00:00:00    36MB         | running on NYMPC144, pid=13700
+00:00:00    36MB         | running on NYMPC144, pid=23712
 00:00:00    36MB         |  2 x Intel(R) Xeon(R) CPU E5-2640 0 @ 2.50GHz (12 cores, 24 logical) with 32743MB
 00:00:00    36MB         |  Windows 8 Professional (version 6.2, build 9200)
 00:00:00    36MB         |  soft limit for open files raised from 512 to 2048
@@ -11,7 +11,7 @@
 00:00:00    36MB         | loading plugins from . ...
 00:00:00    36MB         | no plugins loaded
 00:00:00    37MB         | [ass] loading 01_htoa_instances.ass ...
-00:00:00    37MB         | [ass] read 229146 bytes, 428 nodes in 0:00.01
+00:00:00    37MB         | [ass] read 229123 bytes, 428 nodes in 0:00.01
 00:00:00    37MB         |  
 00:00:00    37MB WARNING | [rlm] skip_license_check enabled
 00:00:00    37MB         | [color_manager] rendering color space is "linear" with declared chromaticities:
@@ -36,7 +36,7 @@
 00:00:00    52MB         |       1 list_aggregate
 00:00:00    52MB         |       1 cryptomatte
 00:00:00    52MB         |  
-00:00:00    52MB         | rendering image at 128 x 128, 8 AA samples
+00:00:00    52MB         | rendering image at 128 x 128, 6 AA samples
 00:00:00    52MB         |   AA sample clamp   <disabled>
 00:00:00    52MB         |   diffuse           <disabled by depth>
 00:00:00    52MB         |   specular          <disabled by depth>
@@ -73,14 +73,14 @@
 00:00:00    53MB         |  [aov]  * "crypto_material02" of type FLOAT filtered by "crypto_material_filter02" (cryptomatte_filter)
 00:00:00    53MB         |  [aov] done preparing 18 AOVs for 16 outputs to 1 driver (11 deep AOVs)
 00:00:00    53MB         |  starting 2 bucket workers of size 64x64 ...
-00:00:00   156MB         |   [skydome_light] /obj/arnold_skydome_light1: 1000x1000 importance map done in 0:00.13, average energy 0.121857
-00:00:03   194MB         |    25% done - 225 rays/pixel
-00:00:04   194MB         |    50% done - 344 rays/pixel
-00:00:08   195MB         |    75% done - 257 rays/pixel
-00:00:08   195MB         |   100% done - 0 rays/pixel
-00:00:08    67MB         |  bucket workers done in 0:08.72
-00:00:08    67MB         |  [driver_exr] writing file `01_result/result.exr'
-00:00:08    63MB         | render done
-00:00:08    63MB         |  
-00:00:08    63MB         | releasing resources
-00:00:08    38MB         | Arnold shutdown
+00:00:00   116MB         |   [skydome_light] /obj/arnold_skydome_light1: 1000x1000 importance map done in 0:00.13, average energy 0.121857
+00:00:02   139MB         |    25% done - 127 rays/pixel
+00:00:02   139MB         |    50% done - 193 rays/pixel
+00:00:04   139MB         |    75% done - 144 rays/pixel
+00:00:05   139MB         |   100% done - 0 rays/pixel
+00:00:05    67MB         |  bucket workers done in 0:05.19
+00:00:05    67MB         |  [driver_exr] writing file `01_result/result.exr'
+00:00:05    63MB         | render done
+00:00:05    63MB         |  
+00:00:05    63MB         | releasing resources
+00:00:05    37MB         | Arnold shutdown

@@ -131,7 +131,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 
     def assertCryptomattePixelsMatch(self,
                                      rms_tolerance=0.01,
-                                     big_diff_pixel_count_tolerance=4,
+                                     very_different_num_tolerance=4,
                                      print_result=False):
         """ 
         Tests pixels match in terms of coverage per ID. Normal image diff doesn't work here with any
@@ -146,7 +146,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
                 for x, y, in ch_pair_idxs if (x != 0.0 or y != 0.0)
             }
 
-        big_dif_tolerance = 0.3,
+        big_dif_tolerance = 0.3
 
         for result_img, correct_img in self.result_images:
             result_nested_md = self.sorted_cryptomatte_metadata(result_img)
@@ -183,12 +183,12 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
             if print_result:
                 print(self.id(), "Root mean square error: ", rms,
                       "Number of very different pixels: ", very_different_count)
+
+            self.assertTrue(very_different_count < very_different_num_tolerance,
+                            "%s matte pixels were very different (max tolerated: %s). " %
+                            (very_different_count, very_different_num_tolerance))
             self.assertTrue(rms < 0.01,
                             "Root mean square error was greater than %s. " % rms_tolerance)
-
-            self.assertTrue(very_different_count < big_diff_pixel_count_tolerance,
-                            "%s matte pixels were very different (max tolerated: %s). " %
-                            (very_different_count, big_diff_pixel_count_tolerance))
 
 
 #############################################
@@ -207,4 +207,3 @@ class CryptomatteTest01(CryptomatteTestBase):
 
     def test_cryptomatte_pixels(self):
         self.assertCryptomattePixelsMatch(print_result=True)
-

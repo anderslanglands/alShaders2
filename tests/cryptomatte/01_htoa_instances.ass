@@ -23,7 +23,6 @@
 options
 {
  AA_samples 6
- AA_seed 125
  outputs 7 1 STRING
   "/obj/cam1 RGBA RGBA /out/arnold1:gaussian_filter /out/arnold1:exr:cam1"
   "/obj/cam1 Cd RGB /out/arnold1:gaussian_filter /out/arnold1:exr:cam1"
@@ -216,6 +215,7 @@ M/iTOM/iTO8Fc2*M/iTOM/iTO8Fc2*M/iTOM/iTO8Fc2*zz8Fc2*M/iTOM/iTOaRSbUM/iTOzaRSbUM/
  declare Cd constant RGB
  Cd 0.742347956 0.778341174 0.356052876
  declare crypto_asset constant STRING
+ crypto_asset "toroidal_asset"
  declare instance constant STRING
  instance "/obj/box"
  declare pscale constant FLOAT
@@ -7836,8 +7836,6 @@ ginstance
  declare Cd constant RGB
  Cd 0.000187277794 0.2107445 0.520857334
 
- declare crypto_asset_offset constant INT
- crypto_asset_offset 277
  declare crypto_object_offset constant INT
  crypto_object_offset 90210
  declare crypto_material_offset constant INT
