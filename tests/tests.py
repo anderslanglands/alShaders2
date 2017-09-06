@@ -366,12 +366,12 @@ def run_tests(test_cases, id_filter=""):
     suite.run(result)
     print "---------"
     for test_instance, traceback in result.failures:
-        print "%s Failed: " % type(test_instance).__name__, find_test_method(traceback)
+        print "Failed: %s.%s" % (type(test_instance).__name__, find_test_method(traceback))
         print
         print traceback
         print "---------"
     for test_instance, traceback in result.errors:
-        print "%s Error: " % type(test_instance).__name__, find_test_method(traceback)
+        print "Error: %s.%s" % (type(test_instance).__name__, find_test_method(traceback))
         print
         print traceback
         print "---------"

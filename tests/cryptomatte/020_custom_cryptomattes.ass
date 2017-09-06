@@ -174,6 +174,20 @@ zz7m>0sz8%v5Iz8.1k0z83Y9tz89+]cz8;io[z8>S,Rz8A<>Jz8D%PBzyzz!7m>0s$$$$'8%v5I7m>0s
  volume_padding 0
  declare mtoa_shading_groups constant ARRAY NODE
  mtoa_shading_groups "transparentGroundSG"
+ declare custom_data_asset constant STRING
+ custom_data_asset "transp_grids_asset"
+ declare custom_data_object constant STRING
+ custom_data_object "foggy_obj"
+ declare custom_data_material constant STRING
+ custom_data_material "material_of_densitny (sic)"
+
+ declare custom_data_asset_offset constant UINT
+ custom_data_asset_offset 888
+ declare custom_data_object_offset constant UINT
+ custom_data_object_offset 999
+ declare custom_data_material_offset constant UINT
+ custom_data_material_offset 101010
+
 }
 
 polymesh
@@ -327,9 +341,9 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
  smoothing on
  step_size 0
  volume_padding 0
- declare crypto_asset_offset UNIFORM INT
- crypto_asset_offset 6 1 INT
-0 111 222 333 444 555
+ declare custom_data_asset UNIFORM STRING
+ custom_data_asset 6 1 STRING
+"0" "111" "222" "333" "444" "555"
  declare mtoa_shading_groups constant ARRAY NODE
  mtoa_shading_groups 2 1 NODE
 "boringStandardSG" "topsSG"

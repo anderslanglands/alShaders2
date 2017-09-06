@@ -1,4 +1,5 @@
 import argparse
+import sys
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
@@ -13,4 +14,5 @@ args = parser.parse_args()
 
 if __name__ == '__main__':
     import tests
-    tests.run_arnold_tests(args.filter)
+    if tests.run_arnold_tests(args.filter):  # means it returned the results, i.e. failure
+        sys.exit()

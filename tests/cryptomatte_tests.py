@@ -207,14 +207,13 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 # Cryptomatte test cases themselves
 #############################################
 
-
 class Cryptomatte000(CryptomatteTestBase):
     """
     A typical Mtoa configuration, (except with mayaShadingEngines removed)
     Some face assignments, some opacity, namespaces, some default namespaces, some 
-    overrides on namespaces
+    overrides on namespaces. 
 
-    Tests the following systems:
+    Settings:
         naming style: maya
         exr: single
         manifest: embedded
@@ -222,6 +221,7 @@ class Cryptomatte000(CryptomatteTestBase):
         overrides:
             Some face assignments
             crypto_asset_override
+            per-face crypto_object_override
     """
     ass = "cryptomatte/000_mtoa_basic.ass"
 
@@ -255,7 +255,7 @@ class Cryptomatte010(CryptomatteTestBase):
     """
     Lots of instances, in a typical HtoA configuration. 
 
-    Tests the following systems:
+    Settings:
         naming style: houdini
         exr: multi
         manifest: embedded
@@ -279,17 +279,15 @@ class Cryptomatte010(CryptomatteTestBase):
 
 class Cryptomatte020(CryptomatteTestBase):
     """
-    Lots of instances, in a typical HtoA configuration. 
+    Has some custom cryptomattes. Some objects have values set, others do not. 
+    Some per-face user data as well. 
 
-    Tests the following systems:
-        naming style: houdini
-        exr: multi
+    Settings:
+        naming style: maya
+        exr: single
         manifest: embedded
-        strip namespaces: off
-        overrides:
-            crypto_asset on instances and instance masters
-            crypto_object_offset on instance masters
-            crypto_material_offset on instance masters
+        strip namespaces: N/A
+    Something has strings per polygon.
     """
     ass = "cryptomatte/020_custom_cryptomattes.ass"
 

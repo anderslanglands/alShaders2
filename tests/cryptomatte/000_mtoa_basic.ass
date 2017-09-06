@@ -316,6 +316,9 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
  declare crypto_asset_offset UNIFORM INT
  crypto_asset_offset 6 1 INT
 0 111 222 333 444 555
+ declare crypto_object UNIFORM STRING
+ crypto_object 6 1 STRING
+"face! 0" "face! 111" "face! 222" "face! 333" "face! 444" "face! 555"
  declare mtoa_shading_groups constant ARRAY NODE
  mtoa_shading_groups 2 1 NODE
 "boringStandardSG" "topsSG"

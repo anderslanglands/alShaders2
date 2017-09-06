@@ -1,17 +1,17 @@
-00:00:00    36MB         | log started Wed Sep  6 18:55:57 2017
+00:00:00    36MB         | log started Wed Sep  6 19:22:13 2017
 00:00:00    36MB         | Arnold 5.0.1.0 [8ea063c7] windows icc-17.0.2 oiio-1.7.15 osl-1.9.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.2.2 2017/06/27 18:48:44
-00:00:00    36MB         | running on NYMPC144, pid=21680
+00:00:00    36MB         | running on NYMPC144, pid=24408
 00:00:00    36MB         |  2 x Intel(R) Xeon(R) CPU E5-2640 0 @ 2.50GHz (12 cores, 24 logical) with 32743MB
 00:00:00    36MB         |  Windows 8 Professional (version 6.2, build 9200)
 00:00:00    36MB         |  soft limit for open files raised from 512 to 2048
 00:00:00    36MB         |  
 00:00:00    36MB         | loading plugins from C:\Users\jfriedman\development\arnold\alshaders2\build\dist\2.0.0\ai\bin ...
-00:00:00    36MB         | loaded 3 plugins from 1 lib(s) in 0:00.01
+00:00:00    36MB         | loaded 3 plugins from 1 lib(s) in 0:00.00
 00:00:00    36MB         | [kick] command: kick -v 2 -t 2 -dp -dw -sl -logfile c:\Users\jfriedman\development\arnold\alshaders2\tests\cryptomatte\020_result\log.txt 020_custom_cryptomattes.ass
 00:00:00    36MB         | loading plugins from . ...
 00:00:00    36MB         | no plugins loaded
 00:00:00    37MB         | [ass] loading 020_custom_cryptomattes.ass ...
-00:00:00    37MB         | [ass] read 31061 bytes, 23 nodes in 0:00.00
+00:00:00    37MB         | [ass] read 31578 bytes, 23 nodes in 0:00.00
 00:00:00    37MB         |  
 00:00:00    37MB WARNING | [rlm] skip_license_check enabled
 00:00:00    37MB         | [color_manager] rendering color space is "linear" with declared chromaticities:
@@ -30,9 +30,9 @@
 00:00:00    51MB         |  
 00:00:00    51MB         | rendering image at 128 x 128, 6 AA samples
 00:00:00    51MB         |   AA sample clamp   <disabled>
-00:00:00    51MB         |   diffuse           samples  2 / depth  1
-00:00:00    51MB         |   specular          samples  2 / depth  1
-00:00:00    51MB         |   transmission      samples  2 / depth  8
+00:00:00    51MB         |   diffuse           <disabled by depth>
+00:00:00    51MB         |   specular          <disabled by depth>
+00:00:00    51MB         |   transmission      <disabled by depth>
 00:00:00    51MB         |   volume indirect   <disabled by depth>
 00:00:00    51MB         |   total                          depth 10
 00:00:00    51MB         |   bssrdf            samples  2
@@ -49,35 +49,35 @@
 00:00:00    52MB         |  node update done in 0:00.00 (single-threaded)
 00:00:00    52MB         |  [color_manager] no color manager is active
 00:00:00    52MB         |  [aov] parsing 13 output statements ...
-00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.custom_crypto_material" (driver_exr)
-00:00:00    52MB         |  [aov]  * "my_crypto_material" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
-00:00:00    52MB         |  [aov]  * "my_crypto_material00" of type FLOAT filtered by "my_crypto_material_filter00" (cryptomatte_filter)
-00:00:00    52MB         |  [aov]  * "my_crypto_material01" of type FLOAT filtered by "my_crypto_material_filter01" (cryptomatte_filter)
-00:00:00    52MB         |  [aov]  * "my_crypto_material02" of type FLOAT filtered by "my_crypto_material_filter02" (cryptomatte_filter)
+00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.RGBA" (driver_exr)
+00:00:00    52MB         |  [aov]  * "RGBA" of type RGBA filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
 00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.custom_crypto_object" (driver_exr)
 00:00:00    52MB         |  [aov]  * "my_crypto_object" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
 00:00:00    52MB         |  [aov]  * "my_crypto_object00" of type FLOAT filtered by "my_crypto_object_filter00" (cryptomatte_filter)
 00:00:00    52MB         |  [aov]  * "my_crypto_object01" of type FLOAT filtered by "my_crypto_object_filter01" (cryptomatte_filter)
 00:00:00    52MB         |  [aov]  * "my_crypto_object02" of type FLOAT filtered by "my_crypto_object_filter02" (cryptomatte_filter)
+00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.custom_crypto_material" (driver_exr)
+00:00:00    52MB         |  [aov]  * "my_crypto_material" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
+00:00:00    52MB         |  [aov]  * "my_crypto_material00" of type FLOAT filtered by "my_crypto_material_filter00" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * "my_crypto_material01" of type FLOAT filtered by "my_crypto_material_filter01" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * "my_crypto_material02" of type FLOAT filtered by "my_crypto_material_filter02" (cryptomatte_filter)
 00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.custom_crypto_asset" (driver_exr)
 00:00:00    52MB         |  [aov]  * "my_crypto_asset" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
 00:00:00    52MB         |  [aov]  * "my_crypto_asset00" of type FLOAT filtered by "my_crypto_asset_filter00" (cryptomatte_filter)
 00:00:00    52MB         |  [aov]  * "my_crypto_asset01" of type FLOAT filtered by "my_crypto_asset_filter01" (cryptomatte_filter)
 00:00:00    52MB         |  [aov]  * "my_crypto_asset02" of type FLOAT filtered by "my_crypto_asset_filter02" (cryptomatte_filter)
-00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.RGBA" (driver_exr)
-00:00:00    52MB         |  [aov]  * "RGBA" of type RGBA filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
 00:00:00    52MB         |  [aov] done preparing 15 AOVs for 13 outputs to 4 drivers (11 deep AOVs)
 00:00:00    55MB         |  starting 2 bucket workers of size 64x64 ...
-00:00:01   123MB         |    25% done - 140 rays/pixel
-00:00:01   123MB         |    50% done - 0 rays/pixel
-00:00:03   124MB         |    75% done - 146 rays/pixel
-00:00:03   124MB         |   100% done - 0 rays/pixel
-00:00:03    59MB         |  bucket workers done in 0:03.70
-00:00:03    59MB         |  [driver_exr] writing file `020_result/custom_crypto_material.exr'
-00:00:03    56MB         |  [driver_exr] writing file `020_result/custom_crypto_object.exr'
-00:00:03    55MB         |  [driver_exr] writing file `020_result/custom_crypto_asset.exr'
-00:00:03    55MB         |  [driver_exr] writing file `P:/projects/jfriedman2_0001p/sequences/arnoldDev/cryptomatte/lighting/output/beauty/cryptomatte_mtoaBasic_v001.exr'
-00:00:03    55MB         | render done
-00:00:03    55MB         |  
-00:00:03    55MB         | releasing resources
-00:00:03    36MB         | Arnold shutdown
+00:00:00   123MB         |    25% done - 37 rays/pixel
+00:00:00   123MB         |    50% done - 0 rays/pixel
+00:00:01   124MB         |    75% done - 37 rays/pixel
+00:00:01   124MB         |   100% done - 0 rays/pixel
+00:00:01    59MB         |  bucket workers done in 0:01.73
+00:00:01    59MB         |  [driver_exr] writing file `P:/projects/jfriedman2_0001p/sequences/arnoldDev/cryptomatte/lighting/output/beauty/cryptomatte_mtoaBasic_v001.exr'
+00:00:01    59MB         |  [driver_exr] writing file `020_result/custom_crypto_object.exr'
+00:00:01    58MB         |  [driver_exr] writing file `020_result/custom_crypto_material.exr'
+00:00:01    54MB         |  [driver_exr] writing file `020_result/custom_crypto_asset.exr'
+00:00:01    54MB         | render done
+00:00:01    54MB         |  
+00:00:01    54MB         | releasing resources
+00:00:01    36MB         | Arnold shutdown
