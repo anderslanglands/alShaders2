@@ -1025,7 +1025,7 @@ private:
         this->manifs_user_paths = string_vector_vector_t();
     }
 
-    void compile_user_manifests(std::vector<bool> &do_metadata, std::vector<manf_map_t> manf_maps) {
+    void compile_user_manifests(std::vector<bool> &do_metadata, std::vector<manf_map_t> &manf_maps) {
         if (this->user_cryptomattes.count == 0)
             return;
         AtNodeIterator * shape_iterator = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
