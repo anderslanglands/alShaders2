@@ -40,17 +40,18 @@ class KickAndCompareTestCase(unittest.TestCase):
         ass_file_name = os.path.basename(self.ass_file)
         test_dir = os.path.abspath(os.path.dirname(self.ass_file))
 
-        self.result_dir = os.path.join(test_dir, "%s_result" % ass_file_name[:2])
-        self.correct_result_dir = os.path.join(test_dir, "%s_correct" % ass_file_name[:2])
+        self.result_dir = os.path.join(test_dir, "%s_result" % ass_file_name[:3])
+        self.correct_result_dir = os.path.join(test_dir, "%s_correct" % ass_file_name[:3])
         self.result_log = os.path.join(self.result_dir, "log.txt")
         self.correct_file_names = [
             x for x in os.listdir(self.correct_result_dir)
             if os.path.isfile(os.path.join(self.correct_result_dir, x))
         ]
 
-        assert os.path.isfile(self.ass_file), "No test ass file found."
-        assert os.path.isdir(test_dir), "No test dir found."
-        assert os.path.isdir(self.correct_result_dir), "No correct result dir found."
+        assert os.path.isfile(self.ass_file), "No test ass file found. %s" % (self.ass_file)
+        assert os.path.isdir(test_dir), "No test dir found. %s" % (test_dir)
+        assert os.path.isdir(self.correct_result_dir), "No correct result dir found. %s" % (
+            self.correct_result_dir)
 
         # only remove previous results after it's confirmed everything else exists, to
         # mitigate odds we're looking at the wrong dir or something.

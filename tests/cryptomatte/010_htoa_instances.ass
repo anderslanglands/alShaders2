@@ -43,7 +43,7 @@ options
 driver_exr
 {
  name /out/arnold1:exr:cam1
- filename "01_result/result.exr"
+ filename "010_result/result.exr"
  tiled on
 }
 

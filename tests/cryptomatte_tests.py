@@ -5,10 +5,12 @@
 #
 #
 import tests
+import os
+import json
 
 
 def get_all_cryptomatte_tests():
-    return [Cryptomatte00, Cryptomatte01]
+    return [Cryptomatte000, Cryptomatte001, Cryptomatte010]
 
 
 #############################################
@@ -28,10 +30,18 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 
     def cryptomatte_metadata(self, ibuf):
         """Returns dictionary of key, value of cryptomatte metadata"""
-        return {
+        metadata = {
             a.name: a.value
             for a in ibuf.spec().extra_attribs if a.name.startswith("cryptomatte")
         }
+
+        for key in metadata.keys():
+            if key.endswith("/manif_file"):
+                sidecar_path = os.path.join(os.path.dirname(ibuf.name), metadata[key])
+                with open(sidecar_path) as f:
+                    metadata[key.replace("manif_file", "manifest")] = f.read()
+
+        return metadata
 
     def sorted_cryptomatte_metadata(self, img):
         """
@@ -84,7 +94,6 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
         Checks both are parsable with json
         Checks that there are no extra names in either manifest
         """
-        import json
         try:
             correct_manifest = json.loads(correct_md[key])
         except Exception, e:
@@ -119,13 +128,16 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
             for key in result_md:
                 self.assertIn(key, correct_md, "Result has extra metadata key: %s" % key)
 
+            found_manifest = False
             for key in correct_md:
                 if key.endswith("/manifest"):
                     self.assertManifestsAreValidAndMatch(result_md, correct_md, key)
+                    found_manifest = True
                 else:
                     self.assertEqual(correct_md[key], result_md[key],
                                      "Metadata doesn't match: %s vs %s " % (result_md[key],
                                                                             correct_md[key]))
+            self.assertTrue(found_manifest, "No manifest found")
 
     def assertCryptomattePixelsMatch(self,
                                      rms_tolerance=0.01,
@@ -194,7 +206,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 #############################################
 
 
-class Cryptomatte00(CryptomatteTestBase):
+class Cryptomatte000(CryptomatteTestBase):
     """
     A typical Mtoa configuration, (except with mayaShadingEngines removed)
     Some face assignments, some opacity, namespaces, some default namespaces, some 
@@ -209,7 +221,7 @@ class Cryptomatte00(CryptomatteTestBase):
             Some face assignments
             crypto_asset_override
     """
-    ass = "cryptomatte/00_mtoa_basic.ass"
+    ass = "cryptomatte/000_mtoa_basic.ass"
 
     def test_manifests_valid_and_match(self):
         self.assertAllManifestsValidAndMatch()
@@ -221,7 +233,23 @@ class Cryptomatte00(CryptomatteTestBase):
         self.assertCryptomattePixelsMatch(print_result=True)
 
 
-class Cryptomatte01(CryptomatteTestBase):
+class Cryptomatte001(CryptomatteTestBase):
+    """
+    Same as 000, but with sidecar manifests.
+    """
+    ass = "cryptomatte/001_sidecars.ass"
+
+    def test_manifests_valid_and_match(self):
+        self.assertAllManifestsValidAndMatch()
+
+    def test_results_all_present(self):
+        self.assertAllResultFilesPresent()
+
+    def test_cryptomatte_pixels(self):
+        self.assertCryptomattePixelsMatch(print_result=True)
+
+
+class Cryptomatte010(CryptomatteTestBase):
     """
     Lots of instances, in a typical HtoA configuration. 
 
@@ -235,7 +263,7 @@ class Cryptomatte01(CryptomatteTestBase):
             crypto_object_offset on instance masters
             crypto_material_offset on instance masters
     """
-    ass = "cryptomatte/01_htoa_instances.ass"
+    ass = "cryptomatte/010_htoa_instances.ass"
 
     def test_manifests_valid_and_match(self):
         self.assertAllManifestsValidAndMatch()

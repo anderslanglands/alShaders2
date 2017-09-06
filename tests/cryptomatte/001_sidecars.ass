@@ -36,6 +36,7 @@ options
 cryptomatte
 {
  name cryptomatte1
+ sidecar_manifests 1
 }
 
 gaussian_filter
@@ -662,7 +663,7 @@ standard_surface
 driver_exr
 {
  name defaultArnoldDriver@driver_exr.crypto_asset
- filename "00_result/crypto_asset.exr"
+ filename "001_result/crypto_asset.exr"
  compression "zips"
  half_precision on
  tiled off
@@ -675,7 +676,7 @@ driver_exr
 driver_exr
 {
  name defaultArnoldDriver@driver_exr.crypto_material
- filename "00_result/crypto_material.exr"
+ filename "001_result/crypto_material.exr"
  compression "zips"
  half_precision on
  tiled off
@@ -688,7 +689,7 @@ driver_exr
 driver_exr
 {
  name defaultArnoldDriver@driver_exr.crypto_object
- filename "00_result/crypto_object.exr"
+ filename "001_result/crypto_object.exr"
  compression "zips"
  half_precision on
  tiled off
