@@ -48,8 +48,8 @@ class KickAndCompareTestCase(unittest.TestCase):
             if os.path.isfile(os.path.join(self.correct_result_dir, x))
         ]
 
-        assert os.path.isdir(test_dir), "No test dir found."
         assert os.path.isfile(self.ass_file), "No test ass file found."
+        assert os.path.isdir(test_dir), "No test dir found."
         assert os.path.isdir(self.correct_result_dir), "No correct result dir found."
 
         # only remove previous results after it's confirmed everything else exists, to
@@ -356,7 +356,7 @@ def run_tests(test_cases, id_filter=""):
     if id_filter:
         filtered_suite = unittest.TestSuite()
         for test in suite:
-            if fnmatch.fnmatch(test.id(), id_filter):
+            if any(fnmatch.fnmatch(x, id_filter) for x in test.id().split(".")):
                 filtered_suite.addTest(test)
         suite = filtered_suite
 

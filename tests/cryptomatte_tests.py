@@ -8,8 +8,7 @@ import tests
 
 
 def get_all_cryptomatte_tests():
-    """ Returns the list of arnold integration tests (Only run in Arnold)"""
-    return [CryptomatteTest01]
+    return [Cryptomatte00, Cryptomatte01]
 
 
 #############################################
@@ -101,10 +100,9 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 
         extra_in_correct = correct_names - result_names
         extra_in_result = result_names - correct_names
-        if extra_in_correct:
-            self.fail("Missing in result manifest: %s" % extra_in_correct)
-        if extra_in_result:
-            self.fail("Extra in result manifest: %s" % extra_in_result)
+        if extra_in_correct or extra_in_result:
+            self.fail("Missing manifest names: %s, Extra manifest names: %s" % (extra_in_correct,
+                                                                                extra_in_result))
 
     def assertAllManifestsValidAndMatch(self):
         """ 
@@ -196,7 +194,47 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 #############################################
 
 
-class CryptomatteTest01(CryptomatteTestBase):
+class Cryptomatte00(CryptomatteTestBase):
+    """
+    A typical Mtoa configuration, (except with mayaShadingEngines removed)
+    Some face assignments, some opacity, namespaces, some default namespaces, some 
+    overrides on namespaces
+
+    Tests the following systems:
+        naming style: maya
+        exr: single
+        manifest: embedded
+        strip namespaces: on
+        overrides:
+            Some face assignments
+            crypto_asset_override
+    """
+    ass = "cryptomatte/00_mtoa_basic.ass"
+
+    def test_manifests_valid_and_match(self):
+        self.assertAllManifestsValidAndMatch()
+
+    def test_results_all_present(self):
+        self.assertAllResultFilesPresent()
+
+    def test_cryptomatte_pixels(self):
+        self.assertCryptomattePixelsMatch(print_result=True)
+
+
+class Cryptomatte01(CryptomatteTestBase):
+    """
+    Lots of instances, in a typical HtoA configuration. 
+
+    Tests the following systems:
+        naming style: houdini
+        exr: multi
+        manifest: embedded
+        strip namespaces: off
+        overrides:
+            crypto_asset on instances and instance masters
+            crypto_object_offset on instance masters
+            crypto_material_offset on instance masters
+    """
     ass = "cryptomatte/01_htoa_instances.ass"
 
     def test_manifests_valid_and_match(self):

@@ -1,24 +1,17 @@
-### exported: Fri Jul 14 18:05:26 2017
-### from:     Arnold 5.0.1.0 [8ea063c7] darwin clang-4.0.0 oiio-1.7.15 osl-1.9.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.2.2 2017/06/27 17:17:34
-### host app: HtoA 2.0.2.wip, Houdini 16.0.633, user: servanf, scene: /Users/servanf/scenes/htoa/arnold5/cryptomatte_v2, frame: 1.000000, fps: 24.000000
-
-
-
-
 # 
 # This file is a simulation of a HtoA use case:
 #   * Writes a multichannel EXR with Cryptomattes and other AOVs
 #   * Has a number of instances of a torus, sphere and cube, with a couple materials
 #   * Has strip namespaces turned off 
-#   * Crypto_asset user data
+#   * Crypto_asset user data on both instance masters and instances
 #   * /obj/instance1:instances:315 has a offset on its material and object name
 #           Should appear in obj, mat, asset as:
-#           /obj/instance1:instances:315_90210, /shop/mat3/standard_surface1_3, <1.17549435082e-38>
+#           /obj/instance1:instances:315_90210, /shop/mat3/standard_surface1_3, /obj/instance1_277
 #
-#
 
-
-
+### exported: Fri Jul 14 18:05:26 2017
+### from:     Arnold 5.0.1.0 [8ea063c7] darwin clang-4.0.0 oiio-1.7.15 osl-1.9.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.2.2 2017/06/27 17:17:34
+### host app: HtoA 2.0.2.wip, Houdini 16.0.633, user: servanf, scene: /Users/servanf/scenes/htoa/arnold5/cryptomatte_v2, frame: 1.000000, fps: 24.000000
 
 options
 {
