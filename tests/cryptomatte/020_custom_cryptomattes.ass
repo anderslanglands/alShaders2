@@ -35,16 +35,13 @@ options
 
 cryptomatte
 {
- name /shop/aovs/cryptomatte1
- aov_crypto_asset "crypto_asset"
- aov_crypto_object "crypto_object"
- aov_crypto_material "crypto_material"
+ name cryptomatte1
  user_crypto_aov_0 "my_crypto_asset"
  user_crypto_src_0 "custom_data_asset"
- user_crypto_aov_1 ""
- user_crypto_src_1 ""
- user_crypto_aov_2 "my_crypto_material"
- user_crypto_src_2 "custom_data_material"
+ user_crypto_aov_1 "my_crypto_material"
+ user_crypto_src_1 "custom_data_material"
+ user_crypto_aov_2 ""
+ user_crypto_src_2 ""
  user_crypto_aov_3 "my_crypto_object"
  user_crypto_src_3 "custom_data_object"
 }
@@ -134,6 +131,12 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
  volume_padding 0
  declare mtoa_shading_groups constant ARRAY NODE
  mtoa_shading_groups "leftAsset:aiStandardSurface1SG"
+ declare custom_data_asset constant STRING
+ custom_data_asset "cyclodrome"
+ declare custom_data_object constant STRING
+ custom_data_object "cyclobject"
+ declare custom_data_material constant STRING
+ custom_data_material "cyclomat"
 }
 
 polymesh

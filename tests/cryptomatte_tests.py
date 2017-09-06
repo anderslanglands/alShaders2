@@ -10,7 +10,7 @@ import json
 
 
 def get_all_cryptomatte_tests():
-    return [Cryptomatte000, Cryptomatte001, Cryptomatte010]
+    return [Cryptomatte000, Cryptomatte001, Cryptomatte010, Cryptomatte020]
 
 
 #############################################
@@ -107,11 +107,13 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
         correct_names = set(correct_manifest.keys())
         result_names = set(result_manifest.keys())
 
+        if not result_manifest:
+            self.fail("%s - Result manifest is empty. " % key)
         extra_in_correct = correct_names - result_names
         extra_in_result = result_names - correct_names
         if extra_in_correct or extra_in_result:
-            self.fail("Missing manifest names: %s, Extra manifest names: %s" % (extra_in_correct,
-                                                                                extra_in_result))
+            self.fail("%s - Missing manifest names: %s, Extra manifest names: %s" %
+                      (key, extra_in_correct, extra_in_result))
 
     def assertAllManifestsValidAndMatch(self):
         """ 
@@ -264,6 +266,32 @@ class Cryptomatte010(CryptomatteTestBase):
             crypto_material_offset on instance masters
     """
     ass = "cryptomatte/010_htoa_instances.ass"
+
+    def test_manifests_valid_and_match(self):
+        self.assertAllManifestsValidAndMatch()
+
+    def test_results_all_present(self):
+        self.assertAllResultFilesPresent()
+
+    def test_cryptomatte_pixels(self):
+        self.assertCryptomattePixelsMatch(print_result=True)
+
+
+class Cryptomatte020(CryptomatteTestBase):
+    """
+    Lots of instances, in a typical HtoA configuration. 
+
+    Tests the following systems:
+        naming style: houdini
+        exr: multi
+        manifest: embedded
+        strip namespaces: off
+        overrides:
+            crypto_asset on instances and instance masters
+            crypto_object_offset on instance masters
+            crypto_material_offset on instance masters
+    """
+    ass = "cryptomatte/020_custom_cryptomattes.ass"
 
     def test_manifests_valid_and_match(self):
         self.assertAllManifestsValidAndMatch()
