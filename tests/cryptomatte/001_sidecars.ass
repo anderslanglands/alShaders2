@@ -22,9 +22,9 @@ options
  camera "perspShape"
  aov_shaders 1 1 NODE
   "cryptomatte1"
- GI_diffuse_depth 1
- GI_specular_depth 1
- GI_transmission_depth 8
+ GI_diffuse_depth 0
+ GI_specular_depth 0
+ GI_transmission_depth 0
  declare frame constant FLOAT
  frame 1
  declare render_layer constant STRING
