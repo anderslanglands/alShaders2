@@ -115,6 +115,20 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
             self.fail("%s - Missing manifest names: %s, Extra manifest names: %s" %
                       (key, list(extra_in_correct), list(extra_in_result)))
 
+    def assertCryptoCompressionValid(self):
+        for result_img, correct_img in self.result_images:
+
+            result_compression = next(x.value for x in result_img.spec().extra_attribs
+                                      if x.name == "compression")
+            correct_compression = next(x.value for x in correct_img.spec().extra_attribs
+                                       if x.name == "compression")
+            self.assertEqual(result_compression, correct_compression,
+                             "Compression of result images does not match. (%s vs %s)" %
+                             (result_compression, correct_compression))
+            self.assertIn(result_compression, {'none', 'zip', 'zips'},
+                          "Compression not of an allowed type: %s" % result_compression)
+            print result_compression, correct_compression
+
     def assertAllManifestsValidAndMatch(self):
         """ 
         Tests manifests match and are valid, and tests that all other cryptomatte 
@@ -225,8 +239,9 @@ class Cryptomatte000(CryptomatteTestBase):
     """
     ass = "cryptomatte/000_mtoa_basic.ass"
 
-    def test_manifests_valid_and_match(self):
+    def test_compression_and_manifests(self):
         self.assertAllManifestsValidAndMatch()
+        self.assertCryptoCompressionValid()
 
     def test_results_all_present(self):
         self.assertAllResultFilesPresent()
@@ -241,8 +256,9 @@ class Cryptomatte001(CryptomatteTestBase):
     """
     ass = "cryptomatte/001_sidecars.ass"
 
-    def test_manifests_valid_and_match(self):
+    def test_compression_and_manifests(self):
         self.assertAllManifestsValidAndMatch()
+        self.assertCryptoCompressionValid()
 
     def test_results_all_present(self):
         self.assertAllResultFilesPresent()
@@ -267,8 +283,9 @@ class Cryptomatte010(CryptomatteTestBase):
     """
     ass = "cryptomatte/010_htoa_instances.ass"
 
-    def test_manifests_valid_and_match(self):
+    def test_compression_and_manifests(self):
         self.assertAllManifestsValidAndMatch()
+        self.assertCryptoCompressionValid()
 
     def test_results_all_present(self):
         self.assertAllResultFilesPresent()
@@ -291,8 +308,9 @@ class Cryptomatte020(CryptomatteTestBase):
     """
     ass = "cryptomatte/020_custom_cryptomattes.ass"
 
-    def test_manifests_valid_and_match(self):
+    def test_compression_and_manifests(self):
         self.assertAllManifestsValidAndMatch()
+        self.assertCryptoCompressionValid()
 
     def test_results_all_present(self):
         self.assertAllResultFilesPresent()
