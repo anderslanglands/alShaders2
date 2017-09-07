@@ -220,6 +220,17 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 #############################################
 # Cryptomatte test cases themselves
 #############################################
+"""
+Testing to do list: 
+    cinema4d naming
+        todo(jonah): Object names do not have namespaces stripped
+    softimage naming
+    mixed standard and custom cryptomattes
+    RLE compression set
+    Non-exrs specified
+
+"""
+
 
 class Cryptomatte000(CryptomatteTestBase):
     """
@@ -229,6 +240,7 @@ class Cryptomatte000(CryptomatteTestBase):
 
     Settings:
         naming style: maya
+                      cinema 4d (floating cubes)
         exr: single
         manifest: embedded
         strip namespaces: on

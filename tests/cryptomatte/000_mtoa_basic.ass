@@ -405,6 +405,47 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
 
 polymesh
 {
+ name c4d|Room|deep|skirting_board
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.19962192 0 2.08844709 0
+ 0 3.03314161 0 0
+ -2.08844709 0 2.19962192 0
+ 6.81029224 8.0 -6.61376238 1
+ shader 2 1 NODE
+"c4d|skirting_board|skirting_board_mat" "topsSG"
+ opaque on
+ matte off
+ id 3306265779
+ nsides 6 1 UINT
+4 4 4 4 4 4
+ vidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:$$-?2$vMr4%<MT0
+ nidxs 24 1 b85UINT
+B$v2N*&9nA:'RU4J(k<'Z*.woj+G^c%
+ uvidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:&UObB$w/J=(3BP?
+ shidxs 6 1 BYTE
+0 1 0 0 0 0
+ vlist 8 1 b85VECTOR
+aDq99aDq9989+]c89+]caDq9989+]caDq99!89+]c$$$$)aDq9989+]caDq9989+]c89+]c!aDq99$$$$(89+]caDq99aDq99
+ nlist 24 1 b85VECTOR
+zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=dzzaRT=dzyzzyzzyzzyzzaRT=dzzaRT=dzzaRT=dzzaRT=dzz
+ uvlist 14 1 b85VECTOR2
+82:0xz8<Nt.z82:0x8+HY88<Nt.8+HY882:0x89+]c8<Nt.89+]c82:0x8?r5N8<Nt.8?r5N82:0xy8<Nt.y8C@Knz8C@Kn8+HY87reTbz7reTb8+HY8
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups 2 1 NODE
+"rightAsset:aiStandardSurface1SG" "topsSG"
+}
+
+polymesh
+{
  name pPlaneShape2
  visibility 255
  sidedness 255
@@ -747,7 +788,7 @@ driver_exr
 {
  name defaultArnoldDriver@driver_exr.crypto_asset
  filename "000_result/crypto_asset.exr"
- compression "zips"
+ compression "rle"
  half_precision on
  tiled off
  color_space ""
@@ -760,7 +801,7 @@ driver_exr
 {
  name defaultArnoldDriver@driver_exr.crypto_material
  filename "000_result/crypto_material.exr"
- compression "zips"
+ compression "rle"
  half_precision on
  tiled off
  color_space ""
@@ -773,7 +814,7 @@ driver_exr
 {
  name defaultArnoldDriver@driver_exr.crypto_object
  filename "000_result/crypto_object.exr"
- compression "zips"
+ compression "rle"
  half_precision on
  tiled off
  color_space ""
