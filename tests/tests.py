@@ -332,15 +332,20 @@ class CryptomatteTest01(KickAndCompareTestCase):
                             (very_different_count, max_very_different_pixels))
 
 
-def run_arnold_tests(id_filter=""):
+def run_arnold_tests(test_filter=""):
     """ Utility function for manually running tests inside Nuke
     Returns unittest results if there are failures, otherwise None """
-    return run_tests(get_all_arnold_tests(), id_filter)
+    return run_tests(get_all_arnold_tests(), test_filter)
 
 
-def run_tests(test_cases, id_filter=""):
-    """ Utility function for manually running tests inside Nuke. 
-    Returns results if there are failures, otherwise None """
+def run_tests(test_cases, test_filter=""):
+    """ Utility function for manually running tests. 
+    Returns results if there are failures, otherwise None 
+
+    test_filter will be matched fnmatch style (* wildcards) to either the name of the TestCase 
+    class or test method. 
+
+    """
     import fnmatch
 
     def find_test_method(traceback):
@@ -354,13 +359,13 @@ def run_tests(test_cases, id_filter=""):
     for case in test_cases:
         suite.addTests(unittest.TestLoader().loadTestsFromTestCase(case))
 
-    if id_filter:
+    if test_filter:
         filtered_suite = unittest.TestSuite()
         for test in suite:
-            if any(fnmatch.fnmatch(x, id_filter) for x in test.id().split(".")):
+            if any(fnmatch.fnmatch(x, test_filter) for x in test.id().split(".")):
                 filtered_suite.addTest(test)
         if not any(True for _ in filtered_suite):
-            raise RuntimeError("Filter %s selected no tests. " % id_filter)
+            raise RuntimeError("Filter %s selected no tests. " % test_filter)
         suite = filtered_suite
 
     suite.run(result)

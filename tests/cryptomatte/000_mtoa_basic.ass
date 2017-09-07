@@ -279,6 +279,44 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
 
 polymesh
 {
+ name c4d|Room|skirting_board
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.19962192 0 2.08844709 0
+ 0 3.03314161 0 0
+ -2.08844709 0 2.19962192 0
+ -6.17146778 8.0 -6.61376238 1
+ shader 3 1 NODE
+"c4d|skirting_board|skirting_board_mat" "topsSG" "boringStandardSG"
+ opaque on
+ matte off
+ id 1171623953
+ nsides 6 1 UINT
+4 4 4 4 4 4
+ vidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:$$-?2$vMr4%<MT0
+ nidxs 24 1 b85UINT
+B$v2N*&9nA:'RU4J(k<'Z*.woj+G^c%
+ uvidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:&UObB$w/J=(3BP?
+ shidxs 6 1 BYTE
+0 1 0 0 2 0
+ vlist 8 1 b85VECTOR
+aDq99aDq9989+]c89+]caDq9989+]caDq99!89+]c$$$$)aDq9989+]caDq9989+]c89+]c!aDq99$$$$(89+]caDq99aDq99
+ nlist 24 1 b85VECTOR
+zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=dzzaRT=dzyzzyzzyzzyzzaRT=dzzaRT=dzzaRT=dzzaRT=dzz
+ uvlist 14 1 b85VECTOR2
+82:0xz8<Nt.z82:0x8+HY88<Nt.8+HY882:0x89+]c8<Nt.89+]c82:0x8?r5N8<Nt.8?r5N82:0xy8<Nt.y8C@Knz8C@Kn8+HY87reTbz7reTb8+HY8
+ smoothing on
+ step_size 0
+ volume_padding 0
+}
+
+polymesh
+{
  name backCenterCubeShape
  visibility 255
  sidedness 255
@@ -485,6 +523,49 @@ standard_surface
 standard_surface
 {
  name leftAsset:aiStandardSurface1SG
+ base 0.800000012
+ base_color 1 1 1
+ diffuse_roughness 0
+ specular 1
+ specular_color 1 1 1
+ specular_roughness 0.100000001
+ specular_IOR 1.51999998
+ specular_anisotropy 0
+ specular_rotation 0
+ metalness 0
+ transmission 0
+ transmission_color 1 1 1
+ transmission_depth 0
+ transmission_scatter 0 0 0
+ transmission_scatter_anisotropy 0
+ transmission_dispersion 0
+ transmission_extra_roughness 0
+ subsurface 0
+ subsurface_color 1 1 1
+ subsurface_radius 1 1 1
+ subsurface_scale 1
+ thin_walled off
+ tangent 0 0 0
+ coat 0
+ coat_color 1 1 1
+ coat_roughness 0.100000001
+ coat_IOR 1.5
+ coat_normal 0 0 0
+ thin_film_thickness 0
+ thin_film_IOR 1.5
+ emission 0
+ emission_color 1 1 1
+ opacity 1 1 1
+ caustics off
+ internal_reflections on
+ exit_to_background off
+ indirect_diffuse 1
+ indirect_specular 1
+}
+
+standard_surface
+{
+ name c4d|skirting_board|skirting_board_mat
  base 0.800000012
  base_color 1 1 1
  diffuse_roughness 0

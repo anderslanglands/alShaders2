@@ -8,7 +8,7 @@ parser.add_argument(
     dest="filter",
     default="",
     type=str,
-    help="Wildcard enabled filter for test IDs.")
+    help="Wildcard enabled filter for test names (class or method names). Example: Cryptomatte*")
 
 args = parser.parse_args()
 
