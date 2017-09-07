@@ -113,7 +113,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
         extra_in_result = result_names - correct_names
         if extra_in_correct or extra_in_result:
             self.fail("%s - Missing manifest names: %s, Extra manifest names: %s" %
-                      (key, extra_in_correct, extra_in_result))
+                      (key, list(extra_in_correct), list(extra_in_result)))
 
     def assertAllManifestsValidAndMatch(self):
         """ 
