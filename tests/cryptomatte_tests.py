@@ -115,9 +115,8 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
             self.fail("%s - Missing manifest names: %s, Extra manifest names: %s" %
                       (key, list(extra_in_correct), list(extra_in_result)))
 
-    def assertCryptoCompressionValid(self):
+    def assertCryptoCompressionValid(self): 
         for result_img, correct_img in self.result_images:
-
             result_compression = next(x.value for x in result_img.spec().extra_attribs
                                       if x.name == "compression")
             correct_compression = next(x.value for x in correct_img.spec().extra_attribs
@@ -127,7 +126,6 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
                              (result_compression, correct_compression))
             self.assertIn(result_compression, {'none', 'zip', 'zips'},
                           "Compression not of an allowed type: %s" % result_compression)
-            print result_compression, correct_compression
 
     def assertAllManifestsValidAndMatch(self):
         """ 

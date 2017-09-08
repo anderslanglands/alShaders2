@@ -64,19 +64,39 @@ namespace NameParsingTests {
         AiMsgDebug("Test ran: %s", msg);
     }
 
+    void assert_mtoa_strip(std::string msg, std::string obj_name_in, const char *obj_correct) {
+        char obj_name_out[MAX_STRING_LENGTH] = "";
+        mtoa_strip_namespaces(obj_name_in.c_str(), obj_name_out);
 
-    void maya_parsing() {    
+        if (obj_correct == NULL)
+            AiMsgDebug("Success - %lu", strlen(obj_name_out));
+        else if (strncmp(obj_name_out, obj_correct, -1) != 0)
+            AiMsgError("MtoA ns stripping: ((%s)) Expected %s, was %s", 
+                       msg.c_str(), obj_correct, obj_name_out);
+        AiMsgDebug("Test ran: %s", msg);
+    }
+
+    void mtoa_parsing() {    
         assert_clean_names("mtoa-1", "object", true, 
                            "object", "default");
-        assert_clean_names("mtoa-2", "namespace:object", true, 
-                           "object", "namespace");
-        assert_clean_names("mtoa-3", "ns1:ns2:object", true, 
-                           "ns2:object", "ns1");
-        assert_clean_names("mtoa-4", "namespace:object", false, 
-                           "namespace:object", "namespace");
+        assert_clean_names("mtoa-2", "ns1:obj1", true, 
+                           "obj1", "ns1");
+        assert_clean_names("mtoa-3", "ns1:ns2:obj1", true, 
+                           "ns2:obj1", "ns1");
+        assert_clean_names("mtoa-4", "ns1:obj1", false, 
+                           "ns1:obj1", "ns1");
         // test gaetan's smarter maya namespace handling
         assert_clean_names("mtoa-5", "namespace:object|ns2:obj2", true, 
                            "object|obj2", "namespace");
+    }
+
+    void mtoa_strip() {    
+        assert_mtoa_strip("mtoa-1b", "object", "object");
+        assert_mtoa_strip("mtoa-2b", "namespace:object", "object");
+        assert_mtoa_strip("mtoa-3b", "ns1:obj1|ns2:obj2", "obj1|obj2");
+        assert_mtoa_strip("mtoa-4b", "ns1:obj1|ns2:obj2|aaa:bbb", "obj1|obj2|bbb");
+        assert_mtoa_strip("mtoa-5b", "ns1:obj1|aaa:bbb|ccc:ddd|eee", "obj1|bbb|ddd|eee");
+        assert_mtoa_strip("mtoa-6b", "ns1:obj1|aaa|ccc:ddd|eee:fff", "obj1|aaa|ddd|fff");
     }
 
     void sitoa_parsing() {    
@@ -196,7 +216,8 @@ namespace NameParsingTests {
     }
 
     void run() {
-        maya_parsing();
+        mtoa_parsing();
+        mtoa_strip();
         sitoa_parsing();
         c4dtoa_parsing();
         crazy_maya_parsing();
