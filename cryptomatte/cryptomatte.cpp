@@ -483,13 +483,16 @@ void write_manifest_to_string(manf_map_t *map, std::string &manf_string) {
     const size_t max_entries = 100000;
     size_t metadata_entries = map_entries;
     if (map_entries > max_entries) {
-        AiMsgWarning("Cryptomatte: %lu entries in manifest, limiting to %lu", map_entries, max_entries);
+        AiMsgWarning("Cryptomatte: %lu entries in manifest, limiting to %lu", 
+                     map_entries, max_entries);
         metadata_entries = max_entries;
     }
 
     manf_string.append("{");
+    std::string pair;
+    pair.reserve(MAX_STRING_LENGTH);
     for (uint32_t i=0; i<metadata_entries; i++) {
-        const char * name = map_it->first.c_str();
+        std::string name = map_it->first;
         float hash_value = map_it->second;
         ++map_it;
 
@@ -498,9 +501,22 @@ void write_manifest_to_string(manf_map_t *map, std::string &manf_string) {
         char hex_chars[9];
         sprintf(hex_chars, "%08x", float_bits);
 
-        std::string pair;
+        pair.clear();
         pair.append("\"");
-        pair.append(name);
+        for (size_t j=0; j<name.length(); j++) {
+            // append the name, char by char
+            const char c = name.at(j);
+            if (c == '\0')
+                break;
+            else if (c=='"')
+                pair += "\\\"";
+            else if (c=='\\')
+                pair += "\\\\";
+            else if (c=='/')
+                pair += "\\/";
+            else
+                pair += c;
+        }
         pair.append("\":\"");
         pair.append(hex_chars);
         pair.append("\"");

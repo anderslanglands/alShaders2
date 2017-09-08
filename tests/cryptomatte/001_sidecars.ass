@@ -13,7 +13,7 @@ options
   "crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_asset"
   "crypto_material RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_material"
   "crypto_object RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_object"
-  "my_crypto_object RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.custom_crypto_object"
+  "special_chars RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.special_chars"
  xres 128
  yres 128
  texture_max_memory_MB 8096
@@ -38,8 +38,8 @@ cryptomatte
 {
  name cryptomatte1
  sidecar_manifests 1
- user_crypto_aov_0 "my_crypto_object"
- user_crypto_src_0 "custom_user_data"
+ user_crypto_aov_0 "special_chars"
+ user_crypto_src_0 "special_chars_udata"
 }
 
 gaussian_filter
@@ -127,8 +127,8 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
  volume_padding 0
  declare mtoa_shading_groups constant ARRAY NODE
  mtoa_shading_groups "leftAsset:aiStandardSurface1SG"
- declare custom_user_data constant STRING
- custom_user_data "name containing a \"quote\""
+ declare special_chars_udata constant STRING
+ special_chars_udata "name containing a \"quote\"  "
 }
 
 polymesh
@@ -203,8 +203,8 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
  volume_padding 0
  declare mtoa_shading_groups constant ARRAY NODE
  mtoa_shading_groups "initialShadingGroup"
- declare custom_user_data constant STRING
- custom_user_data "равнина"
+ declare special_chars_udata constant STRING
+ special_chars_udata "равнина"
 }
 
 polymesh
@@ -242,6 +242,8 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
  volume_padding 0
  declare mtoa_shading_groups constant ARRAY NODE
  mtoa_shading_groups "rightAsset:aiStandardSurface1SG"
+ declare special_chars_udata constant STRING
+ special_chars_udata "name_containing/slash"
 }
 
 polymesh
@@ -709,8 +711,8 @@ driver_exr
 
 driver_exr
 {
- name defaultArnoldDriver@driver_exr.custom_crypto_object
- filename "001_result/custom_crypto_object.exr"
+ name defaultArnoldDriver@driver_exr.special_chars
+ filename "001_result/special_chars.exr"
  compression "zips"
  half_precision on
  tiled off

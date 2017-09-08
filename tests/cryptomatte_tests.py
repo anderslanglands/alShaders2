@@ -268,8 +268,10 @@ class Cryptomatte001(CryptomatteTestBase):
     """
     Same as 000, but with:
         sidecar manifests
-        one custom Cryptomatte
 
+        Special characters cryptomatte:
+            Custom Cryptomatte, where all names contain special characters.
+            quotes, unicode, and slashes
     """
     ass = "cryptomatte/001_sidecars.ass"
 
