@@ -45,7 +45,7 @@ node_parameters
 
 node_initialize
 {
-   CryptomatteData *data = CryptomatteData_new();
+   CryptomatteData *data = CryptomatteData_new(node);
    AiNodeSetLocalData(node, data);
 }
 

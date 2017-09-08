@@ -36,6 +36,9 @@ options
 cryptomatte
 {
  name cryptomatte1
+
+ declare run_unit_tests constant BOOL
+ run_unit_tests true
 }
 
 gaussian_filter

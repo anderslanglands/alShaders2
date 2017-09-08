@@ -71,8 +71,6 @@ How to add cryptomatte to a shader:
 #define CRYPTO_SIDECARMANIFESTS_DEFAULT false
 #define CRYPTO_PREVIEWINEXR_DEFAULT true
 
-
-
 ///////////////////////////////////////////////
 //
 //      Forward declarations
@@ -81,7 +79,7 @@ How to add cryptomatte to a shader:
 
 struct CryptomatteData;
 
-CryptomatteData* CryptomatteData_new();
+CryptomatteData* CryptomatteData_new(AtNode *node);
 void CryptomatteData_setup_all(CryptomatteData *data, const AtString aov_cryptoasset, 
                                const AtString aov_cryptoobject, const AtString aov_cryptomaterial,
                                AtArray *uc_aov_array, AtArray *uc_src_array);

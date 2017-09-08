@@ -250,6 +250,7 @@ class Cryptomatte000(CryptomatteTestBase):
             per-face crypto_object_override
     """
     ass = "cryptomatte/000_mtoa_basic.ass"
+    arnold_v = 6
 
     def test_compression_and_manifests(self):
         self.assertAllManifestsValidAndMatch()
@@ -260,6 +261,14 @@ class Cryptomatte000(CryptomatteTestBase):
 
     def test_cryptomatte_pixels(self):
         self.assertCryptomattePixelsMatch(print_result=True)
+
+    def test_unit_tests_ran(self):
+        with open(self.result_log) as f:
+            log_contents = f.read()
+            self.assertIn("Cryptomatte unit tests: Running", log_contents,
+                          "C++ unit test did not run. ")
+            self.assertIn("Cryptomatte unit tests: Complete", log_contents,
+                          "C++ unit test did not complete. ")
 
 
 class Cryptomatte001(CryptomatteTestBase):

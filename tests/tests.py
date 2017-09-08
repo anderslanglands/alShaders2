@@ -30,6 +30,7 @@ def get_all_cryptomatte_tests():
 
 class KickAndCompareTestCase(unittest.TestCase):
     ass = ""
+    arnold_v = 2
 
     @classmethod
     def setUpClass(self):
@@ -71,7 +72,8 @@ class KickAndCompareTestCase(unittest.TestCase):
         ]
         assert not remaining_files, "Files were not cleaned up: %s " % remaining_files
 
-        cmd = 'kick -v 2 -t 2 -dp -dw -sl -logfile %s %s' % (self.result_log, ass_file_name)
+        cmd = 'kick -v %s -t 2 -dp -dw -sl -logfile %s %s' % (self.arnold_v, self.result_log,
+                                                              ass_file_name)
         cwd = test_dir.replace("\\", "/")
         print cmd, cwd
         proc = subprocess.Popen(cmd, cwd=cwd, shell=True, stderr=subprocess.PIPE)

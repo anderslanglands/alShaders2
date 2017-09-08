@@ -1292,6 +1292,13 @@ public:
 };
 
 
+///////////////////////////////////////////////
+//
+//      Include test code
+//
+///////////////////////////////////////////////
+
+#include "cryptomatte_tests.h"
 
 ///////////////////////////////////////////////
 //
@@ -1299,7 +1306,8 @@ public:
 //
 ///////////////////////////////////////////////
 
-CryptomatteData* CryptomatteData_new() {
+CryptomatteData* CryptomatteData_new(AtNode *node) {
+    run_all_unit_tests(node);
     return new CryptomatteData;
 }
 void CryptomatteData_setup_all(CryptomatteData *data, const AtString aov_cryptoasset, 
