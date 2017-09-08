@@ -344,6 +344,7 @@ AtString get_user_data(const AtShaderGlobals * sg, const AtNode * node, const At
         // this is intentionally outside the if (pentry) block. 
         // With user data declared on ginstances and such, no pentry
         // is aquirable but AiUDataGetStr still works. 
+        // todo(jonah): still true in Arnold 5? 
         AtString udata_value;
         if (AiUDataGetStr(user_data_name, udata_value)) {
             *cachable = false;
