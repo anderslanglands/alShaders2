@@ -39,7 +39,7 @@ cryptomatte
  name cryptomatte1
  sidecar_manifests 1
  user_crypto_aov_0 "my_crypto_object"
- user_crypto_src_0 "custom_data_object"
+ user_crypto_src_0 "custom_user_data"
 }
 
 gaussian_filter
@@ -127,8 +127,8 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
  volume_padding 0
  declare mtoa_shading_groups constant ARRAY NODE
  mtoa_shading_groups "leftAsset:aiStandardSurface1SG"
- declare custom_data_object constant STRING
- custom_data_object "my totally custom data"
+ declare custom_user_data constant STRING
+ custom_user_data "name containing a \"quote\""
 }
 
 polymesh
@@ -203,6 +203,8 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
  volume_padding 0
  declare mtoa_shading_groups constant ARRAY NODE
  mtoa_shading_groups "initialShadingGroup"
+ declare custom_user_data constant STRING
+ custom_user_data "равнина"
 }
 
 polymesh
