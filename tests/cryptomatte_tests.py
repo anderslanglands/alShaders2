@@ -220,13 +220,8 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 #############################################
 """
 Testing to do list: 
-    cinema4d naming
-        todo(jonah): Object names do not have namespaces stripped
-    softimage naming
     mixed standard and custom cryptomattes
-    RLE compression set
     Non-exrs specified
-
 """
 
 
@@ -271,7 +266,10 @@ class Cryptomatte000(CryptomatteTestBase):
 
 class Cryptomatte001(CryptomatteTestBase):
     """
-    Same as 000, but with sidecar manifests.
+    Same as 000, but with:
+        sidecar manifests
+        one custom Cryptomatte
+
     """
     ass = "cryptomatte/001_sidecars.ass"
 

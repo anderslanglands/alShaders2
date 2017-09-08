@@ -8,11 +8,12 @@ options
 {
  AA_samples 6
  error_color_bad_pixel 0 0 0
- outputs 4 1 STRING
+ outputs 5 1 STRING
   "RGBA RGBA defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.RGBA"
   "crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_asset"
   "crypto_material RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_material"
   "crypto_object RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_object"
+  "my_crypto_object RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.custom_crypto_object"
  xres 128
  yres 128
  texture_max_memory_MB 8096
@@ -37,6 +38,8 @@ cryptomatte
 {
  name cryptomatte1
  sidecar_manifests 1
+ user_crypto_aov_0 "my_crypto_object"
+ user_crypto_src_0 "custom_data_object"
 }
 
 gaussian_filter
@@ -124,6 +127,8 @@ zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=d
  volume_padding 0
  declare mtoa_shading_groups constant ARRAY NODE
  mtoa_shading_groups "leftAsset:aiStandardSurface1SG"
+ declare custom_data_object constant STRING
+ custom_data_object "my totally custom data"
 }
 
 polymesh
@@ -690,6 +695,20 @@ driver_exr
 {
  name defaultArnoldDriver@driver_exr.crypto_object
  filename "001_result/crypto_object.exr"
+ compression "zips"
+ half_precision on
+ tiled off
+ color_space ""
+ preserve_layer_name off
+ autocrop on
+ append off
+}
+
+
+driver_exr
+{
+ name defaultArnoldDriver@driver_exr.custom_crypto_object
+ filename "001_result/custom_crypto_object.exr"
  compression "zips"
  half_precision on
  tiled off
