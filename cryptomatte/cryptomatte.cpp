@@ -152,75 +152,97 @@ bool sitoa_pointcloud_instance_handling(const char *obj_full_name, char obj_name
     return true;
 }
 
+void mtoa_strip_namespaces(const char *obj_full_name, char obj_name_out[MAX_STRING_LENGTH]) {
+    char *to = obj_name_out;
+    size_t len = 0;
+    size_t sublen = 0;
+    const char *from = obj_full_name;
+    const char *end = from + strlen(obj_full_name);
+    const char *found = strchr(from, '|');
+    const char *sep = NULL;
+
+    while (found != NULL) {
+        sep = strchr(from, ':');
+        if (sep != NULL && sep < found) {
+            from = sep + 1;
+        }
+        sublen = found - from;
+        memmove(to, from, sublen);
+        to[sublen] = '|';
+
+        len += sublen + 1;
+        to += sublen + 1;
+        from = found + 1;
+
+        found = strchr(from, '|');
+    }
+
+    sep = strchr(from, ':');
+    if (sep != NULL && sep < end) {
+        from = sep + 1;
+    }
+    sublen = end - from;
+    memmove(to, from, sublen);
+    to[sublen] = '\0';
+}
 
 void get_clean_object_name(const char *obj_full_name, char obj_name_out[MAX_STRING_LENGTH], 
                            char nsp_name_out[MAX_STRING_LENGTH], bool strip_obj_ns) 
 { 
     char nsp_name[MAX_STRING_LENGTH] = "";
     safe_copy_to_buffer(nsp_name, obj_full_name);
-    bool preempt_object_name = false;
+    bool obj_already_done = false;
+
+    const uint8_t mode_maya = 0;
+    const uint8_t mode_c4d = 1;
+    const uint8_t mode_si = 2;
+    uint8_t mode = mode_maya;
 
     // C4DtoA: c4d|obj_hierarchy|...
     if (strncmp(nsp_name, "c4d|", 4) == 0) {
-        // Chop first element
-        char *nsp = nsp_name + 4;
-        memmove(obj_name_out, nsp, strlen(nsp));
-        char *obj = strrchr(nsp_name, '|');
-        if (obj != NULL) {
-            // Everything before last element is namespace
-            size_t nsp_len = strlen(nsp) - strlen(obj);
-            nsp[nsp_len] = '\0';
-        }
-        memmove(nsp_name_out, nsp, strlen(nsp));
-        return;
+        mode = mode_c4d;
+        const char *nsp = nsp_name + 4;
+        size_t len = strlen(nsp);
+        memmove(nsp_name, nsp, len);
+        nsp_name[len] = '\0';
     }
 
-    char *obj_postfix = strstr(nsp_name, ".SItoA.");
-    if (obj_postfix != NULL) {
-        // in Softimage mode
-        // to do: when there are more than one way to preempt object names here, we're going to have to have some kind of loop handling that. 
-        preempt_object_name = sitoa_pointcloud_instance_handling(obj_full_name, obj_name_out);
-        obj_postfix[0] = '\0';
+    char *sitoa_suffix = strstr(nsp_name, ".SItoA.");
+    if (sitoa_suffix) { // in Softimage mode
+        mode = mode_si;
+        obj_already_done = sitoa_pointcloud_instance_handling(obj_full_name, obj_name_out);
+        sitoa_suffix[0] = '\0'; // cut off everything after the start of .SItoA
     }
 
-    char *space_finder = strstr(nsp_name, " ");
-    while (space_finder != NULL) {
-        space_finder[0] = '#';
-        space_finder = strstr(nsp_name, " ");
-    }
-
-    char *nsp_separator = strchr(nsp_name, ':');
-    if (nsp_separator == NULL) {
+    char *nsp_separator = NULL;
+    if (mode == mode_c4d)// find last c4d mode switch {
+        nsp_separator = strrchr(nsp_name, '|');
+    else if (mode == mode_si)
         nsp_separator = strchr(nsp_name, '.');
-    }
+    else if (mode == mode_maya)
+        nsp_separator = strchr(nsp_name, ':');
 
-    if (nsp_separator != NULL) {
-        if (strip_obj_ns) {
-            if (!preempt_object_name) {
-                char *obj_name_start = nsp_separator + 1;
-                memmove(obj_name_out, obj_name_start, strlen(obj_name_start));
-            }
-        } else {
-            if (!preempt_object_name)
-                memmove(obj_name_out, nsp_name, strlen(nsp_name)); // the object name is the model name in this case
+    if (!obj_already_done) {
+        if (!nsp_separator || !strip_obj_ns) { // use whole name
+            memmove(obj_name_out, nsp_name, strlen(nsp_name));
+        } else if (mode == mode_maya) { // maya
+            mtoa_strip_namespaces(nsp_name, obj_name_out);
+        } else { // take everything right of sep
+            char *obj_name_start = nsp_separator + 1;
+            memmove(obj_name_out, obj_name_start, strlen(obj_name_start));
         }
-        nsp_separator[0] = '\0';
-    } else {
-        // no namespace
-        if (!preempt_object_name)
-            memmove(obj_name_out, nsp_name, strlen(nsp_name)); // the object name is the model name in this case
-        strncpy(nsp_name, "default\0", 8); // and the model name is default. 
     }
 
-    strcpy(nsp_name_out, nsp_name);
+    if (nsp_separator) { 
+        nsp_separator[0] = '\0';
+        strcpy(nsp_name_out, nsp_name); // copy namespace
+    } else {
+        strncpy(nsp_name_out, "default\0", 8); // default namespace
+    }
 }
 
 
 void get_clean_material_name(const char *mat_full_name, char mat_name_out[MAX_STRING_LENGTH], bool strip_ns) {    
-    // Example: 
-    //      Softimage: Sources.Materials.myLibrary_ref_library.myMaterialName.Standard_Mattes.uBasic.SITOA.25000....
-    //      Maya: namespace:my_material_sg
-
     safe_copy_to_buffer(mat_name_out, mat_full_name);
 
     // C4DtoA: c4d|mat_name|root_node_name
@@ -235,6 +257,9 @@ void get_clean_material_name(const char *mat_full_name, char mat_name_out[MAX_ST
         return;
     }
 
+    // Example: 
+    //      Softimage: Sources.Materials.myLibrary_ref_library.myMaterialName.Standard_Mattes.uBasic.SITOA.25000....
+    //      Maya: namespace:my_material_sg
     char *mat_postfix = strstr(mat_name_out, ".SItoA.");
     if (mat_postfix != NULL) {
         //   Sources.Materials.myLibrary_ref_library.myMaterialName.Standard_Mattes.uBasic  <<chop>> .SITOA.25000....
