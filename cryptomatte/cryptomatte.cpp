@@ -122,20 +122,26 @@ bool sitoa_pointcloud_instance_handling(const char *obj_full_name, char obj_name
     safe_copy_to_buffer(obj_name, obj_full_name);
 
     char *instance_start = strstr(obj_name, ".SItoA.Instance.");
+    if (!instance_start)
+        return false;
 
     char *space = strstr(instance_start, " ");
-    if (space == NULL) { return false; }
+    if (!space) 
+        return false;
 
     char *instance_name = &space[1];    
     char *obj_suffix2 = strstr(instance_name, ".SItoA."); 
-    if (obj_suffix2 == NULL) { return false; }  
+    if (!obj_suffix2) 
+        return false;
     obj_suffix2[0] = '\0';  // strip the suffix
     size_t chars_to_copy = strlen(instance_name);
     if (chars_to_copy >= MAX_STRING_LENGTH || chars_to_copy == 0) { return false; } 
     if (g_pointcloud_instance_verbosity == 2)   {
         char *frame_numbers = &instance_start[16]; // 16 chars in ".SItoA.Instance.", this gets us to the first number
         char *instance_ID = strstr(frame_numbers, ".");
+        if (!instance_ID) return false;
         char *instance_ID_end = strstr(instance_ID, " ");
+        if (!instance_ID_end) return false;
         instance_ID_end[0] = '\0';
         size_t ID_len = strlen(instance_ID);
         strncpy(&instance_name[chars_to_copy], instance_ID, ID_len);
