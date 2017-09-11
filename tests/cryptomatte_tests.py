@@ -240,8 +240,7 @@ class Cryptomatte000(CryptomatteTestBase):
     overrides on namespaces. 
 
     Settings:
-        naming style: maya
-                      cinema 4d (floating cubes)
+        naming style: maya and c4d
         exr: single
         manifest: embedded
         strip namespaces: on
@@ -249,6 +248,7 @@ class Cryptomatte000(CryptomatteTestBase):
             Some face assignments
             crypto_asset_override
             per-face crypto_object_override
+            Matte objects
     """
     ass = "cryptomatte/000_mtoa_basic.ass"
     arnold_v = 6
@@ -274,9 +274,8 @@ class Cryptomatte000(CryptomatteTestBase):
 
 class Cryptomatte001(CryptomatteTestBase):
     """
-    Same as 000, but with:
-        sidecar manifests
-
+    Similar to 000, but with:
+        manifest: sidecar
         Special characters cryptomatte:
             Custom Cryptomatte, where all names contain special characters.
             quotes, unicode, and slashes

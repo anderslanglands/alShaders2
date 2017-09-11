@@ -677,6 +677,119 @@ aZP-]Y+?7F8ZjgvaZP-]Y+?7F8ZjgvaTD;'Y2,CT8[3x?aM\_fY55e.8[,LeaH0COY6,qW8ZY,=aDk@d
  colors 1 1 1
 }
 
+##
+## matte objects
+##
+
+polymesh
+{
+ name opaqueMatteShape1
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.98845506 0 0 0
+ 0 3.76124835 0 0
+ 0 0 2.44630432 0
+ -9.46780396 3.33467865 0.386418253 1
+ shader "initialShadingGroup"
+ opaque off
+ matte on
+ id 2444756442
+ nsides 4
+ vidxs 4 1 UINT
+0 1 3 2
+ nidxs 4 1 UINT
+0 1 2 3
+ uvidxs 4 1 UINT
+0 1 3 2
+ vlist 4 1 b85VECTOR
+aDq99Y&XMt89+]c89+]cY&XMt89+]caDq99/ogrIaDq9989+]c/ogrIaDq99
+ nlist 4 1 b85VECTOR
+zy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvt
+ uvlist 4 1 VECTOR2
+0 0 1 0 0 1 1 1
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups "initialShadingGroup"
+}
+
+# polymesh
+# {
+#  name transpMatteShape1
+#  visibility 255
+#  sidedness 255
+#  receive_shadows on
+#  self_shadows on
+#  matrix
+#  2.98845506 0 0 0
+#  0 3.76124835 0 0
+#  0 0 2.44630432 0
+#  -10.7062206 0.70521456 -0.42309618 1
+#  shader "transparentGroundSG"
+#  opaque off
+#  matte on
+#  id 3750199654
+#  nsides 4
+#  vidxs 4 1 UINT
+# 0 1 3 2
+#  nidxs 4 1 UINT
+# 0 1 2 3
+#  uvidxs 4 1 UINT
+# 0 1 3 2
+#  vlist 4 1 b85VECTOR
+# aDq99Y&XMt89+]c89+]cY&XMt89+]caDq99/ogrIaDq9989+]c/ogrIaDq99
+#  nlist 4 1 b85VECTOR
+# zy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvt
+#  uvlist 4 1 VECTOR2
+# 0 0 1 0 0 1 1 1
+#  smoothing on
+#  step_size 0
+#  volume_padding 0
+#  declare mtoa_shading_groups constant ARRAY NODE
+#  mtoa_shading_groups "transparentGroundSG"
+# }
+
+# polymesh
+# {
+#  name transpMatteShape2
+#  visibility 255
+#  sidedness 255
+#  receive_shadows on
+#  self_shadows on
+#  matrix
+#  2.98845506 0 0 0
+#  0 3.76124835 0 0
+#  0 0 2.44630432 0
+#  -9.6849823 3.63946629 -0.42309618 1
+#  shader "transparentGroundSG"
+#  opaque off
+#  matte on
+#  id 3889989027
+#  nsides 4
+#  vidxs 4 1 UINT
+# 0 1 3 2
+#  nidxs 4 1 UINT
+# 0 1 2 3
+#  uvidxs 4 1 UINT
+# 0 1 3 2
+#  vlist 4 1 b85VECTOR
+# aDq99Y&XMt89+]c89+]cY&XMt89+]caDq99/ogrIaDq9989+]c/ogrIaDq99
+#  nlist 4 1 b85VECTOR
+# zy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvt
+#  uvlist 4 1 VECTOR2
+# 0 0 1 0 0 1 1 1
+#  smoothing on
+#  step_size 0
+#  volume_padding 0
+#  declare mtoa_shading_groups constant ARRAY NODE
+#  mtoa_shading_groups "transparentGroundSG"
+# }
+
+
 standard_hair
 {
  name hairshader_transparent
