@@ -17,8 +17,8 @@ options
   "perspCam2 crypto_material RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera2_crypto_material"
   "perspCam2 crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera2_crypto_asset"
   "perspCam2 special_chars RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera2_special_chars"
- xres 128
- yres 128
+ xres 64
+ yres 64
  texture_max_memory_MB 8096
  texture_per_file_stats on
  texture_automip off

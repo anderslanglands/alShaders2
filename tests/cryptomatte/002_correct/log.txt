@@ -1,6 +1,6 @@
-00:00:00    36MB         | log started Mon Sep 11 15:36:41 2017
+00:00:00    36MB         | log started Mon Sep 11 17:17:13 2017
 00:00:00    36MB         | Arnold 5.0.1.0 [8ea063c7] windows icc-17.0.2 oiio-1.7.15 osl-1.9.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.2.2 2017/06/27 18:48:44
-00:00:00    36MB         | running on NYMPC144, pid=25160
+00:00:00    36MB         | running on NYMPC144, pid=14160
 00:00:00    36MB         |  2 x Intel(R) Xeon(R) CPU E5-2640 0 @ 2.50GHz (12 cores, 24 logical) with 32743MB
 00:00:00    36MB         |  Windows 8 Professional (version 6.2, build 9200)
 00:00:00    36MB         |  soft limit for open files raised from 512 to 2048
@@ -11,7 +11,7 @@
 00:00:00    36MB         | loading plugins from . ...
 00:00:00    36MB         | no plugins loaded
 00:00:00    37MB         | [ass] loading 002_multicam.ass ...
-00:00:00    37MB         | [ass] read 9794 bytes, 19 nodes in 0:00.00
+00:00:00    37MB         | [ass] read 7754 bytes, 19 nodes in 0:00.00
 00:00:00    37MB         |  
 00:00:00    37MB WARNING | [rlm] skip_license_check enabled
 00:00:00    37MB         | [color_manager] rendering color space is "linear" with declared chromaticities:
@@ -28,7 +28,7 @@
 00:00:00    52MB         |       1 list_aggregate
 00:00:00    52MB         |       1 cryptomatte
 00:00:00    52MB         |  
-00:00:00    52MB         | rendering image at 128 x 128, 6 AA samples
+00:00:00    52MB         | rendering image at 64 x 64, 6 AA samples
 00:00:00    52MB         |   AA sample clamp   <disabled>
 00:00:00    52MB         |   diffuse           <disabled by depth>
 00:00:00    52MB         |   specular          <disabled by depth>
@@ -48,6 +48,23 @@
 00:00:00    52MB         |  node update done in 0:00.00 (single-threaded)
 00:00:00    52MB         |  [color_manager] no color manager is active
 00:00:00    52MB         |  [aov] parsing 26 output statements ...
+00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.camera1_bty" (driver_tiff)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "RGBA" of type RGBA filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
+00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.camera1_crypto_material" (driver_exr)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_material" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_material00" of type FLOAT filtered by "crypto_material_filter00" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_material01" of type FLOAT filtered by "crypto_material_filter01" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_material02" of type FLOAT filtered by "crypto_material_filter02" (cryptomatte_filter)
+00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.camera1_crypto_asset" (driver_exr)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_asset" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_asset00" of type FLOAT filtered by "crypto_asset_filter00" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_asset01" of type FLOAT filtered by "crypto_asset_filter01" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_asset02" of type FLOAT filtered by "crypto_asset_filter02" (cryptomatte_filter)
+00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.camera1_special_chars" (driver_exr)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "special_chars" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "special_chars00" of type FLOAT filtered by "special_chars_filter00" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "special_chars01" of type FLOAT filtered by "special_chars_filter01" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * camera "perspCam1", "special_chars02" of type FLOAT filtered by "special_chars_filter02" (cryptomatte_filter)
 00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.camera2_special_chars" (driver_exr)
 00:00:00    52MB         |  [aov]  * camera "perspCam2", "special_chars" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
 00:00:00    52MB         |  [aov]  * camera "perspCam2", "special_chars00" of type FLOAT filtered by "special_chars_filter00" (cryptomatte_filter)
@@ -60,50 +77,27 @@
 00:00:00    52MB         |  [aov]  * camera "perspCam2", "crypto_material00" of type FLOAT filtered by "crypto_material_filter00" (cryptomatte_filter)
 00:00:00    52MB         |  [aov]  * camera "perspCam2", "crypto_material01" of type FLOAT filtered by "crypto_material_filter01" (cryptomatte_filter)
 00:00:00    52MB         |  [aov]  * camera "perspCam2", "crypto_material02" of type FLOAT filtered by "crypto_material_filter02" (cryptomatte_filter)
-00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.camera1_crypto_asset" (driver_exr)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_asset" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_asset00" of type FLOAT filtered by "crypto_asset_filter00" (cryptomatte_filter)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_asset01" of type FLOAT filtered by "crypto_asset_filter01" (cryptomatte_filter)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_asset02" of type FLOAT filtered by "crypto_asset_filter02" (cryptomatte_filter)
-00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.camera1_special_chars" (driver_exr)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "special_chars" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "special_chars00" of type FLOAT filtered by "special_chars_filter00" (cryptomatte_filter)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "special_chars01" of type FLOAT filtered by "special_chars_filter01" (cryptomatte_filter)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "special_chars02" of type FLOAT filtered by "special_chars_filter02" (cryptomatte_filter)
 00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.camera2_crypto_asset" (driver_exr)
 00:00:00    52MB         |  [aov]  * camera "perspCam2", "crypto_asset" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
 00:00:00    52MB         |  [aov]  * camera "perspCam2", "crypto_asset00" of type FLOAT filtered by "crypto_asset_filter00" (cryptomatte_filter)
 00:00:00    52MB         |  [aov]  * camera "perspCam2", "crypto_asset01" of type FLOAT filtered by "crypto_asset_filter01" (cryptomatte_filter)
 00:00:00    52MB         |  [aov]  * camera "perspCam2", "crypto_asset02" of type FLOAT filtered by "crypto_asset_filter02" (cryptomatte_filter)
-00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.camera1_bty" (driver_tiff)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "RGBA" of type RGBA filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
-00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.camera1_crypto_material" (driver_exr)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_material" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_material00" of type FLOAT filtered by "crypto_material_filter00" (cryptomatte_filter)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_material01" of type FLOAT filtered by "crypto_material_filter01" (cryptomatte_filter)
-00:00:00    52MB         |  [aov]  * camera "perspCam1", "crypto_material02" of type FLOAT filtered by "crypto_material_filter02" (cryptomatte_filter)
 00:00:00    52MB         |  [aov] done preparing 15 AOVs for 26 outputs to 8 drivers (11 deep AOVs)
-00:00:00    55MB         |  starting 2 bucket workers of size 64x64 ...
-00:00:00   120MB         |    25% done - 37 rays/pixel
-00:00:00   120MB         |    50% done - 0 rays/pixel
-00:00:01   120MB         |    75% done - 37 rays/pixel
-00:00:01   120MB         |   100% done - 0 rays/pixel
-00:00:01    57MB         |  bucket workers done in 0:01.14
-00:00:01    57MB         |  [driver_exr] writing file `002_result/camera1_crypto_asset.exr'
-00:00:01    58MB         |  [driver_exr] writing file `002_result/camera1_special_chars.exr'
-00:00:01    54MB         |  [driver_tiff] writing file `002_result/camera1_bty.tif'
-00:00:01    54MB         |  [driver_exr] writing file `002_result/camera1_crypto_material.exr'
-00:00:01    56MB         |  starting 2 bucket workers of size 64x64 ...
-00:00:01   120MB         |    25% done - 37 rays/pixel
-00:00:01   120MB         |    50% done - 43 rays/pixel
-00:00:02   120MB         |    75% done - 37 rays/pixel
-00:00:02   120MB         |   100% done - 0 rays/pixel
-00:00:02    58MB         |  bucket workers done in 0:02.31
-00:00:02    58MB         |  [driver_exr] writing file `002_result/camera2_special_chars.exr'
-00:00:02    55MB         |  [driver_tiff] writing file `002_result/camera2_bty.tif'
-00:00:02    55MB         |  [driver_exr] writing file `002_result/camera2_crypto_material.exr'
-00:00:02    55MB         |  [driver_exr] writing file `002_result/camera2_crypto_asset.exr'
-00:00:02    55MB         | render done
-00:00:02    55MB         |  
-00:00:02    55MB         | releasing resources
-00:00:02    36MB         | Arnold shutdown
+00:00:00    53MB         |  starting 2 bucket workers of size 64x64 ...
+00:00:00    89MB         |   100% done - 37 rays/pixel
+00:00:00    57MB         |  bucket workers done in 0:00.52
+00:00:00    57MB         |  [driver_tiff] writing file `002_result/camera1_bty.tif'
+00:00:00    57MB         |  [driver_exr] writing file `002_result/camera1_crypto_material.exr'
+00:00:00    55MB         |  [driver_exr] writing file `002_result/camera1_crypto_asset.exr'
+00:00:00    55MB         |  [driver_exr] writing file `002_result/camera1_special_chars.exr'
+00:00:00    54MB         |  starting 2 bucket workers of size 64x64 ...
+00:00:01    89MB         |   100% done - 37 rays/pixel
+00:00:01    56MB         |  bucket workers done in 0:01.04
+00:00:01    56MB         |  [driver_exr] writing file `002_result/camera2_special_chars.exr'
+00:00:01    56MB         |  [driver_tiff] writing file `002_result/camera2_bty.tif'
+00:00:01    56MB         |  [driver_exr] writing file `002_result/camera2_crypto_material.exr'
+00:00:01    54MB         |  [driver_exr] writing file `002_result/camera2_crypto_asset.exr'
+00:00:01    54MB         | render done
+00:00:01    54MB         |  
+00:00:01    54MB         | releasing resources
+00:00:01    38MB         | Arnold shutdown

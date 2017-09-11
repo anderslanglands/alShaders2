@@ -274,7 +274,8 @@ class Cryptomatte000(CryptomatteTestBase):
 
 class Cryptomatte001(CryptomatteTestBase):
     """
-    Similar to 000, but with:
+    Stripped down version of 000, with:
+        64px
         manifest: sidecar
         Special characters cryptomatte:
             Custom Cryptomatte, where all names contain special characters.
@@ -295,7 +296,9 @@ class Cryptomatte001(CryptomatteTestBase):
 
 class Cryptomatte002(CryptomatteTestBase):
     """
-    Tests multicamera renders with embedded manifests. Otherwise similar to 001. 
+    Stripped down version of 000, with:
+        64px
+        Multicamera renders with embedded manifests
     """
     ass = "cryptomatte/002_multicam.ass"
 
@@ -312,8 +315,10 @@ class Cryptomatte002(CryptomatteTestBase):
 
 class Cryptomatte003(CryptomatteTestBase):
     """
-    Tests multicamera renders with sidecar manifests. Otherwise similar to 001. 
-    One camera generates exr files per AOV, other one generates one EXR file. 
+    Stripped down version of 000, with:
+        64px
+        Multicamera renders with sidecar manifests.
+            One camera generates exr files per AOV, other one generates one EXR file. 
     """
     ass = "cryptomatte/003_multicam_sidecars.ass"
 

@@ -1,6 +1,6 @@
-00:00:00    36MB         | log started Mon Sep 11 15:32:25 2017
+00:00:00    36MB         | log started Mon Sep 11 17:17:14 2017
 00:00:00    36MB         | Arnold 5.0.1.0 [8ea063c7] windows icc-17.0.2 oiio-1.7.15 osl-1.9.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.2.2 2017/06/27 18:48:44
-00:00:00    36MB         | running on NYMPC144, pid=26272
+00:00:00    36MB         | running on NYMPC144, pid=27668
 00:00:00    36MB         |  2 x Intel(R) Xeon(R) CPU E5-2640 0 @ 2.50GHz (12 cores, 24 logical) with 32743MB
 00:00:00    36MB         |  Windows 8 Professional (version 6.2, build 9200)
 00:00:00    36MB         |  soft limit for open files raised from 512 to 2048
@@ -11,7 +11,7 @@
 00:00:00    36MB         | loading plugins from . ...
 00:00:00    36MB         | no plugins loaded
 00:00:00    37MB         | [ass] loading 003_multicam_sidecars.ass ...
-00:00:00    37MB         | [ass] read 8518 bytes, 13 nodes in 0:00.00
+00:00:00    37MB         | [ass] read 6786 bytes, 13 nodes in 0:00.00
 00:00:00    37MB         |  
 00:00:00    37MB WARNING | [rlm] skip_license_check enabled
 00:00:00    37MB         | [color_manager] rendering color space is "linear" with declared chromaticities:
@@ -27,7 +27,7 @@
 00:00:00    51MB         |       1 list_aggregate
 00:00:00    51MB         |       1 cryptomatte
 00:00:00    51MB         |  
-00:00:00    51MB         | rendering image at 128 x 128, 6 AA samples
+00:00:00    51MB         | rendering image at 64 x 64, 6 AA samples
 00:00:00    51MB         |   AA sample clamp   <disabled>
 00:00:00    51MB         |   diffuse           <disabled by depth>
 00:00:00    51MB         |   specular          <disabled by depth>
@@ -78,27 +78,21 @@
 00:00:00    52MB         |  [aov]  * camera "perspCamera2", "special_chars01" of type FLOAT filtered by "special_chars_filter01" (cryptomatte_filter)
 00:00:00    52MB         |  [aov]  * camera "perspCamera2", "special_chars02" of type FLOAT filtered by "special_chars_filter02" (cryptomatte_filter)
 00:00:00    52MB         |  [aov] done preparing 16 AOVs for 27 outputs to 3 drivers (11 deep AOVs)
+00:00:00    53MB         |  starting 2 bucket workers of size 64x64 ...
+00:00:00    90MB         |   100% done - 37 rays/pixel
+00:00:00    56MB         |  bucket workers done in 0:00.55
+00:00:00    56MB         |  [Cryptomatte] writing file, 003_result/camera1.crypto_asset.json
+00:00:00    56MB         |  [Cryptomatte] writing file, 003_result/camera2.crypto_asset.json
+00:00:00    56MB         |  [Cryptomatte] writing file, 003_result/camera1.crypto_material.json
+00:00:00    56MB         |  [Cryptomatte] writing file, 003_result/camera2.crypto_material.json
+00:00:00    56MB         |  [Cryptomatte] writing file, 003_result/camera1.special_chars.json
+00:00:00    56MB         |  [Cryptomatte] writing file, 003_result/camera2.special_chars.json
+00:00:00    56MB         |  [driver_exr] writing file `003_result/camera1.exr'
 00:00:00    55MB         |  starting 2 bucket workers of size 64x64 ...
-00:00:00   121MB         |    25% done - 37 rays/pixel
-00:00:00   121MB         |    50% done - 0 rays/pixel
-00:00:01   121MB         |    75% done - 37 rays/pixel
-00:00:01   121MB         |   100% done - 0 rays/pixel
-00:00:01    56MB         |  bucket workers done in 0:01.16
-00:00:01    56MB         |  [Cryptomatte] writing file, 003_result/camera1.crypto_asset.json
-00:00:01    56MB         |  [Cryptomatte] writing file, 003_result/camera2.crypto_asset.json
-00:00:01    56MB         |  [Cryptomatte] writing file, 003_result/camera1.crypto_material.json
-00:00:01    56MB         |  [Cryptomatte] writing file, 003_result/camera2.crypto_material.json
-00:00:01    56MB         |  [Cryptomatte] writing file, 003_result/camera1.special_chars.json
-00:00:01    56MB         |  [Cryptomatte] writing file, 003_result/camera2.special_chars.json
-00:00:01    56MB         |  [driver_exr] writing file `003_result/camera1.exr'
-00:00:01    57MB         |  starting 2 bucket workers of size 64x64 ...
-00:00:01   121MB         |    25% done - 37 rays/pixel
-00:00:01   121MB         |    50% done - 54 rays/pixel
-00:00:02   121MB         |    75% done - 37 rays/pixel
-00:00:02   121MB         |   100% done - 0 rays/pixel
-00:00:02    56MB         |  bucket workers done in 0:02.35
-00:00:02    56MB         |  [driver_exr] writing file `003_result/camera2.exr'
-00:00:02    53MB         | render done
-00:00:02    54MB         |  
-00:00:02    54MB         | releasing resources
-00:00:02    36MB         | Arnold shutdown
+00:00:01    91MB         |   100% done - 37 rays/pixel
+00:00:01    56MB         |  bucket workers done in 0:01.07
+00:00:01    56MB         |  [driver_exr] writing file `003_result/camera2.exr'
+00:00:01    53MB         | render done
+00:00:01    53MB         |  
+00:00:01    53MB         | releasing resources
+00:00:01    36MB         | Arnold shutdown
