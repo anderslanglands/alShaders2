@@ -28,7 +28,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
             if img and correct_img:
                 self.result_images.append((img, correct_img))
 
-    def cryptomatte_metadata(self, ibuf):
+    def crypto_metadata(self, ibuf):
         """Returns dictionary of key, value of cryptomatte metadata"""
         metadata = {
             a.name: a.value
@@ -43,7 +43,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 
         return metadata
 
-    def sorted_cryptomatte_metadata(self, img):
+    def sorted_crypto_metadata(self, img):
         """
         Gets a dictionary of the cryptomatte metadata, interleved by cryptomatte stream. 
 
@@ -52,7 +52,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 
         Also includes ID coverage pairs in subkeys, "ch_pair_idxs" and "ch_pair_names". 
         """
-        img_md = self.cryptomatte_metadata(img)
+        img_md = self.crypto_metadata(img)
         cryptomatte_streams = {}
         for key, value in img_md.iteritems():
             prefix, cryp_key, cryp_md_key = key.split("/")
@@ -115,7 +115,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
             self.fail("%s - Missing manifest names: %s, Extra manifest names: %s" %
                       (key, list(extra_in_correct), list(extra_in_result)))
 
-    def assertCryptoCompressionValid(self): 
+    def assertCryptoCompressionValid(self):
         for result_img, correct_img in self.result_images:
             result_compression = next(x.value for x in result_img.spec().extra_attribs
                                       if x.name == "compression")
@@ -134,8 +134,8 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
         """
         for result_img, correct_img in self.result_images:
             self.assertSameChannels(result_img, correct_img)
-            result_md = self.cryptomatte_metadata(result_img)
-            correct_md = self.cryptomatte_metadata(correct_img)
+            result_md = self.crypto_metadata(result_img)
+            correct_md = self.crypto_metadata(correct_img)
 
             for key in correct_md:
                 self.assertIn(key, result_md, "Result missing metadata key: %s" % key)
@@ -173,8 +173,8 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
         big_dif_tolerance = 0.3
 
         for result_img, correct_img in self.result_images:
-            result_nested_md = self.sorted_cryptomatte_metadata(result_img)
-            correct_nested_md = self.sorted_cryptomatte_metadata(correct_img)
+            result_nested_md = self.sorted_crypto_metadata(result_img)
+            correct_nested_md = self.sorted_crypto_metadata(correct_img)
 
             total_count = 0
             very_different_count = 0
