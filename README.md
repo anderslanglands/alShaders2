@@ -15,6 +15,7 @@ Bugs
 * Fixed metadata when rendering multiple Cryptomattes into one EXR file (Sen Haerens)
 * Fixed metadata with multiple drivers if one driver did not support metadata (Sen Haerens)
 * Fixed manifests in custom Cryptomattes
+* Fixed manifests for standard cryptomattes with array (per poly) overrides 
 * Manifests no longer include list aggregate nodes (Sen Haerens)
 * Fixed issue passing AtStrings to variadic arguments in gcc older than 4.8.x (Sachin Shrestha)
 * Statically link the stdc++ lib (Sachin Shrestha)
@@ -49,4 +50,3 @@ To run a subset of tests, wildcard filters can be used:
 ```
 python tests -f Cryptomatte01*
 ```
-

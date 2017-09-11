@@ -594,25 +594,58 @@ void metadata_set_unneeded(AtNode *driver, const AtString aov_name) {
 }
 
 
-void add_hash_to_map(const char *c_str, manf_map_t *md_map) {
+void add_hash_to_map(const char *c_str, manf_map_t &md_map) {
     if (!string_has_content(c_str))
         return;
     AtRGB hash;
     std::string name_string = std::string(c_str);
-    if (md_map->count(name_string) == 0) {
+    if (md_map.count(name_string) == 0) {
         hash_name_rgb(c_str, &hash);
-        (*md_map)[name_string] = hash.r;
+        md_map[name_string] = hash.r;
     }
 }
 
+AtString add_override_udata_to_manifest(const AtNode *node, const AtString override_udata, 
+                                        manf_map_t &hash_map) {
+    /* 
+    Adds override user data to manifest map, including arrays of overrides. 
+    Does not add offsets. 
+    */
+    const AtUserParamEntry* pentry = AiNodeLookUpUserParameter(node, override_udata);
+    if (pentry == NULL|| AiUserParamGetType(pentry) != AI_TYPE_STRING)
+        return AtString();
+
+    if ( AiUserParamGetCategory(pentry) == AI_USERDEF_CONSTANT) {
+        // not an array
+        AtString udata = AiNodeGetStr(node, override_udata);
+        add_hash_to_map(udata, hash_map);
+        return udata;
+    } else {
+        AtArray * values = AiNodeGetArray(node, override_udata);
+        if (values != NULL) {
+            for (uint32_t ai=0; ai<AiArrayGetNumElements(values); ai++)
+                add_hash_to_map(AiArrayGetStr(values, ai), hash_map);
+        }
+        return AtString();
+    }
+}
 
 void add_obj_to_manifest(const AtNode *node, char name[MAX_STRING_LENGTH], 
-                         const AtString offset_user_data, manf_map_t *hash_map ) {
+                         AtString override_udata, const AtString offset_udata, 
+                         manf_map_t &hash_map ) {
+    /* 
+    Adds objects to the manifest, based on processed names and potentially user data overrides
+    and offsets. 
+
+    Does not handle combining overrides and offsets, unless the overrides are already passed
+    in as "name", as is the case with single value per node overrides. 
+    */
     add_hash_to_map(name, hash_map);
-    bool cachable = true;
-    get_offset_user_data(NULL, node, offset_user_data, &cachable);
-    if (!cachable) {
-        AtArray *offsets = AiNodeGetArray(node, offset_user_data);
+    add_override_udata_to_manifest(node, override_udata, hash_map);
+    bool single_offset_val = true;
+    get_offset_user_data(NULL, node, offset_udata, &single_offset_val);
+    if (!single_offset_val) { // means offset was an array
+        AtArray *offsets = AiNodeGetArray(node, offset_udata);
         if (offsets) {                    
             std::unordered_set<int> visitedOffsets;
             for (uint32_t i=0; i<AiArrayGetNumElements(offsets); i++) {
@@ -629,7 +662,6 @@ void add_obj_to_manifest(const AtNode *node, char name[MAX_STRING_LENGTH],
         }
     }
 }
-
 
 struct UserCryptomattes {
     size_t count;
@@ -1007,7 +1039,8 @@ private:
     }
 
     void compile_standard_manifests(bool do_md_asset, bool do_md_object, bool do_md_material, 
-                                    manf_map_t &map_md_asset, manf_map_t &map_md_object, manf_map_t &map_md_material) {
+                                    manf_map_t &map_md_asset, manf_map_t &map_md_object, 
+                                    manf_map_t &map_md_material) {
         AtNodeIterator * shape_iterator = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
         while (!AiNodeIteratorFinished(shape_iterator)) {
             AtNode *node = AiNodeIteratorGetNext(shape_iterator);
@@ -1024,8 +1057,10 @@ private:
             get_object_names(NULL, node, this->option_strip_obj_ns, nsp_name, obj_name);
 
             if (do_md_asset || do_md_object) { 
-                add_obj_to_manifest(node, nsp_name, CRYPTO_ASSET_OFFSET_UDATA, &map_md_asset);
-                add_obj_to_manifest(node, obj_name, CRYPTO_OBJECT_OFFSET_UDATA, &map_md_object);
+                add_obj_to_manifest(node, nsp_name, CRYPTO_ASSET_UDATA, 
+                                    CRYPTO_ASSET_OFFSET_UDATA, map_md_asset);
+                add_obj_to_manifest(node, obj_name, CRYPTO_OBJECT_UDATA, 
+                                    CRYPTO_OBJECT_OFFSET_UDATA, map_md_object);
             }
             if (do_md_material) {
                 // Process all shaders from the objects into the manifest. 
@@ -1039,7 +1074,8 @@ private:
                     if (!shader)
                         continue;
                     get_material_name(NULL, node, shader, this->option_strip_mat_ns, mat_name);
-                    add_obj_to_manifest(node, mat_name, CRYPTO_MATERIAL_OFFSET_UDATA, &map_md_material);
+                    add_obj_to_manifest(node, mat_name, CRYPTO_MATERIAL_UDATA, 
+                                        CRYPTO_MATERIAL_OFFSET_UDATA, map_md_material);
                 }
             }
         }
@@ -1069,27 +1105,13 @@ private:
     void compile_user_manifests(std::vector<bool> &do_metadata, std::vector<manf_map_t> &manf_maps) {
         if (this->user_cryptomattes.count == 0)
             return;
-        AtNodeIterator * shape_iterator = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
+        AtNodeIterator *shape_iterator = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
         while (!AiNodeIteratorFinished(shape_iterator)) {
             AtNode *node = AiNodeIteratorGetNext(shape_iterator);
             for (uint32_t i=0; i<this->user_cryptomattes.count; i++) {
-                if (!do_metadata[i])
-                    continue;
-                AtString user_data_name = this->user_cryptomattes.sources[i]; // should really be atstring
-                const AtUserParamEntry* pentry = AiNodeLookUpUserParameter(node, user_data_name);
-                if (pentry == NULL|| AiUserParamGetType(pentry) != AI_TYPE_STRING)
-                    continue;
-
-                if ( AiUserParamGetCategory(pentry) == AI_USERDEF_CONSTANT) {
-                    // not an array
-                    add_hash_to_map(AiNodeGetStr(node, user_data_name), &manf_maps[i]);
-                } else {
-                    AtArray * values = AiNodeGetArray(node, user_data_name);
-                    if (values != NULL) {
-                        for (uint32_t ai=0; ai<AiArrayGetNumElements(values); ai++)
-                            add_hash_to_map(AiArrayGetStr(values, ai), &manf_maps[i]);
-                    }
-                }
+                if (do_metadata[i])
+                    add_override_udata_to_manifest(node, this->user_cryptomattes.sources[i], 
+                                                   manf_maps[i]);
             }
         }
         AiNodeIteratorDestroy(shape_iterator);
