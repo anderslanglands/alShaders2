@@ -8,6 +8,7 @@ Features
 * Test suite for developers
 * Added Cinema 4D name parsing (Sen Haerens)
 * aov_shader metadata for KtoA and MtoA
+* Unicode and special characters in names are now tested and supported
 
 Bugs
 * Restored Maya name in special cases (ns1:obj1|ns2:obj2)
@@ -16,6 +17,7 @@ Bugs
 * Fixed metadata with multiple drivers if one driver did not support metadata (Sen Haerens)
 * Fixed manifests in custom Cryptomattes
 * Fixed manifests for standard cryptomattes with array (per poly) overrides 
+* Fixed special characters (quotes, slashes) in manifests
 * Manifests no longer include list aggregate nodes (Sen Haerens)
 * Fixed issue passing AtStrings to variadic arguments in gcc older than 4.8.x (Sachin Shrestha)
 * Statically link the stdc++ lib (Sachin Shrestha)
