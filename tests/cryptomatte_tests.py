@@ -23,10 +23,13 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 
     def setUp(self):
         self.result_images = []
+        self.exr_result_images = []
         for file_name in self.correct_file_names:
             img, correct_img = self.load_images(file_name)
             if img and correct_img:
                 self.result_images.append((img, correct_img))
+                if file_name.lower().endswith(".exr"):
+                    self.exr_result_images.append((img, correct_img))
 
     def crypto_metadata(self, ibuf):
         """Returns dictionary of key, value of cryptomatte metadata"""
@@ -116,7 +119,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
                       (key, list(extra_in_correct), list(extra_in_result)))
 
     def assertCryptoCompressionValid(self):
-        for result_img, correct_img in self.result_images:
+        for result_img, correct_img in self.exr_result_images:
             result_compression = next(x.value for x in result_img.spec().extra_attribs
                                       if x.name == "compression")
             correct_compression = next(x.value for x in correct_img.spec().extra_attribs
@@ -132,7 +135,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
         Tests manifests match and are valid, and tests that all other cryptomatte 
         metadata is equal. 
         """
-        for result_img, correct_img in self.result_images:
+        for result_img, correct_img in self.exr_result_images:
             self.assertSameChannels(result_img, correct_img)
             result_md = self.crypto_metadata(result_img)
             correct_md = self.crypto_metadata(correct_img)
@@ -172,7 +175,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
 
         big_dif_tolerance = 0.3
 
-        for result_img, correct_img in self.result_images:
+        for result_img, correct_img in self.exr_result_images:
             result_nested_md = self.sorted_crypto_metadata(result_img)
             correct_nested_md = self.sorted_crypto_metadata(correct_img)
 
@@ -213,6 +216,7 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
                             (very_different_count, very_different_num_tolerance))
             self.assertTrue(rms < 0.01,
                             "Root mean square error was greater than %s. " % rms_tolerance)
+
 
 
 #############################################
