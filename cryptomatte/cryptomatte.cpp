@@ -506,16 +506,9 @@ void write_manifest_to_string(manf_map_t *map, std::string &manf_string) {
         for (size_t j=0; j<name.length(); j++) {
             // append the name, char by char
             const char c = name.at(j);
-            if (c == '\0')
-                break;
-            else if (c=='"')
-                pair += "\\\"";
-            else if (c=='\\')
-                pair += "\\\\";
-            else if (c=='/')
-                pair += "\\/";
-            else
-                pair += c;
+            if (c=='"' || c=='\\' || c=='/')
+                pair += "\\";
+            pair += c;
         }
         pair.append("\":\"");
         pair.append(hex_chars);
