@@ -9,7 +9,7 @@ options
  AA_samples 6
  error_color_bad_pixel 0 0 0
  outputs 5 1 STRING
-  "RGBA RGBA defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.RGBA"
+  "RGBA RGBA defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_tiff.RGBA"
   "crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_asset"
   "crypto_material RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_material"
   "crypto_object RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_object"
@@ -48,18 +48,6 @@ gaussian_filter
  width 2
 }
 
-driver_exr
-{
- name defaultArnoldDriver@driver_exr.RGBA
- filename "P:/projects/jfriedman2_0001p/sequences/arnoldDev/cryptomatte/lighting/output/beauty/cryptomatte_mtoaBasic_v001.exr"
- compression "zips"
- half_precision on
- tiled off
- color_space ""
- preserve_layer_name off
- autocrop on
- append off
-}
 
 persp_camera
 {
@@ -667,6 +655,14 @@ standard_surface
  exit_to_background off
  indirect_diffuse 1
  indirect_specular 1
+}
+
+driver_tiff
+{
+ name defaultArnoldDriver@driver_tiff.RGBA
+ filename "001_result/beauty.tif"
+ compression "lzw"
+ format "int8"
 }
 
 driver_exr

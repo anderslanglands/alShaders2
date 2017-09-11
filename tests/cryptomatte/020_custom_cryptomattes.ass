@@ -8,8 +8,7 @@ options
 {
  AA_samples 6
  error_color_bad_pixel 0 0 0
- outputs 4 1 STRING
-  "RGBA RGBA defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.RGBA"
+ outputs 3 1 STRING
   "my_crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.custom_crypto_asset"
   "my_crypto_material RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.custom_crypto_material"
   "my_crypto_object RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.custom_crypto_object"
@@ -50,19 +49,6 @@ gaussian_filter
 {
  name defaultArnoldFilter@gaussian_filter
  width 2
-}
-
-driver_exr
-{
- name defaultArnoldDriver@driver_exr.RGBA
- filename "P:/projects/jfriedman2_0001p/sequences/arnoldDev/cryptomatte/lighting/output/beauty/cryptomatte_mtoaBasic_v001.exr"
- compression "zips"
- half_precision on
- tiled off
- color_space ""
- preserve_layer_name off
- autocrop on
- append off
 }
 
 persp_camera
