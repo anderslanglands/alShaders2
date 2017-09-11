@@ -774,16 +774,6 @@ standard_surface
  indirect_specular 1
 }
 
-
-
-
-
-
-
-
-
-
-
 curves
 {
  name minpix_transpShader_curveShape
@@ -966,7 +956,6 @@ driver_exr
  autocrop on
  append off
 }
-
 
 driver_tiff
 {

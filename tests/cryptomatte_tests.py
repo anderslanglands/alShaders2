@@ -10,7 +10,10 @@ import json
 
 
 def get_all_cryptomatte_tests():
-    return [Cryptomatte000, Cryptomatte001, Cryptomatte010, Cryptomatte020]
+    return [
+        Cryptomatte000, Cryptomatte001, Cryptomatte002, Cryptomatte003, Cryptomatte010,
+        Cryptomatte020
+    ]
 
 
 #############################################
@@ -206,6 +209,8 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
                                 if delta > big_dif_tolerance:
                                     very_different_count += 1
 
+            self.assertTrue(total_count, "No values in %s" % result_img.name)
+
             rms = math.sqrt(squared_error / float(total_count))
             if print_result:
                 print(self.id(), "Root mean square error: ", rms,
@@ -216,7 +221,6 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
                             (very_different_count, very_different_num_tolerance))
             self.assertTrue(rms < 0.01,
                             "Root mean square error was greater than %s. " % rms_tolerance)
-
 
 
 #############################################
@@ -278,6 +282,41 @@ class Cryptomatte001(CryptomatteTestBase):
             quotes, unicode, and slashes
     """
     ass = "cryptomatte/001_sidecars.ass"
+
+    def test_compression_and_manifests(self):
+        self.assertAllManifestsValidAndMatch()
+        self.assertCryptoCompressionValid()
+
+    def test_results_all_present(self):
+        self.assertAllResultFilesPresent()
+
+    def test_cryptomatte_pixels(self):
+        self.assertCryptomattePixelsMatch(print_result=True)
+
+
+class Cryptomatte002(CryptomatteTestBase):
+    """
+    Tests multicamera renders with embedded manifests. Otherwise similar to 001. 
+    """
+    ass = "cryptomatte/002_multicam.ass"
+
+    def test_compression_and_manifests(self):
+        self.assertAllManifestsValidAndMatch()
+        self.assertCryptoCompressionValid()
+
+    def test_results_all_present(self):
+        self.assertAllResultFilesPresent()
+
+    def test_cryptomatte_pixels(self):
+        self.assertCryptomattePixelsMatch(print_result=True)
+
+
+class Cryptomatte003(CryptomatteTestBase):
+    """
+    Tests multicamera renders with sidecar manifests. Otherwise similar to 001. 
+    One camera generates exr files per AOV, other one generates one EXR file. 
+    """
+    ass = "cryptomatte/003_multicam_sidecars.ass"
 
     def test_compression_and_manifests(self):
         self.assertAllManifestsValidAndMatch()
