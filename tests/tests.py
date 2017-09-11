@@ -364,7 +364,9 @@ def run_tests(test_cases, test_filter=""):
     if test_filter:
         filtered_suite = unittest.TestSuite()
         for test in suite:
-            if any(fnmatch.fnmatch(x, test_filter) for x in test.id().split(".")):
+            if fnmatch.fnmatch(test.id(), test_filter):
+                filtered_suite.addTest(test)
+            elif any(fnmatch.fnmatch(x, test_filter) for x in test.id().split(".")):
                 filtered_suite.addTest(test)
         if not any(True for _ in filtered_suite):
             raise RuntimeError("Filter %s selected no tests. " % test_filter)
