@@ -1,0 +1,281 @@
+00:00:00    36MB         | log started Mon Sep 11 17:19:16 2017
+00:00:00    36MB         | Arnold 5.0.1.0 [8ea063c7] windows icc-17.0.2 oiio-1.7.15 osl-1.9.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.2.2 2017/06/27 18:48:44
+00:00:00    36MB         | running on NYMPC144, pid=9780
+00:00:00    36MB         |  2 x Intel(R) Xeon(R) CPU E5-2640 0 @ 2.50GHz (12 cores, 24 logical) with 32743MB
+00:00:00    36MB         |  Windows 8 Professional (version 6.2, build 9200)
+00:00:00    36MB         |  soft limit for open files raised from 512 to 2048
+00:00:00    36MB         |  
+00:00:00    36MB         | loading plugins from C:\Users\jfriedman\development\arnold\alshaders2\build\dist\2.0.0\ai\bin ...
+00:00:00    36MB         |  cryptomatte.dll: cryptomatte uses Arnold 5.0.1.0
+00:00:00    36MB         |  cryptomatte.dll: cryptomatte_filter uses Arnold 5.0.1.0
+00:00:00    36MB         |  cryptomatte.dll: cryptomatte_manifest_driver uses Arnold 5.0.1.0
+00:00:00    36MB         |  [metadata] loading metadata file: C:\Users\jfriedman\development\arnold\alshaders2\build\dist\2.0.0\ai\bin\cryptomatte.mtd
+00:00:00    36MB         | loaded 3 plugins from 1 lib(s) in 0:00.00
+00:00:00    36MB         | [kick] command: kick -v 6 -t 2 -dp -dw -sl -logfile c:\Users\jfriedman\development\arnold\alshaders2\tests\cryptomatte\000_result\log.txt 000_mtoa_basic.ass
+00:00:00    36MB         | loading plugins from . ...
+00:00:00    36MB         | no plugins loaded
+00:00:00    37MB         | [ass] loading 000_mtoa_basic.ass ...
+00:00:00    37MB         | [ass] read 39375 bytes, 34 nodes in 0:00.00
+00:00:00    37MB         |  
+00:00:00    37MB WARNING | [rlm] skip_license_check enabled
+00:00:00    37MB         | [color_manager] rendering color space is "linear" with declared chromaticities:
+00:00:00    37MB         |                 r(0.6400, 0.3300) g(0.3000, 0.6000) b(0.1500, 0.0600) and w(0.3127, 0.3290)
+00:00:00    52MB         |  
+00:00:00    52MB         | there are 0 lights and 18 objects:
+00:00:00    52MB         |       1 persp_camera
+00:00:00    52MB         |       1 utility
+00:00:00    52MB         |       1 lambert
+00:00:00    52MB         |       6 standard_surface
+00:00:00    52MB         |       2 standard_hair
+00:00:00    52MB         |       1 driver_tiff
+00:00:00    52MB         |       3 driver_exr
+00:00:00    52MB         |       1 gaussian_filter
+00:00:00    52MB         |      12 polymesh
+00:00:00    52MB         |       5 curves
+00:00:00    52MB         |       1 list_aggregate
+00:00:00    52MB         |       1 cryptomatte
+00:00:00    52MB         |  
+00:00:00    52MB         | rendering image at 128 x 128, 6 AA samples
+00:00:00    52MB         |   AA sample clamp   <disabled>
+00:00:00    52MB         |   diffuse           <disabled by depth>
+00:00:00    52MB         |   specular          <disabled by depth>
+00:00:00    52MB         |   transmission      <disabled by depth>
+00:00:00    52MB         |   volume indirect   <disabled by depth>
+00:00:00    52MB         |   total                          depth 10
+00:00:00    52MB         |   bssrdf            samples  2
+00:00:00    52MB         |   transparency      depth 10
+00:00:00    52MB         |  initializing 36 nodes ...
+00:00:00    52MB WARNING |   Cryptomatte unit tests: Running
+00:00:00    52MB         |   Test completed (mtoa-1)
+00:00:00    52MB         |   Test completed (mtoa-2)
+00:00:00    52MB         |   Test completed (mtoa-3)
+00:00:00    52MB         |   Test completed (mtoa-4)
+00:00:00    52MB         |   Test completed (mtoa-5)
+00:00:00    52MB         |   Test ran: mtoa-1b
+00:00:00    52MB         |   Test ran: mtoa-2b
+00:00:00    52MB         |   Test ran: mtoa-3b
+00:00:00    52MB         |   Test ran: mtoa-4b
+00:00:00    52MB         |   Test ran: mtoa-5b
+00:00:00    52MB         |   Test ran: mtoa-6b
+00:00:00    52MB         |   Test completed (sitoa-1)
+00:00:00    52MB         |   Test completed (sitoa-2)
+00:00:00    52MB         |   Test completed (sitoa-3)
+00:00:00    52MB         |   Test completed (sitoa-4)
+00:00:00    52MB         |   Test ran: sitoa-4b
+00:00:00    52MB         |   Test completed (sitoa-5)
+00:00:00    52MB         |   Test ran: sitoa-5b
+00:00:00    52MB         |   Test completed (sitoa-6)
+00:00:00    52MB         |   Test ran: sitoa-6b
+00:00:00    52MB         |   Test completed (sitoa-7)
+00:00:00    52MB         |   Test ran: sitoa-7b
+00:00:00    52MB         |   Test completed (sitoa-8)
+00:00:00    52MB         |   Test ran: sitoa-8b
+00:00:00    52MB         |   Test completed (sitoa-9)
+00:00:00    52MB         |   Test ran: sitoa-9b
+00:00:00    52MB         |   Test completed (sitoa-10)
+00:00:00    52MB         |   Test ran: sitoa-10b
+00:00:00    52MB         |   Test completed (sitoa-11)
+00:00:00    52MB         |   Test ran: sitoa-11b
+00:00:00    52MB         |   Test completed (sitoa-12)
+00:00:00    52MB         |   Test ran: sitoa-12b
+00:00:00    52MB         |   Test completed (sitoa-13)
+00:00:00    52MB         |   Test ran: sitoa-13b
+00:00:00    52MB         |   Test completed (c4d-1)
+00:00:00    52MB         |   Test completed (c4d-2)
+00:00:00    52MB         |   Test completed (c4d-3)
+00:00:00    52MB         |   Test completed (c4d-4)
+00:00:00    52MB         |   Success (mtoa-6 did not crash) - 254 7
+00:00:00    52MB         |   Test completed (mtoa-6)
+00:00:00    52MB         |   Success (mtoa-7 did not crash) - 251 2
+00:00:00    52MB         |   Test completed (mtoa-7)
+00:00:00    52MB         |   Success (sitoa-ugly-1 did not crash) - 12 3
+00:00:00    52MB         |   Test completed (sitoa-ugly-1)
+00:00:00    52MB         |   Success - 0
+00:00:00    52MB         |   Test ran: sitoa-ugly-14b
+00:00:00    52MB         |   Success (sitoa-ugly-2 did not crash) - 254 7
+00:00:00    52MB         |   Test completed (sitoa-ugly-2)
+00:00:00    52MB         |   Success - 0
+00:00:00    52MB         |   Test ran: sitoa-ugly-2b
+00:00:00    52MB         |   Success (sitoa-ugly-3 did not crash) - 254 7
+00:00:00    52MB         |   Test completed (sitoa-ugly-3)
+00:00:00    52MB         |   Success - 0
+00:00:00    52MB         |   Test ran: sitoa-ugly-3b
+00:00:00    52MB         |   Success (sitoa-ugly-4 did not crash) - 254 7
+00:00:00    52MB         |   Test completed (sitoa-ugly-4)
+00:00:00    52MB         |   Success - 0
+00:00:00    52MB         |   Test ran: sitoa-ugly-4b
+00:00:00    52MB         |   Success (malformed-0 did not crash) - 0 7
+00:00:00    52MB         |   Test completed (malformed-0)
+00:00:00    52MB         |   Success (malformed-1 did not crash) - 3 0
+00:00:00    52MB         |   Test completed (malformed-1)
+00:00:00    52MB         |   Success (malformed-2 did not crash) - 1 7
+00:00:00    52MB         |   Test completed (malformed-2)
+00:00:00    52MB         |   Success (malformed-3 did not crash) - 4 7
+00:00:00    52MB         |   Test completed (malformed-3)
+00:00:00    52MB         |   Success (malformed-4 did not crash) - 3 7
+00:00:00    52MB         |   Test completed (malformed-4)
+00:00:00    52MB         |   Success (malformed-5 did not crash) - 0 2
+00:00:00    52MB         |   Test completed (malformed-5)
+00:00:00    52MB         |   Success (malformed-6 did not crash) - 1 7
+00:00:00    52MB         |   Test completed (malformed-6)
+00:00:00    52MB         |   Success (malformed-7 did not crash) - 0 7
+00:00:00    52MB         |   Test completed (malformed-7)
+00:00:00    52MB         |   Success (malformed-8 did not crash) - 5 7
+00:00:00    52MB         |   Test completed (malformed-8)
+00:00:00    52MB         |   Success (malformed-9 did not crash) - 6 7
+00:00:00    52MB         |   Test completed (malformed-9)
+00:00:00    52MB         |   Test completed (utf8-mayastyle-1)
+00:00:00    52MB         |   Test completed (utf8-mayastyle-2)
+00:00:00    52MB         |   Cryptomatte unit tests: Name parsing checks complete
+00:00:00    52MB         |   Success (mtoa-m-4 did not crash) - 0
+00:00:00    52MB         |   Success (mtoa-m-5 did not crash) - 0
+00:00:00    52MB WARNING |   Cryptomatte unit tests: Complete
+00:00:00    52MB         |   [curves] minpix_transpShader_curveShape: pixel-width optimization requires varying radius specification; upgrading to varying
+00:00:00    52MB         |   [curves] minpixelwidth_opq_curveShape: pixel-width optimization requires varying radius specification; upgrading to varying
+00:00:00    52MB         |   creating root object list ...
+00:00:00    52MB         |  node initialization done in 0:00.11 (single-threaded)
+00:00:00    52MB         |  updating 37 nodes ...
+00:00:00    52MB WARNING |   Cryptomatte cannot be set to RLE compression- it does not work on full float. Switching to Zip.
+00:00:00    52MB WARNING |   Cryptomatte cannot be set to RLE compression- it does not work on full float. Switching to Zip.
+00:00:00    52MB WARNING |   Cryptomatte cannot be set to RLE compression- it does not work on full float. Switching to Zip.
+00:00:00    52MB         |   Cryptomatte manifest created - 0.000000 seconds
+00:00:00    52MB         |   scene bounds: (-11.1373997 -1.11022302e-16 -8.75779629) -> (11.1373997 9.51657104 7.52883339)
+00:00:00    52MB         |  node update done in 0:00.00 (single-threaded)
+00:00:00    52MB         |  [color_manager] no color manager is active
+00:00:00    52MB         |  [aov] parsing 13 output statements ...
+00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.crypto_material" (driver_exr)
+00:00:00    52MB         |  [aov]  * "crypto_material" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
+00:00:00    52MB         |  [aov]  * "crypto_material00" of type FLOAT filtered by "crypto_material_filter00" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * "crypto_material01" of type FLOAT filtered by "crypto_material_filter01" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * "crypto_material02" of type FLOAT filtered by "crypto_material_filter02" (cryptomatte_filter)
+00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.crypto_asset" (driver_exr)
+00:00:00    52MB         |  [aov]  * "crypto_asset" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
+00:00:00    52MB         |  [aov]  * "crypto_asset00" of type FLOAT filtered by "crypto_asset_filter00" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * "crypto_asset01" of type FLOAT filtered by "crypto_asset_filter01" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * "crypto_asset02" of type FLOAT filtered by "crypto_asset_filter02" (cryptomatte_filter)
+00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_tiff.RGBA" (driver_tiff)
+00:00:00    52MB         |  [aov]  * "RGBA" of type RGBA filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
+00:00:00    52MB         |  [aov] registered driver: "defaultArnoldDriver@driver_exr.crypto_object" (driver_exr)
+00:00:00    52MB         |  [aov]  * "crypto_object" of type RGB filtered by "defaultArnoldFilter@gaussian_filter" (gaussian_filter)
+00:00:00    52MB         |  [aov]  * "crypto_object00" of type FLOAT filtered by "crypto_object_filter00" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * "crypto_object01" of type FLOAT filtered by "crypto_object_filter01" (cryptomatte_filter)
+00:00:00    52MB         |  [aov]  * "crypto_object02" of type FLOAT filtered by "crypto_object_filter02" (cryptomatte_filter)
+00:00:00    52MB         |  [aov] done preparing 15 AOVs for 13 outputs to 4 drivers (11 deep AOVs)
+00:00:00    55MB         |  starting 2 bucket workers of size 64x64 ...
+00:00:00   101MB         |   [accel] list_aggregate bvh4 done - 0:00.00 - 17 prims, 1 key
+00:00:00   101MB         |   [accel] polymesh bvh4 done - 0:00.00 - 6 prims, 1 key
+00:00:00   102MB         |   [accel] polymesh bvh4 done - 0:00.00 - 6 prims, 1 key
+00:00:00   110MB         |   [accel] polymesh bvh4 done - 0:00.00 - 6 prims, 1 key
+00:00:00   111MB         |   [accel] polymesh bvh4 done - 0:00.00 - 6 prims, 1 key
+00:00:00   111MB         |   [accel] polymesh bvh4 done - 0:00.00 - 6 prims, 1 key
+00:00:00   114MB         |   [accel] polymesh bvh4 done - 0:00.00 - 100 prims, 1 key
+00:00:00   114MB         |   [accel] polymesh bvh4 done - 0:00.00 - 100 prims, 1 key
+00:00:00   115MB         |   [accel] polymesh bvh4 done - 0:00.00 - 100 prims, 1 key
+00:00:00   116MB         |   [accel] polymesh bvh4 done - 0:00.00 - 6 prims, 1 key
+00:00:00   116MB         |   [accel] polymesh bvh4 done - 0:00.00 - 6 prims, 1 key
+00:00:00   117MB         |   [accel] polymesh bvh4 done - 0:00.00 - 6 prims, 1 key
+00:00:01   122MB         |    25% done - 37 rays/pixel
+00:00:01   122MB         |    50% done - 51 rays/pixel
+00:00:01   122MB         |   [accel] curves bvh4 done - 0:00.00 - 64 prims, 1 key
+00:00:01   122MB         |   [accel] curves bvh4 done - 0:00.00 - 64 prims, 1 key
+00:00:01   123MB         |   [accel] curves bvh4 done - 0:00.00 - 64 prims, 1 key
+00:00:01   125MB         |   [accel] curves bvh4 done - 0:00.00 - 64 prims, 1 key
+00:00:01   125MB         |   [accel] curves bvh4 done - 0:00.00 - 64 prims, 1 key
+00:00:02   127MB         |    75% done - 37 rays/pixel
+00:00:02   127MB         |   100% done - 0 rays/pixel
+00:00:02    62MB         |  bucket workers done in 0:02.25
+00:00:02    62MB         |  [driver_exr] writing file `000_result/crypto_material.exr'
+00:00:02    58MB         |  [driver_exr] writing file `000_result/crypto_asset.exr'
+00:00:02    58MB         |  [driver_tiff] writing file `000_result/beauty.tif'
+00:00:02    58MB         |  [driver_exr] writing file `000_result/crypto_object.exr'
+00:00:02    58MB         | render done
+00:00:02    58MB         |  
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         | scene creation time:
+00:00:02    58MB         |  plugin loading               0:00.00
+00:00:02    58MB         |  .ass parsing                 0:00.00
+00:00:02    58MB         |  unaccounted                  0:00.01
+00:00:02    58MB         |  total                        0:00.02  ( 0.00% machine utilization)
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         | render time:                  (multi-threaded render, values may not be reliable)
+00:00:02    58MB         |  node init                    0:00.12
+00:00:02    58MB         |   sanity checks               0:00.00
+00:00:02    58MB         |  driver init/close            0:00.10
+00:00:02    58MB         |  bucket rendering             0:02.25
+00:00:02    58MB         |   mesh processing             0:00.00
+00:00:02    58MB         |   accel. building             0:00.00
+00:00:02    58MB         |   pixel rendering             0:02.24
+00:00:02    58MB         |  unaccounted                  0:00.05
+00:00:02    58MB         |  total                        0:02.53  (87.57% machine utilization)
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         | memory consumed in MB:
+00:00:02    58MB         |  at startup                31.86
+00:00:02    58MB         |  plugins                    0.75
+00:00:02    58MB         |  AOV samples               76.24
+00:00:02    58MB         |  output buffers             4.41
+00:00:02    58MB         |  node overhead              0.02
+00:00:02    58MB         |  message passing            0.00
+00:00:02    58MB         |  memory pools              16.07
+00:00:02    58MB         |  geometry                   0.02
+00:00:02    58MB         |    polymesh                 0.01
+00:00:02    58MB         |    curves                   0.01
+00:00:02    58MB         |  accel. structs             0.08
+00:00:02    58MB         |  strings                   12.01
+00:00:02    58MB         |  texture cache              0.00
+00:00:02    58MB         |  unaccounted              -13.67
+00:00:02    58MB         |  total peak               127.80
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         | ray counts:                      ( /pixel, /sample) (% total) (avg. hits) (max hits)
+00:00:02    58MB         |  camera                   608400 (  37.13,    1.00) ( 99.64%) (     0.45) (       5)
+00:00:02    58MB         |  specular_reflect           2191 (   0.13,    0.00) (  0.36%) (     0.20) (       4)
+00:00:02    58MB         |  total                    610591 (  37.27,    1.00) (100.00%) (     0.45) (       5)
+00:00:02    58MB         | by ray depth:              0     1     2
+00:00:02    58MB         |  total                   99.6%  0.4%  0.0% 
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         | shader calls                     (  /pixel,  /sample) (% total)
+00:00:02    58MB         |  primary                  506365 (   30.91,     0.83) (100.00%)
+00:00:02    58MB         |  total                    506365 (   30.91,     0.83) (100.00%)
+00:00:02    58MB         | by ray depth:              0     1     2
+00:00:02    58MB         |  total                   99.9%  0.1%  0.0% 
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         | geometry:                        (% hit ) (instances) (  init mem,  final mem)
+00:00:02    58MB         |  lists                         1 (100.0%) (        0) (      0.00,       0.00)
+00:00:02    58MB         |  polymeshes                   12 (100.0%) (        0) (      0.02,       0.01)
+00:00:02    58MB         |  curves                        5 (100.0%) (        0) (      0.01,       0.01)
+00:00:02    58MB         |  curves                        2 had pixel-width optimization
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         | geometric elements:              (      min) (       avg.) (      max)
+00:00:02    58MB         |  polygons                    349 (        1) (       29.1) (      100)
+00:00:02    58MB         |  curves                        5 (        1) (        1.0) (        1)
+00:00:02    58MB         |  curve segments              320 (       64) (       64.0) (       64)
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         | triangle tessellation:           (      min) (       avg.) (      max) (/ element) (% total)
+00:00:02    58MB         |  polymeshes                  698 (        2) (       58.2) (      200) (     2.00) (100.00%)
+00:00:02    58MB         |  unique triangles            698
+00:00:02    58MB         |  memory use (in MB)         0.01
+00:00:02    58MB         |   vertices                  0.00
+00:00:02    58MB         |   vertex indices            0.00
+00:00:02    58MB         |  largest polymeshes by triangle count:
+00:00:02    58MB         |         200 tris -- pPlaneShape3
+00:00:02    58MB         |         200 tris -- pPlaneShape2
+00:00:02    58MB         |         200 tris -- pPlaneShape1
+00:00:02    58MB         |          12 tris -- c4d|Room|deep|skirting_board
+00:00:02    58MB         |          12 tris -- backRightCubeShape
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         | acceleration structures:         (% total)
+00:00:02    58MB         |  list                          1 (  5.56%)
+00:00:02    58MB         |  bvh                          17 ( 94.44%)
+00:00:02    58MB         |  total                        18 (100.00%)
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         | number of warnings, warning type:
+00:00:02    58MB         |     3:  Cryptomatte cannot be set to RLE compression- it does not work on full float. Switching to Zip.
+00:00:02    58MB         |     1:  Cryptomatte unit tests: Complete
+00:00:02    58MB         |     1:  Cryptomatte unit tests: Running
+00:00:02    58MB         |     1:  [rlm] skip_license_check enabled
+00:00:02    58MB         | -----------------------------------------------------------------------------------
+00:00:02    58MB         |  
+00:00:02    58MB         | releasing resources
+00:00:02    39MB         |  unloading 1 plugin
+00:00:02    39MB         |   closing cryptomatte.dll ...
+00:00:02    39MB         |  unloading plugins done
+00:00:02    39MB         | Arnold shutdown
