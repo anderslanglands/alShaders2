@@ -1,0 +1,7 @@
+---
+IndentWidth: 4
+AccessModifierOffset: -4
+AlignTrailingComments: true
+DerivePointerAlignment: false
+PointerAlignment: Left
+...
