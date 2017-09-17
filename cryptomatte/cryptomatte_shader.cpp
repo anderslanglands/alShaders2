@@ -2,6 +2,7 @@
 #include <cstring>
 #include <string>
 #include "cryptomatte.h"
+#include "cryptomatte_tests.h"
 
 AI_SHADER_NODE_EXPORT_METHODS(cryptomatteMtd)
 
@@ -45,24 +46,25 @@ node_parameters
 
 node_initialize
 {
-   CryptomatteData *data = CryptomatteData_new(node);
+   CryptomatteData* data = new CryptomatteData();
+   run_all_unit_tests(node);
    AiNodeSetLocalData(node, data);
 }
 
 node_finish
 {
-   CryptomatteData *data = (CryptomatteData*) AiNodeGetLocalData(node);
-   CryptomatteData_del(data);
+   CryptomatteData *data = reinterpret_cast<CryptomatteData*>(AiNodeGetLocalData(node));
+   delete data;
 }
 
 node_update
 {
-   CryptomatteData *data = (CryptomatteData*) AiNodeGetLocalData(node);
+   CryptomatteData *data = reinterpret_cast<CryptomatteData*>(AiNodeGetLocalData(node));
 
-   CryptomatteData_set_option_sidecar_manifests(data, AiNodeGetBool(node, "sidecar_manifests"));
-   CryptomatteData_set_option_channels(data, AiNodeGetInt(node, "cryptomatte_depth"), 
+   data->set_option_sidecar_manifests(AiNodeGetBool(node, "sidecar_manifests"));
+   data->set_option_channels(AiNodeGetInt(node, "cryptomatte_depth"), 
                                        CRYPTO_PREVIEWINEXR_DEFAULT);
-   CryptomatteData_set_option_namespace_stripping(data, AiNodeGetBool(node, "strip_obj_namespaces"), 
+   data->set_option_namespace_stripping(AiNodeGetBool(node, "strip_obj_namespaces"), 
                                                   AiNodeGetBool(node, "strip_mat_namespaces"));
 
    AtArray* uc_aov_array = AiArray(4, 1, AI_TYPE_STRING, 
@@ -72,7 +74,7 @@ node_update
       AiNodeGetStr(node, "user_crypto_src_0").c_str(), AiNodeGetStr(node, "user_crypto_src_1").c_str(), 
       AiNodeGetStr(node, "user_crypto_src_2").c_str(), AiNodeGetStr(node, "user_crypto_src_3").c_str());
    
-   CryptomatteData_setup_all(data, AiNodeGetStr(node, "aov_crypto_asset"),
+   data->setup_all(AiNodeGetStr(node, "aov_crypto_asset"),
                           AiNodeGetStr(node, "aov_crypto_object"),
                           AiNodeGetStr(node, "aov_crypto_material"), 
                           uc_aov_array, uc_src_array);
@@ -81,8 +83,8 @@ node_update
 shader_evaluate
 {
    if (sg->Rt & AI_RAY_CAMERA && sg->sc == AI_CONTEXT_SURFACE) {
-      CryptomatteData *data = (CryptomatteData*) AiNodeGetLocalData(node);
-      CryptomatteData_do_cryptomattes(data, sg);
+      CryptomatteData *data = reinterpret_cast<CryptomatteData*>(AiNodeGetLocalData(node));
+      data->do_cryptomattes(sg);
    }
 }
 

@@ -1,8 +1,8 @@
 #include <ai.h>
 #include "cryptomatte.h"
 
-struct CryptomatteData;
-void CryptomatteData_write_sidecar_manifests(CryptomatteData *data);
+// struct CryptomatteData;
+// void CryptomatteData_write_sidecar_manifests(CryptomatteData *data);
 
 
 AI_DRIVER_NODE_EXPORT_METHODS(CryptomatteManifestDriverMtd);
@@ -42,7 +42,7 @@ driver_write_bucket {}
 driver_close {
     CryptomatteData *data = (CryptomatteData *)AiNodeGetLocalData(node);
     if (data)
-        CryptomatteData_write_sidecar_manifests(data);
+        data->write_sidecar_manifests();
 }
 
 node_finish { }

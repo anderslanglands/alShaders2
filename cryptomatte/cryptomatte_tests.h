@@ -38,7 +38,7 @@ static const char test_utf8_madchen[] = {
 }; // mädchen
 
 namespace NameParsingTests {
-    void assert_clean_names(const char *msg, const char *obj_name_in, bool strip_obj_ns,
+    inline void assert_clean_names(const char *msg, const char *obj_name_in, bool strip_obj_ns,
                             const char *obj_correct, const char *nsp_correct) {
         char obj_name_out[MAX_STRING_LENGTH] = "", nsp_name_out[MAX_STRING_LENGTH] = "";
         get_clean_object_name(obj_name_in, obj_name_out, nsp_name_out, strip_obj_ns);
@@ -58,11 +58,11 @@ namespace NameParsingTests {
         AiMsgDebug("Test completed (%s)", msg);
     }
 
-    void assert_name_doesnt_crash(const char *msg, const char *obj_name_in, bool strip_obj_ns) {
+    inline void assert_name_doesnt_crash(const char *msg, const char *obj_name_in, bool strip_obj_ns) {
         assert_clean_names(msg, obj_name_in, strip_obj_ns, NULL, NULL);
     }
 
-    void assert_sitoa_inst_handling(const char *msg, const char *obj_name_in, 
+    inline void assert_sitoa_inst_handling(const char *msg, const char *obj_name_in, 
                              const char *obj_correct, bool handled_correct) {
         char obj_name_out[MAX_STRING_LENGTH] = "";
         bool handled = sitoa_pointcloud_instance_handling(obj_name_in, obj_name_out);
@@ -78,7 +78,7 @@ namespace NameParsingTests {
         AiMsgDebug("Test ran: %s", msg);
     }
 
-    void assert_mtoa_strip(const char *msg, const char *obj_name_in, const char *obj_correct) {
+    inline void assert_mtoa_strip(const char *msg, const char *obj_name_in, const char *obj_correct) {
         char obj_name_out[MAX_STRING_LENGTH] = "";
         mtoa_strip_namespaces(obj_name_in, obj_name_out);
 
@@ -90,7 +90,7 @@ namespace NameParsingTests {
         AiMsgDebug("Test ran: %s", msg);
     }
 
-    void mtoa_parsing() {    
+    inline void mtoa_parsing() {    
         assert_clean_names("mtoa-1", "object", true, "object", "default");
         assert_clean_names("mtoa-2", "ns1:obj1", true, "obj1", "ns1");
         assert_clean_names("mtoa-3", "ns1:ns2:obj1", true, "ns2:obj1", "ns1");
@@ -100,7 +100,7 @@ namespace NameParsingTests {
                            "object|obj2", "namespace");
     }
 
-    void mtoa_strip() {
+    inline void mtoa_strip() {
         assert_mtoa_strip("mtoa-1b", "object", "object");
         assert_mtoa_strip("mtoa-2b", "namespace:object", "object");
         assert_mtoa_strip("mtoa-3b", "ns1:obj1|ns2:obj2", "obj1|obj2");
@@ -109,7 +109,7 @@ namespace NameParsingTests {
         assert_mtoa_strip("mtoa-6b", "obj1|aaa|ccc:ddd|eee:fff", "obj1|aaa|ddd|fff");
     }
 
-    void sitoa_parsing() {    
+    inline void sitoa_parsing() {    
         assert_clean_names("sitoa-1", "object.SItoA.1002", true, 
                            "object", "default");
         assert_clean_names("sitoa-2", "model.object.SItoA.1002", true, 
@@ -172,7 +172,7 @@ namespace NameParsingTests {
         g_pointcloud_instance_verbosity = CRYPTO_ICEPCLOUDVERB_DEFAULT;
     }
 
-    void c4dtoa_parsing() {    
+    inline void c4dtoa_parsing() {    
         // c4d style
         assert_clean_names("c4d-1", "c4d|hi|er|arch|chy", true, 
                            "chy", "hi|er|arch");
@@ -184,14 +184,14 @@ namespace NameParsingTests {
                            "hi|er|arch|chy", "hi|er|arch");
     }
 
-    std::string long_string(std::string input, int doublings) {
+    inline std::string long_string(std::string input, int doublings) {
         std::string result(input);
         for (uint32_t i=0; i<10; i++) // lenght doubles each time
             result += result;
         return result;
     }
 
-    void crazy_maya_parsing() {    
+    inline void crazy_maya_parsing() {    
         std::string looong = std::string(
             long_string("namespace", 10) 
             + ":" 
@@ -203,7 +203,7 @@ namespace NameParsingTests {
         assert_name_doesnt_crash("mtoa-7", weird.c_str(), true);
     }
 
-    void crazy_sitoa_parsing() {
+    inline void crazy_sitoa_parsing() {
         const char *crashed_parsing = "mdl.icecloud.SItoA.Instance.<frame> <id> mstr.SItoA.1001";
         g_pointcloud_instance_verbosity = 2;
         assert_name_doesnt_crash("sitoa-ugly-1", crashed_parsing, false);
@@ -225,7 +225,7 @@ namespace NameParsingTests {
         assert_sitoa_inst_handling("sitoa-ugly-4b", longInst.c_str(), NULL, false);
     }
 
-    void malformed_name_parsing() {
+    inline void malformed_name_parsing() {
         // just want to know there's no crashing
         assert_name_doesnt_crash("malformed-0", "", true);
         assert_name_doesnt_crash("malformed-1", ":obj", true);
@@ -239,7 +239,7 @@ namespace NameParsingTests {
         assert_name_doesnt_crash("malformed-9", ".SItoA", true);
     }
 
-    void utf8_parsing() {
+    inline void utf8_parsing() {
         // mädchen:равнина -> равнина, mädchen
         std::string m_p = std::string(test_utf8_madchen) + ":" + std::string(test_utf8_pabhnha);
         assert_clean_names("utf8-mayastyle-1", m_p.c_str(), true, 
@@ -252,7 +252,7 @@ namespace NameParsingTests {
         );
     }
 
-    void run() {
+    inline void run() {
         mtoa_parsing();
         mtoa_strip();
         sitoa_parsing();
@@ -267,7 +267,7 @@ namespace NameParsingTests {
 
 namespace MaterialNameTests {
 
-    void assert_material_name(const char *msg, const char *mat_full_name,
+    inline void assert_material_name(const char *msg, const char *mat_full_name,
                               bool strip_ns, const char *mat_correct) {
         char mat_name_out[MAX_STRING_LENGTH] = "";
         get_clean_material_name(mat_full_name, mat_name_out, strip_ns);
@@ -279,12 +279,12 @@ namespace MaterialNameTests {
                        msg, mat_correct, mat_name_out);
     }  
 
-    void test_c4d_names() {
+    inline void test_c4d_names() {
         assert_material_name("c4d-m-1", "c4d|mat_name|root_node_name", true, "mat_name");
         // todo(jonah): is this correct? 
         assert_material_name("c4d-m-2", "c4d|mat_name|root_node_name", false, "mat_name");
     }
-    void test_mtoa_names() {
+    inline void test_mtoa_names() {
         assert_material_name("mtoa-m-1", "namespace:my_material_sg", true, "my_material_sg");
         assert_material_name("mtoa-m-2", "namespace:my_material_sg", false, "namespace:my_material_sg");
         assert_material_name("mtoa-m-3", "my_material_sg", true, "my_material_sg");
@@ -292,14 +292,14 @@ namespace MaterialNameTests {
         assert_material_name("mtoa-m-5", ":", true, NULL);
         assert_material_name("mtoa-m-6", ":my_material_sg", true, "my_material_sg");
     }
-    void test_sitoa_names() {
+    inline void test_sitoa_names() {
         const char sitoa_mat[] = "Sources.Materials.myLibrary_ref_library.myMaterialName."
                                  "Standard_Mattes.uBasic.SItoA.25000...";
         assert_material_name("sitoa-m-1", sitoa_mat, true, "myMaterialName");
         assert_material_name("sitoa-m-2", sitoa_mat, false, "myLibrary_ref_library.myMaterialName");
     }
 
-    void run() {
+    inline void run() {
         test_c4d_names();
         test_mtoa_names();
         test_sitoa_names();
@@ -307,7 +307,7 @@ namespace MaterialNameTests {
 }
 
 namespace HashingTests {
-    void assert_hash_to_float(const char *name, float expected_hash) {
+    inline void assert_hash_to_float(const char *name, float expected_hash) {
         uint32_t m3hash = 0;
         MurmurHash3_x86_32(name, (uint32_t) strlen(name), 0, &m3hash);
         float hash = hash_to_float(m3hash);    
@@ -316,14 +316,14 @@ namespace HashingTests {
                        name, expected_hash, hash);
     }
 
-    void hash_ascii_names() {
+    inline void hash_ascii_names() {
         assert_hash_to_float("hello", 6.0705627102400005616e-17f);
         assert_hash_to_float("cube", -4.08461912519e+15f);
         assert_hash_to_float("sphere", 2.79018604383e+15f);
         assert_hash_to_float("plane", 3.66557617593e-11f);
     }
 
-    void hash_utf8_names() {
+    inline void hash_utf8_names() {
         assert_hash_to_float(test_utf8_pabhnha, -1.3192631212399999468e-25f);
         // assert_hash_to_float("равнина", -1.3192631212399999468e-25f);
 
@@ -331,13 +331,13 @@ namespace HashingTests {
         // assert_hash_to_float("mädchen", 6.2361298211599995797e+25f);
     }
 
-    void run() {
+    inline void run() {
         hash_ascii_names();
         hash_utf8_names();
     }
 }
 
-void run_all_unit_tests(AtNode *node) {
+inline void run_all_unit_tests(AtNode *node) {
     if (node 
         && AiNodeLookUpUserParameter(node, CRYPTO_TEST_FLAG) 
         && AiNodeGetBool(node, CRYPTO_TEST_FLAG)) 
