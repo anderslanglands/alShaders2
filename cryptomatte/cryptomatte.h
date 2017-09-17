@@ -11,63 +11,77 @@ How to add cryptomatte to a shader:
 
 1. Add a member of type *CryptomatteData to your ShaderData
 
-        CryptomatteData *data = CryptomatteData_new();
-
-2. in node_init:
-
-        CryptomatteData_del(data);
+    node_initialize {
+        CryptomatteData* data = new CryptomatteData();
+        AiNodeSetLocalData(node, data);
+    }
 
     The constructor sets up getting the global state of things, including
 getting global
     options declared on the Arnold options.
 
-3. in node_finish:
+2. in node_finish:
 
-        CryptomatteData_del(data);
+    node_finish {
+        CryptomatteData* data =
+            reinterpret_cast<CryptomatteData*>(AiNodeGetLocalData(node));
+        delete data;
+    }
 
-4. in node_update:
+3. in node_update:
 
-        # set cryptomatte depth (optional)
-        CryptomatteData_set_option_depth(data, AiNodeGetInt(node,
-"cryptomatte_depth"));
-        # set namespace options (optional)
-        CryptomatteData_set_option_namespace_stripping(data, AiNodeGetBool(node,
-"strip_obj_namespaces"),
-                                                      AiNodeGetBool(node,
-"strip_mat_namespaces"));
-        # set option for sidecar manifest (optional)
-        CryptomatteData_set_manifest_sidecar(data, sidecar);
+    node_update {
+        CryptomatteData* data =
+            reinterpret_cast<CryptomatteData*>(AiNodeGetLocalData(node));
 
-        AtArray* uc_aov_array = AiArray(4, 1, AI_TYPE_STRING,
-            AiNodeGetStr(node, "user_crypto_aov_0"), AiNodeGetStr(node,
-"user_crypto_aov_1"),
-            AiNodeGetStr(node, "user_crypto_aov_2"), AiNodeGetStr(node,
-"user_crypto_aov_3"));
-        AtArray* uc_src_array = AiArray(4, 1, AI_TYPE_STRING,
-            AiNodeGetStr(node, "user_crypto_src_0"), AiNodeGetStr(node,
-"user_crypto_src_1"),
-            AiNodeGetStr(node, "user_crypto_src_2"), AiNodeGetStr(node,
-"user_crypto_src_3"));
+        // set cryptomatte depth (optional)
+        data->set_option_channels(AiNodeGetInt(node, "cryptomatte_depth"),
+                                CRYPTO_PREVIEWINEXR_DEFAULT);
 
-        # does all the setup work. User cryptomatte arrays are optional (can be
-nulls)
-        CryptomatteData_setup_all(data, AiNodeGetStr(node, "aov_crypto_asset"),
-                                  AiNodeGetStr(node, "aov_crypto_object"),
-                                  AiNodeGetStr(node, "aov_crypto_material"),
-                                  uc_aov_array, uc_src_array);
+        // set namespace options (optional)
+        data->set_option_namespace_stripping(
+            AiNodeGetBool(node, "strip_obj_namespaces"),
+            AiNodeGetBool(node, "strip_mat_namespaces"));
 
-    The three arguments are the names of the cryptomatte AOVs. If the AOVs are
-activ (connected to EXR drivers),
-    this does all the complicated setup work of creating multiple AOVs if
-necessary, writing metadata, etc.
+        // set option for sidecar manifest (optional)
+        data->set_manifest_sidecar(sidecar);
 
-5. in shader_evaluate:
+        AtArray* uc_aov_array = AiArray(
+            4, 1, AI_TYPE_STRING, AiNodeGetStr(node, "user_crypto_aov_0").c_str(),
+            AiNodeGetStr(node, "user_crypto_aov_1").c_str(),
+            AiNodeGetStr(node, "user_crypto_aov_2").c_str(),
+            AiNodeGetStr(node, "user_crypto_aov_3").c_str());
+        AtArray* uc_src_array = AiArray(
+            4, 1, AI_TYPE_STRING, AiNodeGetStr(node, "user_crypto_src_0").c_str(),
+            AiNodeGetStr(node, "user_crypto_src_1").c_str(),
+            AiNodeGetStr(node, "user_crypto_src_2").c_str(),
+            AiNodeGetStr(node, "user_crypto_src_3").c_str());
 
-        CryptomatteData_do_cryptomattes(data, sg);
+        // does all the setup work. User cryptomatte arrays are optional (can be
+        // nulls).
+        // The three arguments are the names of the cryptomatte AOVs. If the 
+        // AOVs are active (connected to EXR drivers), this does all the 
+        // complicated setup work of creating multiple AOVs if necessary, 
+        // writing metadata, etc.
+        data->setup_all(AiNodeGetStr(node, "aov_crypto_asset"),
+                        AiNodeGetStr(node, "aov_crypto_object"),
+                        AiNodeGetStr(node, "aov_crypto_material"), uc_aov_array,
+                        uc_src_array);
+    }
 
-    This does all the hashing and writing values to AOVs, including user-defined
-cryptomattes.
-    Opacity does not need to be supplied.
+
+4. in shader_evaluate:
+
+    shader_evaluate {
+        if (sg->Rt & AI_RAY_CAMERA && sg->sc == AI_CONTEXT_SURFACE) {
+            CryptomatteData* data =
+                reinterpret_cast<CryptomatteData*>(AiNodeGetLocalData(node));
+            // This does all the hashing and writing values to AOVs, including 
+            // user-defined cryptomattes. Opacity does not need to be supplied.
+            data->do_cryptomattes(sg);
+        }
+    }
+
 
 */
 
