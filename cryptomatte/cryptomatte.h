@@ -1219,30 +1219,31 @@ private:
         AiNodeIteratorDestroy(shape_iterator);
     }
 
-    void build_standard_metadata(std::vector<AtNode*> driver_asset_v,
-                                 std::vector<AtNode*> driver_object_v,
-                                 std::vector<AtNode*> driver_material_v) {
+    void
+    build_standard_metadata(const std::vector<AtNode*>& driver_asset_v,
+                            const std::vector<AtNode*>& driver_object_v,
+                            const std::vector<AtNode*>& driver_material_v) {
         const clock_t metadata_start_time = clock();
 
         bool do_md_asset = false, do_md_object = false, do_md_material = false;
-        for (size_t i = 0; i < driver_asset_v.size(); i++) {
-            if (metadata_needed(driver_asset_v[i], aov_cryptoasset)) {
+        for (auto& driver_asset : driver_asset_v) {
+            if (metadata_needed(driver_asset, aov_cryptoasset)) {
                 do_md_asset = true;
-                metadata_set_unneeded(driver_asset_v[i], aov_cryptoasset);
+                metadata_set_unneeded(driver_asset, aov_cryptoasset);
                 break;
             }
         }
-        for (size_t i = 0; i < driver_object_v.size(); i++) {
-            if (metadata_needed(driver_object_v[i], aov_cryptoobject)) {
+        for (auto& driver_object : driver_object_v) {
+            if (metadata_needed(driver_object, aov_cryptoobject)) {
                 do_md_object = true;
-                metadata_set_unneeded(driver_object_v[i], aov_cryptoobject);
+                metadata_set_unneeded(driver_object, aov_cryptoobject);
                 break;
             }
         }
-        for (size_t i = 0; i < driver_material_v.size(); i++) {
-            if (metadata_needed(driver_material_v[i], aov_cryptomaterial)) {
+        for (auto& driver_material : driver_material_v) {
+            if (metadata_needed(driver_material, aov_cryptomaterial)) {
                 do_md_material = true;
-                metadata_set_unneeded(driver_material_v[i], aov_cryptomaterial);
+                metadata_set_unneeded(driver_material, aov_cryptomaterial);
                 break;
             }
         }
@@ -1288,7 +1289,8 @@ private:
                       "written at end of render.");
     }
 
-    void build_user_metadata(std::vector<std::vector<AtNode*>> drivers_vv) {
+    void
+    build_user_metadata(const std::vector<std::vector<AtNode*>>& drivers_vv) {
         std::vector<StringVector> manifs_user_m;
         manifs_user_paths = std::vector<StringVector>();
         manifs_user_m.resize(drivers_vv.size());
