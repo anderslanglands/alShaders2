@@ -106,7 +106,7 @@ def createBinaryDistribution(name, droot):
         f.close()
 
 # source distribution
-createSourceDistribution(name_src, ptrn_src, files_src)
+# createSourceDistribution(name_src, ptrn_src, files_src)
 
 # Binary distribution
 droot = 'build/dist/%s/ai%s' % (ALS_VERSION, ARNOLD_VERSION)
