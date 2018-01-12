@@ -369,16 +369,13 @@ inline void get_clean_material_name(const char* mat_full_name,
 }
 
 inline float hash_to_float(uint32_t hash) {
-    uint32_t mantissa = hash & ((1 << 23) - 1);
-    uint32_t exponent = (hash >> 23) & ((1 << 8) - 1);
-    exponent = std::max(exponent, (uint32_t)1);
-    exponent = std::min(exponent, (uint32_t)254);
-    exponent = exponent << 23;
-    uint32_t sign = (hash >> 31);
-    sign = sign << 31;
-    uint32_t float_bits = sign | exponent | mantissa;
+    // if all exponent bits are 0 (subnormals, +zero, -zero) set exponent to 1
+    // if all exponent bits are 1 (NaNs, +inf, -inf) set exponent to 254
+    uint32_t exponent = hash >> 23 & 255; // extract exponent (8 bits)
+    if (exponent == 0 || exponent == 255)
+        hash ^= 1 << 23; // toggle bit 
     float f;
-    std::memcpy(&f, &float_bits, 4);
+    std::memcpy(&f, &hash, 4);
     return f;
 }
 
