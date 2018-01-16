@@ -61,16 +61,16 @@ node_update {
     data->set_option_namespace_stripping(AiNodeGetBool(node, "strip_obj_namespaces"),
                                          AiNodeGetBool(node, "strip_mat_namespaces"));
 
-    AtArray* uc_aov_array =
-        AiArray(4, 1, AI_TYPE_STRING, AiNodeGetStr(node, "user_crypto_aov_0").c_str(),
-                AiNodeGetStr(node, "user_crypto_aov_1").c_str(),
-                AiNodeGetStr(node, "user_crypto_aov_2").c_str(),
-                AiNodeGetStr(node, "user_crypto_aov_3").c_str());
-    AtArray* uc_src_array =
-        AiArray(4, 1, AI_TYPE_STRING, AiNodeGetStr(node, "user_crypto_src_0").c_str(),
-                AiNodeGetStr(node, "user_crypto_src_1").c_str(),
-                AiNodeGetStr(node, "user_crypto_src_2").c_str(),
-                AiNodeGetStr(node, "user_crypto_src_3").c_str());
+    AtArray* uc_aov_array = AiArray(4, 1, AI_TYPE_STRING, //
+                                    AiNodeGetStr(node, "user_crypto_aov_0").c_str(),
+                                    AiNodeGetStr(node, "user_crypto_aov_1").c_str(),
+                                    AiNodeGetStr(node, "user_crypto_aov_2").c_str(),
+                                    AiNodeGetStr(node, "user_crypto_aov_3").c_str());
+    AtArray* uc_src_array = AiArray(4, 1, AI_TYPE_STRING, //
+                                    AiNodeGetStr(node, "user_crypto_src_0").c_str(),
+                                    AiNodeGetStr(node, "user_crypto_src_1").c_str(),
+                                    AiNodeGetStr(node, "user_crypto_src_2").c_str(),
+                                    AiNodeGetStr(node, "user_crypto_src_3").c_str());
 
     data->setup_all(AiNodeGetStr(node, "aov_crypto_asset"), AiNodeGetStr(node, "aov_crypto_object"),
                     AiNodeGetStr(node, "aov_crypto_material"), uc_aov_array, uc_src_array);

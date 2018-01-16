@@ -401,7 +401,7 @@ inline AtString get_user_data(const AtShaderGlobals* sg, const AtNode* node,
         // this is intentionally outside the if (pentry) block.
         // With user data declared on ginstances and such, no pentry
         // is aquirable but AiUDataGetStr still works.
-        // todo(jonah): still true in Arnold 5?
+        // still true in Arnold 5.
         AtString udata_value;
         if (AiUDataGetStr(user_data_name, udata_value)) {
             *cachable = false;
@@ -513,8 +513,8 @@ inline void write_manifest_to_string(const ManifestMap& map, std::string& manf_s
     const size_t max_entries = 100000;
     size_t metadata_entries = map_entries;
     if (map_entries > max_entries) {
-        AiMsgWarning("Cryptomatte: %lu entries in manifest, limiting to %lu", map_entries,
-                     max_entries);
+        AiMsgWarning("Cryptomatte: %lu entries in manifest, limiting to %lu", //
+                     map_entries, max_entries);
         metadata_entries = max_entries;
     }
 
@@ -654,7 +654,7 @@ inline AtString add_override_udata_to_manifest(const AtNode* node, const AtStrin
         return udata;
     } else {
         AtArray* values = AiNodeGetArray(node, override_udata);
-        if (values != NULL) {
+        if (values) {
             for (uint32_t ai = 0; ai < AiArrayGetNumElements(values); ai++)
                 add_hash_to_map(AiArrayGetStr(values, ai), hash_map);
         }
@@ -698,7 +698,7 @@ inline void add_obj_to_manifest(const AtNode* node, char name[MAX_STRING_LENGTH]
 
 ///////////////////////////////////////////////
 //
-//      Forward declarations
+//      AOV utilities
 //
 ///////////////////////////////////////////////
 
@@ -710,6 +710,12 @@ inline void write_array_of_AOVs(AtShaderGlobals* sg, const AtArray* names, float
         AiAOVSetFlt(sg, aovName, id);
     }
 }
+
+///////////////////////////////////////////////
+//
+//      CryptomatteCache
+//
+///////////////////////////////////////////////
 
 #define CACHE_LINE 64
 #if defined(_WIN32) || defined(_MSC_VER)
@@ -727,6 +733,13 @@ struct CACHE_ALIGN CryptomatteCache {
 };
 
 extern CryptomatteCache CRYPTOMATTE_CACHE[AI_MAX_THREADS];
+
+
+///////////////////////////////////////////////
+//
+//      UserCryptomatte and CryptomatteData 
+//
+///////////////////////////////////////////////
 
 struct UserCryptomattes {
     size_t count = 0;
@@ -995,9 +1008,8 @@ private:
                 for (size_t j = 0; j < user_cryptomattes.count; j++) {
                     const char* user_aov_name = user_cryptomattes.aovs[j].c_str();
                     if (strcmp(aov_name, user_aov_name) == 0) {
-                        cryptoAOVs = AiArrayAllocate(option_aov_depth, 1,
-                                                     AI_TYPE_STRING); // will be destroyed when
-                                                                      // cryptomatteData is
+                        // will be destroyed when cryptomatteData is
+                        cryptoAOVs = AiArrayAllocate(option_aov_depth, 1, AI_TYPE_STRING);
                         driver = AiNodeLookUpByName(driver_name);
                         tmp_uc_drivers_vv[j].push_back(driver);
                         user_cryptomattes.aov_arrays[j] = cryptoAOVs;
@@ -1026,8 +1038,8 @@ private:
                 new_outputs.push_back(manifest_driver_name.c_str());
             }
             const uint32_t total_outputs = prev_output_num + (uint32_t)new_outputs.size();
-            AtArray* final_outputs =
-                AiArrayAllocate(total_outputs, 1, AI_TYPE_STRING); // Does not need destruction
+            // Does not need destruction
+            AtArray* final_outputs = AiArrayAllocate(total_outputs, 1, AI_TYPE_STRING);
             for (uint32_t i = 0; i < prev_output_num; i++) {
                 // Iterate through old outputs and add them
                 AiArraySetStr(final_outputs, i, AiArrayGetStr(outputs, i));
@@ -1258,8 +1270,7 @@ private:
             for (size_t j = 0; j < drivers_vv[i].size(); j++) {
                 AtNode* driver = drivers_vv[i][j];
                 AtString user_aov = user_cryptomattes.aovs[i];
-                do_metadata[i] =
-                    do_metadata[i] || metadata_needed(driver, user_aov); // checks for null
+                do_metadata[i] = do_metadata[i] || metadata_needed(driver, user_aov);
                 do_anything = do_anything || do_metadata[i];
 
                 std::string manif_user_m;

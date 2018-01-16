@@ -247,7 +247,6 @@ filter_pixel {
             out_value->a = (all_vals_iter->second / total_weight);
             return;
         }
-
         iter++;
     }
 }

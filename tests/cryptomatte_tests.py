@@ -261,7 +261,7 @@ class Cryptomatte000(CryptomatteTestBase):
         self.assertAllResultFilesPresent()
 
     def test_cryptomatte_pixels(self):
-        self.assertCryptomattePixelsMatch(print_result=True)
+        self.assertCryptomattePixelsMatch()
 
     def test_unit_tests_ran(self):
         with open(self.result_log) as f:
@@ -291,7 +291,7 @@ class Cryptomatte001(CryptomatteTestBase):
         self.assertAllResultFilesPresent()
 
     def test_cryptomatte_pixels(self):
-        self.assertCryptomattePixelsMatch(print_result=True)
+        self.assertCryptomattePixelsMatch()
 
 
 class Cryptomatte002(CryptomatteTestBase):
@@ -310,7 +310,7 @@ class Cryptomatte002(CryptomatteTestBase):
         self.assertAllResultFilesPresent()
 
     def test_cryptomatte_pixels(self):
-        self.assertCryptomattePixelsMatch(print_result=True)
+        self.assertCryptomattePixelsMatch()
 
 
 class Cryptomatte003(CryptomatteTestBase):
@@ -330,7 +330,7 @@ class Cryptomatte003(CryptomatteTestBase):
         self.assertAllResultFilesPresent()
 
     def test_cryptomatte_pixels(self):
-        self.assertCryptomattePixelsMatch(print_result=True)
+        self.assertCryptomattePixelsMatch()
 
 
 class Cryptomatte010(CryptomatteTestBase):
@@ -357,7 +357,7 @@ class Cryptomatte010(CryptomatteTestBase):
         self.assertAllResultFilesPresent()
 
     def test_cryptomatte_pixels(self):
-        self.assertCryptomattePixelsMatch(print_result=True)
+        self.assertCryptomattePixelsMatch()
 
 
 class Cryptomatte020(CryptomatteTestBase):
@@ -382,4 +382,4 @@ class Cryptomatte020(CryptomatteTestBase):
         self.assertAllResultFilesPresent()
 
     def test_cryptomatte_pixels(self):
-        self.assertCryptomattePixelsMatch(print_result=True)
+        self.assertCryptomattePixelsMatch()

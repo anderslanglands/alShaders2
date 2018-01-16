@@ -29,7 +29,7 @@ def get_all_cryptomatte_tests():
 
 class KickAndCompareTestCase(unittest.TestCase):
     ass = ""
-    arnold_v = 2
+    arnold_v = 1
     arnold_t = 4
 
     @classmethod
@@ -157,8 +157,8 @@ class KickAndCompareTestCase(unittest.TestCase):
 
         self.assertEqual(compresults.nfail, 0,
                          "%s. Did not match within threshold %s. %s" % (msg, file_name, result_msg))
-        if print_results:
-            print("Passed: (within tolerance) - ", result_msg)
+        # if print_results:
+        #     print("Passed: (within tolerance) - ", result_msg)
 
     def assertAllResultImagesEqual(self, tolerance):
         """ Checks all correct images match results """
