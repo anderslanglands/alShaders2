@@ -142,8 +142,8 @@ extern const AtString CRYPTO_OBJECT_OFFSET_UDATA;
 extern const AtString CRYPTO_MATERIAL_OFFSET_UDATA;
 
 // Some static AtStrings to cache
-extern const AtString aStr_shader;
-extern const AtString aStr_listAggregate;
+const AtString aStr_shader("shader");
+const AtString aStr_list_aggregate("list_aggregate");
 
 ///////////////////////////////////////////////
 //
@@ -766,6 +766,7 @@ struct CACHE_ALIGN CryptomatteCache {
     AtNode* shader_object = nullptr;
     AtRGB mat_hash_clr = AI_RGB_BLACK;
 };
+
 extern CryptomatteCache CRYPTOMATTE_CACHE[AI_MAX_THREADS];
 
 struct UserCryptomattes {
@@ -1164,7 +1165,7 @@ private:
                 continue;
 
             // skip any list aggregate nodes
-            if (AiNodeIs(node, aStr_listAggregate))
+            if (AiNodeIs(node, aStr_list_aggregate))
                 continue;
 
             char nsp_name[MAX_STRING_LENGTH] = "";
