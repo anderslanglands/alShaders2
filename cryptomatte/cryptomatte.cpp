@@ -1,8 +1,6 @@
+#include "cryptomatte.h"
 #include "MurmurHash3.h"
 #include <ai.h>
-#include "cryptomatte.h"
-
-
 
 // User data names
 const AtString CRYPTO_ASSET_UDATA("crypto_asset");
