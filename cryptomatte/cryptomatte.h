@@ -1,5 +1,3 @@
-#include <ai.h>
-
 /*
 API Documentation:
 
@@ -84,6 +82,7 @@ getting global
 
 
 */
+#include <ai.h>
 
 #include <algorithm>
 #include <cstdio>
@@ -148,12 +147,10 @@ const AtString aStr_list_aggregate("list_aggregate");
 ///////////////////////////////////////////////
 
 inline void safe_copy_to_buffer(char buffer[MAX_STRING_LENGTH], const char* c) {
-    if (c != NULL) {
-        size_t length = std::min(strlen(c), (size_t)MAX_STRING_LENGTH - 1);
-        strncpy(buffer, c, length);
-    } else {
+    if (c)
+        strncpy(buffer, c, std::min(strlen(c), (size_t)MAX_STRING_LENGTH - 1));
+    else
         buffer[0] = '\0';
-    }
 }
 
 inline bool string_has_content(const char* c) { return c != NULL && c[0] != '\0'; }
@@ -717,12 +714,14 @@ inline void write_array_of_AOVs(AtShaderGlobals* sg, const AtArray* names, float
 //
 ///////////////////////////////////////////////
 
+// clang-format off
 #define CACHE_LINE 64
 #if defined(_WIN32) || defined(_MSC_VER)
 #define CACHE_ALIGN __declspec(align(CACHE_LINE))
 #else
 #define CACHE_ALIGN __attribute__((aligned(CACHE_LINE)))
 #endif
+// clang-format on
 
 struct CACHE_ALIGN CryptomatteCache {
     AtNode* object = nullptr;
@@ -734,10 +733,9 @@ struct CACHE_ALIGN CryptomatteCache {
 
 extern CryptomatteCache CRYPTOMATTE_CACHE[AI_MAX_THREADS];
 
-
 ///////////////////////////////////////////////
 //
-//      UserCryptomatte and CryptomatteData 
+//      UserCryptomatte and CryptomatteData
 //
 ///////////////////////////////////////////////
 
@@ -1345,14 +1343,15 @@ private:
         const bool cmp_rle = compression == AiEnumGetValue(compressions, "rle"),
                    cmp_dwa = compression == AiEnumGetValue(compressions, "dwaa") ||
                              compression == AiEnumGetValue(compressions, "dwab");
-        if (cmp_rle)
-            AiMsgWarning("Cryptomatte cannot be set to RLE compression- it "
-                         "does not work on full float. Switching to Zip.");
-        if (cmp_dwa)
-            AiMsgWarning("Cryptomatte cannot be set to dwa compression- the "
-                         "compression breaks Cryptomattes. Switching to Zip.");
-        if (cmp_rle || cmp_dwa)
+        if (cmp_rle || cmp_dwa) {
+            if (cmp_rle)
+                AiMsgWarning("Cryptomatte cannot be set to RLE compression- it "
+                             "does not work on full float. Switching to Zip.");
+            if (cmp_dwa)
+                AiMsgWarning("Cryptomatte cannot be set to dwa compression- the "
+                             "compression breaks Cryptomattes. Switching to Zip.");
             AiNodeSetStr(driver, "compression", "zip");
+        }
 
         AiAOVRegister(aov_name, AI_TYPE_RGB, AI_AOV_BLEND_OPACITY);
 
