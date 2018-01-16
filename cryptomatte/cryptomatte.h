@@ -86,13 +86,23 @@ getting global
 */
 
 // types
-#include <fstream>
 #include <map>
+#include <ctime>
+#include <cstdio>
 #include <string>
-#include <unordered_set>
 #include <vector>
+#include <limits>
+#include <vector>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+#include <unordered_set>
+
 
 #include "MurmurHash3.h"
+
+#define NOMINMAX // lets you keep using std::min on windows
 
 using ManifestMap = std::map<std::string, float>;
 
@@ -1230,11 +1240,8 @@ private:
         AiNodeIteratorDestroy(shape_iterator);
     }
 
-    void
-    build_standard_metadata(const std::vector<AtNode*>& driver_asset_v,
-                            const std::vector<AtNode*>& driver_object_v,
-                            const std::vector<AtNode*>& driver_material_v) {
-        const clock_t metadata_start_time = clock();
+    void build_standard_metadata(const std::vector<AtNode*>& driver_asset_v, const std::vector<AtNode*>& driver_object_v, const std::vector<AtNode*>& driver_material_v) {
+        clock_t metadata_start_time = clock();
 
         bool do_md_asset = false, do_md_object = false, do_md_material = false;
         for (auto& driver_asset : driver_asset_v) {
@@ -1402,15 +1409,20 @@ private:
 
         AiNodeSetBool(driver, "half_precision", false);
 
-        const AtNodeEntry* driver_entry = AiNodeGetNodeEntry(driver);
-        AtEnum compressions = AiParamGetEnum(
-            AiNodeEntryLookUpParameter(driver_entry, "compression"));
-        if (AiNodeGetInt(driver, "compression") ==
-            AiEnumGetValue(compressions, "rle")) {
+        const AtEnum compressions =
+            AiParamGetEnum(AiNodeEntryLookUpParameter(AiNodeGetNodeEntry(driver), "compression"));
+        const int compression = AiNodeGetInt(driver, "compression");
+        const bool cmp_rle = compression == AiEnumGetValue(compressions, "rle"),
+                   cmp_dwa = compression == AiEnumGetValue(compressions, "dwaa") ||
+                             compression == AiEnumGetValue(compressions, "dwab");
+        if (cmp_rle)
             AiMsgWarning("Cryptomatte cannot be set to RLE compression- it "
                          "does not work on full float. Switching to Zip.");
+        if (cmp_dwa)
+            AiMsgWarning("Cryptomatte cannot be set to dwa compression- the "
+                         "compression breaks Cryptomattes. Switching to Zip.");
+        if (cmp_rle || cmp_dwa)
             AiNodeSetStr(driver, "compression", "zip");
-        }
 
         AiAOVRegister(aov_name, AI_TYPE_RGB, AI_AOV_BLEND_OPACITY);
 

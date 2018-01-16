@@ -1,20 +1,7 @@
 #include "MurmurHash3.h"
 #include <ai.h>
-#include <algorithm>
-#include <cstdio>
-#include <cstring>
-#include <ctime>
-#include <fstream>
-#include <iostream>
-#include <limits>
-#include <map>
-#include <string>
-#include <unordered_set>
-#include <vector>
-
 #include "cryptomatte.h"
 
-#define NOMINMAX // lets you keep using std::min
 
 ///////////////////////////////////////////////
 //
