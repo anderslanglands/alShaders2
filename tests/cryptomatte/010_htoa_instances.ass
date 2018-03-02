@@ -5,6 +5,8 @@
 options
 {
  AA_samples 6
+ AA_sample_clamp 1
+ AA_sample_clamp_affects_aovs 1
  outputs 7 1 STRING
   "/obj/cam1 RGBA RGBA /out/arnold1:gaussian_filter /out/arnold1:exr:cam1"
   "/obj/cam1 Cd RGB /out/arnold1:gaussian_filter /out/arnold1:exr:cam1"

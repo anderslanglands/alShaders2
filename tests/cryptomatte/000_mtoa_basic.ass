@@ -7,6 +7,8 @@
 options
 {
  AA_samples 6
+ AA_sample_clamp 1
+ AA_sample_clamp_affects_aovs 1
  error_color_bad_pixel 0 0 0
  outputs 4 1 STRING
   "RGBA RGBA defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_tiff.RGBA"
