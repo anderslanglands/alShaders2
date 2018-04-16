@@ -188,6 +188,7 @@ filter_pixel {
             data->filter_func(AiAOVSampleIteratorGetOffset(iterator), data->width);
         if (sample_weight == 0.0f)
             continue;
+        sample_weight *= AiAOVSampleIteratorGetInvDensity(iterator);
 
         float iterative_transparency_weight = 1.0f;
         float quota = sample_weight;
