@@ -516,7 +516,8 @@ standard_surface
  opacity 0.538461566 0.538461566 0.538461566
 }
 
-standard_surface
+# set to a closure shader to test for a fixed Arnold 5.1 crash (42fa9d7)
+utility
 {
  name leftAsset:aiStandardSurface1SG
 }
