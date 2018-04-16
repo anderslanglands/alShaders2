@@ -77,6 +77,8 @@ node_update {
 }
 
 shader_evaluate {
+    sg->out.CLOSURE() = AtClosureList();
+
     if (sg->Rt & AI_RAY_CAMERA && sg->sc == AI_CONTEXT_SURFACE) {
         CryptomatteData* data = reinterpret_cast<CryptomatteData*>(AiNodeGetLocalData(node));
         data->do_cryptomattes(sg);
