@@ -1104,7 +1104,7 @@ private:
         AtNodeIterator* shape_iterator = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
         while (!AiNodeIteratorFinished(shape_iterator)) {
             AtNode* node = AiNodeIteratorGetNext(shape_iterator);
-            if (!node)
+            if (!node || AiNodeIsDisabled(node))
                 continue;
 
             // skip any list aggregate nodes
@@ -1169,6 +1169,8 @@ private:
         AtNodeIterator* shape_iterator = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
         while (!AiNodeIteratorFinished(shape_iterator)) {
             AtNode* node = AiNodeIteratorGetNext(shape_iterator);
+            if (!node || AiNodeIsDisabled(node))
+                continue;
             for (uint32_t i = 0; i < user_cryptomattes.count; i++) {
                 if (do_metadata[i])
                     add_override_udata_to_manifest(node, user_cryptomattes.sources[i],
