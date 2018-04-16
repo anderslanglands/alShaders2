@@ -5,7 +5,10 @@
 options
 {
  AA_samples 6
+ AA_samples_max 10
+ enable_adaptive_sampling on
  AA_sample_clamp 1
+ AA_adaptive_threshold 0.01
  AA_sample_clamp_affects_aovs 1
  outputs 7 1 STRING
   "/obj/cam1 RGBA RGBA /out/arnold1:gaussian_filter /out/arnold1:exr:cam1"

@@ -238,6 +238,8 @@ class Cryptomatte000(CryptomatteTestBase):
     A typical Mtoa configuration, (except with mayaShadingEngines removed)
     Some face assignments, some opacity, namespaces, some default namespaces, some 
     overrides on namespaces. 
+    
+    Has a non_AOV shader to test for regressions to an Arnold 5.1 crash. 
 
     Settings:
         naming style: maya and c4d
@@ -336,6 +338,8 @@ class Cryptomatte003(CryptomatteTestBase):
 class Cryptomatte010(CryptomatteTestBase):
     """
     Lots of instances, in a typical HtoA configuration. 
+
+    Adaptive sampling. 
 
     Settings:
         naming style: houdini
