@@ -316,10 +316,7 @@ inline void hash_ascii_names() {
 
 inline void hash_utf8_names() {
     assert_hash_to_float(test_utf8_pabhnha, -1.3192631212399999468e-25f);
-    // assert_hash_to_float("равнина", -1.3192631212399999468e-25f);
-
     assert_hash_to_float(test_utf8_madchen, 6.2361298211599995797e+25f);
-    // assert_hash_to_float("mädchen", 6.2361298211599995797e+25f);
 }
 
 inline void run() {
