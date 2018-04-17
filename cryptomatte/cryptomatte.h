@@ -963,11 +963,16 @@ private:
     void setup_cryptomatte_nodes() {
         AtNode* renderOptions = AiUniverseGetOptions();
         const AtArray* outputs = AiNodeGetArray(renderOptions, "outputs");
+        const uint32_t prev_output_num = AiArrayGetNumElements(outputs);
+
+        // if a driver is set to half, it needs to be set to full,
+        // and its non-cryptomatte outputs need to be set to half. 
+        std::unordered_set<AtNode*> half_modified;
+        std::vector<AtNode*> half_modifiable;
+        half_modifiable.resize(prev_output_num);
 
         std::vector<std::vector<AtNode*>> tmp_uc_drivers_vv;
         tmp_uc_drivers_vv.resize(user_cryptomattes.count);
-
-        const uint32_t prev_output_num = AiArrayGetNumElements(outputs);
 
         std::vector<AtNode*> driver_cryptoAsset_v, driver_cryptoObject_v, driver_cryptoMaterial_v;
         StringVector new_outputs;
@@ -983,30 +988,34 @@ private:
             char* c2 = strtok(NULL, " ");
             char* c3 = strtok(NULL, " ");
             char* c4 = strtok(NULL, " ");
+            char* c5 = strtok(NULL, " ");
 
-            bool short_output = (c4 == NULL);
+            bool short_output = (c4 == NULL || strncmp(c4, "HALF", 4) == 0);
+
             char* camera_name = short_output ? NULL : c0;
             char* aov_name = short_output ? c0 : c1;
             char* filter_name = short_output ? c2 : c3;
             char* driver_name = short_output ? c3 : c4;
+            char* output_half = short_output ? c4 : c5;
 
-            AtNode* driver = NULL;
-            AtArray* cryptoAOVs = NULL;
+            AtNode* driver = AiNodeLookUpByName(driver_name);
+
+            const bool flagged_half = output_half && strncmp(output_half, "HALF", 4) == 0;
+            half_modifiable[i] = flagged_half ? nullptr : driver;
+
+            AtArray* cryptoAOVs = nullptr;
 
             if (strcmp(aov_name, aov_cryptoasset.c_str()) == 0) {
                 aov_array_cryptoasset = AiArrayAllocate(option_aov_depth, 1, AI_TYPE_STRING);
                 cryptoAOVs = aov_array_cryptoasset;
-                driver = AiNodeLookUpByName(driver_name);
                 driver_cryptoAsset_v.push_back(driver);
             } else if (strcmp(aov_name, aov_cryptoobject.c_str()) == 0) {
                 aov_array_cryptoobject = AiArrayAllocate(option_aov_depth, 1, AI_TYPE_STRING);
                 cryptoAOVs = aov_array_cryptoobject;
-                driver = AiNodeLookUpByName(driver_name);
                 driver_cryptoObject_v.push_back(driver);
             } else if (strcmp(aov_name, aov_cryptomaterial.c_str()) == 0) {
                 aov_array_cryptomaterial = AiArrayAllocate(option_aov_depth, 1, AI_TYPE_STRING);
                 cryptoAOVs = aov_array_cryptomaterial;
-                driver = AiNodeLookUpByName(driver_name);
                 driver_cryptoMaterial_v.push_back(driver);
             } else if (user_cryptomattes.count != 0) {
                 for (size_t j = 0; j < user_cryptomattes.count; j++) {
@@ -1014,7 +1023,6 @@ private:
                     if (strcmp(aov_name, user_aov_name) == 0) {
                         // will be destroyed when cryptomatteData is
                         cryptoAOVs = AiArrayAllocate(option_aov_depth, 1, AI_TYPE_STRING);
-                        driver = AiNodeLookUpByName(driver_name);
                         tmp_uc_drivers_vv[j].push_back(driver);
                         user_cryptomattes.aov_arrays[j] = cryptoAOVs;
                         break;
@@ -1023,6 +1031,8 @@ private:
             }
 
             if (cryptoAOVs != NULL) {
+                if (check_driver(driver) && AiNodeGetBool(driver, "half_precision")) 
+                    half_modified.insert(driver);
                 for (uint32_t j = 0; j < option_aov_depth; j++)
                     AiArraySetStr(cryptoAOVs, j, "");
                 create_AOV_array(aov_name, filter_name, camera_name, driver, cryptoAOVs,
@@ -1044,14 +1054,17 @@ private:
             const uint32_t total_outputs = prev_output_num + (uint32_t)new_outputs.size();
             // Does not need destruction
             AtArray* final_outputs = AiArrayAllocate(total_outputs, 1, AI_TYPE_STRING);
+            // Add old outputs (with "HALF" appended where appropes)
             for (uint32_t i = 0; i < prev_output_num; i++) {
-                // Iterate through old outputs and add them
-                AiArraySetStr(final_outputs, i, AiArrayGetStr(outputs, i));
+                AtString output = AiArrayGetStr(outputs, i);
+                if (half_modified.count(half_modifiable[i]))
+                    output = AtString((std::string(output) + " HALF").c_str());
+                AiArraySetStr(final_outputs, i, output);
             }
-            for (int i = 0; i < new_outputs.size(); i++) {
-                // Iterate through new outputs and add them
+            // Add new outputs and add them
+            for (int i = 0; i < new_outputs.size(); i++) 
                 AiArraySetStr(final_outputs, i + prev_output_num, new_outputs[i].c_str());
-            }
+
             AiNodeSetArray(renderOptions, "outputs", final_outputs);
         }
 
@@ -1343,6 +1356,7 @@ private:
         ///////////////////////////////////////////////
         //      Set CryptoAOV driver to full precision and outlaw RLE
 
+        // output strings should have already had "HALF" appended. 
         AiNodeSetBool(driver, "half_precision", false);
 
         const AtEnum compressions =

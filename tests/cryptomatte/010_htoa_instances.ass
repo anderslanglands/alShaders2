@@ -39,6 +39,7 @@ driver_exr
  name /out/arnold1:exr:cam1
  filename "010_result/result.exr"
  tiled on
+ half_precision on
 }
 
 gaussian_filter

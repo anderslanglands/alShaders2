@@ -11,11 +11,11 @@ options
  outputs 8 1 STRING
   "perspCam1 RGBA RGBA defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera1_bty"
   "perspCam1 crypto_material RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera1_crypto_material"
-  "perspCam1 crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera1_crypto_asset"
-  "perspCam1 special_chars RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera1_special_chars"
+  "perspCam1 crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera1_crypto_asset HALF"
+  "perspCam1 special_chars RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera1_special_chars HALF"
   "perspCam2 RGBA RGBA defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera2_bty"
   "perspCam2 crypto_material RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera2_crypto_material"
-  "perspCam2 crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera2_crypto_asset"
+  "perspCam2 crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera2_crypto_asset HALF"
   "perspCam2 special_chars RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.camera2_special_chars"
  xres 64
  yres 64
@@ -56,7 +56,7 @@ driver_exr
  name defaultArnoldDriver@driver_exr.camera1_crypto_asset
  filename "002_result/camera1_crypto_asset.exr"
  compression "zips"
- half_precision on
+ half_precision off
 }
 
 driver_exr

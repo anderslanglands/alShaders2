@@ -13,7 +13,7 @@ options
  outputs 4 1 STRING
   "RGBA RGBA defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_tiff.RGBA"
   "crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_asset"
-  "crypto_material RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_material"
+  "crypto_material RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_material HALF"
   "crypto_object RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_object"
  xres 128
  yres 128
