@@ -452,10 +452,8 @@ inline bool get_object_names(const AtShaderGlobals* sg, const AtNode* node, bool
 
     bool need_nsp_name = nsp_user_data.empty();
     bool need_obj_name = obj_user_data.empty();
-    if (need_obj_name || need_nsp_name) {
-        const char* obj_full_name = AiNodeGetName(node);
-        get_clean_object_name(obj_full_name, obj_name_out, nsp_name_out, strip_obj_ns);
-    }
+    if (need_obj_name || need_nsp_name) 
+        get_clean_object_name(AiNodeGetName(node), obj_name_out, nsp_name_out, strip_obj_ns);    
 
     offset_name(sg, node, get_offset_user_data(sg, node, CRYPTO_OBJECT_OFFSET_UDATA, &cachable),
                 obj_name_out);
