@@ -118,7 +118,7 @@ using StringVector = std::vector<std::string>;
 #define CRYPTO_PREVIEWINEXR_DEFAULT true
 
 // System values
-#define MAX_STRING_LENGTH 255
+#define MAX_STRING_LENGTH 2048
 #define MAX_CRYPTOMATTE_DEPTH 99
 #define MAX_USER_CRYPTOMATTES 16
 
