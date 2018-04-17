@@ -97,8 +97,9 @@ user_data_int
 cryptomatte
 {
  name /shop/aovs/cryptomatte1
- strip_obj_namespaces 0
- strip_mat_namespaces 0
+ strip_obj_namespaces off
+ strip_mat_namespaces off
+ preview_in_exr off
  aov_crypto_asset "crypto_asset"
  aov_crypto_object "crypto_object"
  aov_crypto_material "crypto_material"

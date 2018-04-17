@@ -14,6 +14,7 @@ enum cryptomatteParams {
     p_aov_crypto_asset,
     p_aov_crypto_object,
     p_aov_crypto_material,
+    p_preview_in_exr,
     p_user_crypto_aov_0,
     p_user_crypto_src_0,
     p_user_crypto_aov_1,
@@ -32,6 +33,7 @@ node_parameters {
     AiParameterStr("aov_crypto_asset", "crypto_asset");
     AiParameterStr("aov_crypto_object", "crypto_object");
     AiParameterStr("aov_crypto_material", "crypto_material");
+    AiParameterBool("preview_in_exr", CRYPTO_PREVIEWINEXR_DEFAULT);
     AiParameterStr("user_crypto_aov_0", "");
     AiParameterStr("user_crypto_src_0", "");
     AiParameterStr("user_crypto_aov_1", "");
@@ -57,7 +59,7 @@ node_update {
     CryptomatteData* data = reinterpret_cast<CryptomatteData*>(AiNodeGetLocalData(node));
 
     data->set_option_sidecar_manifests(AiNodeGetBool(node, "sidecar_manifests"));
-    data->set_option_channels(AiNodeGetInt(node, "cryptomatte_depth"), CRYPTO_PREVIEWINEXR_DEFAULT);
+    data->set_option_channels(AiNodeGetInt(node, "cryptomatte_depth"), AiNodeGetBool(node, "preview_in_exr"));
     data->set_option_namespace_stripping(AiNodeGetBool(node, "strip_obj_namespaces"),
                                          AiNodeGetBool(node, "strip_mat_namespaces"));
 

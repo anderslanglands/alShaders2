@@ -40,7 +40,10 @@ with uigen.group(ui, 'Standard Cryptomatte AOVs', collapse=False):
    ui.aov('aov_crypto_material', 'rgb', label='Material AOV name', 
       description='Set the name of the cryptomatte material AOV')
 
-with uigen.group(ui, 'User Defined Cryptomattes', collapse=True):
+with uigen.group(ui, 'Advanced', collapse=True):
+   ui.parameter('preview_in_exr', 'bool', False, label='Do preview channels in EXR Files', 
+      description='When off, skips rendering legacy Cryptomatte preview channels in EXR drivers.')
+
    with uigen.group(ui, 'User Cryptomatte 0', collapse=False ):
       ui.parameter('user_crypto_aov_0', 'string', '', label='AOV name', 
          description='AOV name for user Cryptomatte 0')

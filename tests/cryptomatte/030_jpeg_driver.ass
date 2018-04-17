@@ -1,0 +1,742 @@
+### exported: Wed Sep  6 16:47:54 2017
+### from:     Arnold 5.0.1.3 [30b1489a] windows icc-17.0.2 oiio-1.7.15 osl-1.9.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.2.2 2017/08/25 17:00:29
+### host app: MtoA 2.0.1.1 8bf10171 (master) Maya 2016
+
+
+
+options
+{
+ AA_samples 4
+ AA_sample_clamp 1
+ AA_sample_clamp_affects_aovs 1
+ error_color_bad_pixel 0 0 0
+ outputs 2 1 STRING
+  "RGB RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_jpeg.RGB"
+  "crypto_object RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_jpeg2.RGB"
+ xres 128
+ yres 128
+ texture_max_memory_MB 8096
+ texture_per_file_stats on
+ texture_automip off
+ texture_specular_blur 0
+ camera "perspShape"
+ aov_shaders 1 1 NODE
+  "cryptomatte1"
+ GI_diffuse_depth 0
+ GI_specular_depth 0
+ GI_transmission_depth 0
+ declare frame constant FLOAT
+ frame 1
+ declare render_layer constant STRING
+ render_layer "defaultRenderLayer"
+ declare fps constant FLOAT
+ fps 24
+}
+
+cryptomatte
+{
+ name cryptomatte1
+ preview_in_exr off
+}
+
+gaussian_filter
+{
+ name defaultArnoldFilter@gaussian_filter
+ width 2
+}
+
+persp_camera
+{
+ name perspShape
+ matrix
+ 0.9997015 -8.67361738e-19 -0.0244321786 0
+ -0.0148863392 0.792945683 -0.609110475 0
+ 0.019373389 0.609292328 0.792708993 0
+ 0.289257109 16.7602825 18.4332409 1
+ near_clip 0.100000001
+ far_clip 10000
+ screen_window_min -1 -1
+ screen_window_max 1 1
+ shutter_start 0
+ shutter_end 0
+ shutter_type "box"
+ rolling_shutter "off"
+ rolling_shutter_duration 0
+ motion_start 0
+ motion_end 0
+ exposure 0
+ fov 54.4322243
+ focus_distance 1
+ aperture_size 0
+ aperture_blades 0
+ aperture_rotation 0
+ aperture_blade_curvature 0
+ aperture_aspect_ratio 1
+ uv_remap 0 0 0 0
+ radial_distortion 0
+}
+
+polymesh
+{
+ name leftAsset:pCubeShape1
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.19962192 0 2.08844709 0
+ 0 3.03314161 0 0
+ -2.08844709 0 2.19962192 0
+ -6.17146778 1.5709517 0 1
+ shader "leftAsset:aiStandardSurface1SG"
+ opaque on
+ matte off
+ id 4039888159
+ nsides 6 1 UINT
+4 4 4 4 4 4
+ vidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:$$-?2$vMr4%<MT0
+ nidxs 24 1 b85UINT
+B$v2N*&9nA:'RU4J(k<'Z*.woj+G^c%
+ uvidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:&UObB$w/J=(3BP?
+ vlist 8 1 b85VECTOR
+aDq99aDq9989+]c89+]caDq9989+]caDq99!89+]c$$$$)aDq9989+]caDq9989+]c89+]c!aDq99$$$$(89+]caDq99aDq99
+ nlist 24 1 b85VECTOR
+zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=dzzaRT=dzyzzyzzyzzyzzaRT=dzzaRT=dzzaRT=dzzaRT=dzz
+ uvlist 14 1 b85VECTOR2
+82:0xz8<Nt.z82:0x8+HY88<Nt.8+HY882:0x89+]c8<Nt.89+]c82:0x8?r5N8<Nt.8?r5N82:0xy8<Nt.y8C@Knz8C@Kn8+HY87reTbz7reTb8+HY8
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups "leftAsset:aiStandardSurface1SG"
+}
+
+polymesh
+{
+ name pPlaneShape1
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 22.2747993 0 0 0
+ 0 1 0 0
+ 0 0 8.98249722 0
+ 0 0 -2.95381904 1
+ shader "transparentGroundSG"
+ opaque off
+ matte off
+ id 141609554
+ nsides 100 1 b85UINT
+B!%<_l4$$$$=
+ vidxs 400 1 b85UINT
+B'Rg(<'n6:@(4ZLD(P)^H(kMpL)1r-P)MA?T)heQX*/4c\*JXu`+,LDh+GpVl+c?hp,)d%t,E37x,`WJ'-'&\+-BJn/-]o+3.$>=7.[1a?.vUsC/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc24l(k2P;:o2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:5cQEB6)uWF6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9=6an9XZsr9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z=<kq)E=2@;I=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@EVEq@a%WuA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@Ct;bHD:_tLDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGMv)tGiE;xH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ nidxs 400 1 b85UINT
+B$v2N*$[2`0%XA8:&:4\B&q(+J'RpOR(4csZ(kWBb)MJfj*/>5r+G^)V+,U5Y+c?Sa,)chg,E3(m,`W=s-'&S$-BJh*-]o(0.$>=6.vCa?.[:jA/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc2P)(k24u1m2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:6)cEB5cZND6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9XHan9=?jp9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z==2.)E<l%2G=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@`hEq@E_NsA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@D:MbHCtDkJDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGi3)tGN*2vH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ uvidxs 400 1 b85UINT
+B'Rg(<'n6:@(4ZLD(P)^H(kMpL)1r-P)MA?T)heQX*/4c\*JXu`+,LDh+GpVl+c?hp,)d%t,E37x,`WJ'-'&\+-BJn/-]o+3.$>=7.[1a?.vUsC/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc24l(k2P;:o2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:5cQEB6)uWF6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9=6an9XZsr9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z=<kq)E=2@;I=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@EVEq@a%WuA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@Ct;bHD:_tLDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGMv)tGiE;xH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ vlist 121 1 b85VECTOR
+aDq99Y&XMt89+]ca?IjJY&XMt89+]ca9wF[Y&XMt89+]ca1fesY&XMt89+]ca$.aHY&XMt89+]czY&XMt89+]c7m>0vY&XMt89+]c8%v5HY&XMt89+]c8.1k0Y&XMt89+]c83Y9uY&XMt89+]c89+]cY&XMt89+]caDq99Xv1*083Y9ta?IjJXv1*083Y9ta9wF[Xv1*083Y9ta1fesXv1*083Y9ta$.aHXv1*083Y9tzXv1*083Y9t7m>0vXv1*083Y9t8%v5HXv1*083Y9t8.1k0Xv1*083Y9t83Y9uXv1*083Y9t89+]cXv1*083Y9taDq99Xp^[A8.1k0a?IjJXp^[A8.1k0a9wF[Xp^[A8.1k0a1fesXp^[A8.1k0a$.aHXp^[A8.1k0zXp^[A8.1k07m>0vXp^[A8.1k08%v5HXp^[A8.1k08.1k0Xp^[A8.1k083Y9uXp^[A8.1k089+]cXp^[A8.1k0aDq99XhN%Y8%v5Ha?IjJXhN%Y8%v5Ha9wF[XhN%Y8%v5Ha1fesXhN%Y8%v5Ha$.aHXhN%Y8%v5HzXhN%Y8%v5H7m>0vXhN%Y8%v5H8%v5HXhN%Y8%v5H8.1k0XhN%Y8%v5H83Y9uXhN%Y8%v5H89+]cXhN%Y8%v5HaDq99XZjv.7m>0ra?IjJXZjv.7m>0ra9wF[XZjv.7m>0ra1fesXZjv.7m>0ra$.aHXZjv.7m>0rzXZjv.7m>0r7m>0vXZjv.7m>0r8%v5HXZjv.7m>0r8.1k0XZjv.7m>0r83Y9uXZjv.7m>0r89+]cXZjv.7m>0raDq99zza?IjJzza9wF[zza1feszza$.aH!$$$$$$$$$)7m>0vzz8%v5Hzz8.1k0zz83Y9uzz89+]czzaDq99/O%E\a$.aLa?IjJ/O%E\a$.aLa9wF[/O%E\a$.aLa1fes/O%E\a$.aLa$.aH/O%E\a$.aLz/O%E\a$.aL7m>0v/O%E\a$.aL8%v5H/O%E\a$.aL8.1k0/O%E\a$.aL83Y9u/O%E\a$.aL89+]c/O%E\a$.aLaDq99/\]J.a1fesa?IjJ/\]J.a1fesa9wF[/\]J.a1fesa1fes/\]J.a1fesa$.aH/\]J.a1fesz/\]J.a1fes7m>0v/\]J.a1fes8%v5H/\]J.a1fes8.1k0/\]J.a1fes83Y9u/\]J.a1fes89+]c/\]J.a1fesaDq99/dn*ka9wF[a?IjJ/dn*ka9wF[a9wF[/dn*ka9wF[a1fes/dn*ka9wF[a$.aH/dn*ka9wF[z/dn*ka9wF[7m>0v/dn*ka9wF[8%v5H/dn*ka9wF[8.1k0/dn*ka9wF[83Y9u/dn*ka9wF[89+]c/dn*ka9wF[aDq99/j@N[a?IjKa?IjJ/j@N[a?IjKa9wF[/j@N[a?IjKa1fes/j@N[a?IjKa$.aH/j@N[a?IjKz/j@N[a?IjK7m>0v/j@N[a?IjK8%v5H/j@N[a?IjK8.1k0/j@N[a?IjK83Y9u/j@N[a?IjK89+]c/j@N[a?IjKaDq99/ogrIaDq99a?IjJ/ogrIaDq99a9wF[/ogrIaDq99a1fes/ogrIaDq99a$.aH/ogrIaDq99z/ogrIaDq997m>0v/ogrIaDq998%v5H/ogrIaDq998.1k0/ogrIaDq9983Y9u/ogrIaDq9989+]c/ogrIaDq99
+ nlist 121 1 b85VECTOR
+zy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvuzy0(Jvqzy0(Jvqzy0(Jvszy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvszy0(Jvszy0(Jvrzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvvzy0(Jvuzy0(Jvvzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvqzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvvzy0(Jvtzy0(Jvuzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvuzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvrzy0(Jvuzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvrzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvpzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvt
+ uvlist 121 1 b85VECTOR2
+zz7m>0sz8%v5Iz8.1k0z83Y9tz89+]cz8;io[z8>S,Rz8A<>Jz8D%PBzyzz!7m>0s$$$$'8%v5I7m>0s8.1k07m>0s83Y9t7m>0s89+]c7m>0s8;io[7m>0s8>S,R7m>0s8A<>J7m>0s8D%PB7m>0sy7m>0sz8%v5I7m>0s!8%v5I$$$$'8.1k08%v5I83Y9t8%v5I89+]c8%v5I8;io[8%v5I8>S,R8%v5I8A<>J8%v5I8D%PB8%v5Iy8%v5Iz8.1k07m>0s8.1k08%v5I!8.1k0$$$$'83Y9t8.1k089+]c8.1k08;io[8.1k08>S,R8.1k08A<>J8.1k08D%PB8.1k0y8.1k0z83Y9t7m>0s83Y9t8%v5I83Y9t8.1k0!83Y9t$$$$'89+]c83Y9t8;io[83Y9t8>S,R83Y9t8A<>J83Y9t8D%PB83Y9ty83Y9tz89+]c7m>0s89+]c8%v5I89+]c8.1k089+]c83Y9t89+]c89+]c89+]c8;io[89+]c8>S,R89+]c8A<>J89+]c8D%PB89+]cy89+]cz8;io[7m>0s8;io[8%v5I8;io[8.1k08;io[83Y9t8;io[89+]c!8;io[$$$$'8>S,R8;io[8A<>J8;io[8D%PB8;io[y8;io[z8>S,R7m>0s8>S,R8%v5I8>S,R8.1k08>S,R83Y9t8>S,R89+]c8>S,R8;io[!8>S,R$$$$'8A<>J8>S,R8D%PB8>S,Ry8>S,Rz8A<>J7m>0s8A<>J8%v5I8A<>J8.1k08A<>J83Y9t8A<>J89+]c8A<>J8;io[8A<>J8>S,R!8A<>J$$$$'8D%PB8A<>Jy8A<>Jz8D%PB7m>0s8D%PB8%v5I8D%PB8.1k08D%PB83Y9t8D%PB89+]c8D%PB8;io[8D%PB8>S,R8D%PB8A<>J!8D%PB$$$$'y8D%PBzy7m>0sy8%v5Iy8.1k0y83Y9ty89+]cy8;io[y8>S,Ry8A<>Jy8D%PB!8Fcb9$$$$'
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups "transparentGroundSG"
+}
+
+polymesh
+{
+ name pCubeShape2
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.19962192 0 2.08844709 0
+ 0 3.03314161 0 0
+ -2.08844709 0 2.19962192 0
+ -0.0614566505 1.5709517 0 1
+ shader "initialShadingGroup"
+ opaque on
+ matte off
+ id 2205628138
+ nsides 6 1 UINT
+4 4 4 4 4 4
+ vidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:$$-?2$vMr4%<MT0
+ nidxs 24 1 b85UINT
+B$v2N*&9nA:'RU4J(k<'Z*.woj+G^c%
+ uvidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:&UObB$w/J=(3BP?
+ vlist 8 1 b85VECTOR
+aDq99aDq9989+]c89+]caDq9989+]caDq99!89+]c$$$$)aDq9989+]caDq9989+]c89+]c!aDq99$$$$(89+]caDq99aDq99
+ nlist 24 1 b85VECTOR
+zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=dzzaRT=dzyzzyzzyzzyzzaRT=dzzaRT=dzzaRT=dzzaRT=dzz
+ uvlist 14 1 b85VECTOR2
+82:0xz8<Nt.z82:0x8+HY88<Nt.8+HY882:0x89+]c8<Nt.89+]c82:0x8?r5N8<Nt.8?r5N82:0xy8<Nt.y8C@Knz8C@Kn8+HY87reTbz7reTb8+HY8
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups "initialShadingGroup"
+}
+
+polymesh
+{
+ name rightAsset:pCubeShape1
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.19962192 0 2.08844709 0
+ 0 3.03314161 0 0
+ -2.08844709 0 2.19962192 0
+ 6.81029224 1.5709517 0 1
+ shader "rightAsset:aiStandardSurface1SG"
+ opaque on
+ matte off
+ id 1002215600
+ nsides 6 1 UINT
+4 4 4 4 4 4
+ vidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:$$-?2$vMr4%<MT0
+ nidxs 24 1 b85UINT
+B$v2N*&9nA:'RU4J(k<'Z*.woj+G^c%
+ uvidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:&UObB$w/J=(3BP?
+ vlist 8 1 b85VECTOR
+aDq99aDq9989+]c89+]caDq9989+]caDq99!89+]c$$$$)aDq9989+]caDq9989+]c89+]c!aDq99$$$$(89+]caDq99aDq99
+ nlist 24 1 b85VECTOR
+zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=dzzaRT=dzyzzyzzyzzyzzaRT=dzzaRT=dzzaRT=dzzaRT=dzz
+ uvlist 14 1 b85VECTOR2
+82:0xz8<Nt.z82:0x8+HY88<Nt.8+HY882:0x89+]c8<Nt.89+]c82:0x8?r5N8<Nt.8?r5N82:0xy8<Nt.y8C@Knz8C@Kn8+HY87reTbz7reTb8+HY8
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups "rightAsset:aiStandardSurface1SG"
+}
+
+polymesh
+{
+ name backLeftCubeShape
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.19962192 0 2.08844709 0
+ 0 3.03314161 0 0
+ -2.08844709 0 2.19962192 0
+ -6.17146778 1.5709517 -6.61376238 1
+ shader 3 1 NODE
+"leftAsset:aiStandardSurface1SG" "topsSG" "boringStandardSG"
+ opaque on
+ matte off
+ id 1171623953
+ nsides 6 1 UINT
+4 4 4 4 4 4
+ vidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:$$-?2$vMr4%<MT0
+ nidxs 24 1 b85UINT
+B$v2N*&9nA:'RU4J(k<'Z*.woj+G^c%
+ uvidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:&UObB$w/J=(3BP?
+ shidxs 6 1 BYTE
+0 1 0 0 2 0
+ vlist 8 1 b85VECTOR
+aDq99aDq9989+]c89+]caDq9989+]caDq99!89+]c$$$$)aDq9989+]caDq9989+]c89+]c!aDq99$$$$(89+]caDq99aDq99
+ nlist 24 1 b85VECTOR
+zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=dzzaRT=dzyzzyzzyzzyzzaRT=dzzaRT=dzzaRT=dzzaRT=dzz
+ uvlist 14 1 b85VECTOR2
+82:0xz8<Nt.z82:0x8+HY88<Nt.8+HY882:0x89+]c8<Nt.89+]c82:0x8?r5N8<Nt.8?r5N82:0xy8<Nt.y8C@Knz8C@Kn8+HY87reTbz7reTb8+HY8
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups 3 1 NODE
+"leftAsset:aiStandardSurface1SG" "topsSG" "boringStandardSG"
+}
+
+polymesh
+{
+ name c4d|Room|skirting_board
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.19962192 0 2.08844709 0
+ 0 3.03314161 0 0
+ -2.08844709 0 2.19962192 0
+ -6.17146778 8.0 -6.61376238 1
+ shader 3 1 NODE
+"c4d|skirting_board|skirting_board_mat" "topsSG" "boringStandardSG"
+ opaque on
+ matte off
+ id 1171623953
+ nsides 6 1 UINT
+4 4 4 4 4 4
+ vidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:$$-?2$vMr4%<MT0
+ nidxs 24 1 b85UINT
+B$v2N*&9nA:'RU4J(k<'Z*.woj+G^c%
+ uvidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:&UObB$w/J=(3BP?
+ shidxs 6 1 BYTE
+0 1 0 0 2 0
+ vlist 8 1 b85VECTOR
+aDq99aDq9989+]c89+]caDq9989+]caDq99!89+]c$$$$)aDq9989+]caDq9989+]c89+]c!aDq99$$$$(89+]caDq99aDq99
+ nlist 24 1 b85VECTOR
+zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=dzzaRT=dzyzzyzzyzzyzzaRT=dzzaRT=dzzaRT=dzzaRT=dzz
+ uvlist 14 1 b85VECTOR2
+82:0xz8<Nt.z82:0x8+HY88<Nt.8+HY882:0x89+]c8<Nt.89+]c82:0x8?r5N8<Nt.8?r5N82:0xy8<Nt.y8C@Knz8C@Kn8+HY87reTbz7reTb8+HY8
+ smoothing on
+ step_size 0
+ volume_padding 0
+}
+
+polymesh
+{
+ name backCenterCubeShape
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.19962192 0 2.08844709 0
+ 0 3.03314161 0 0
+ -2.08844709 0 2.19962192 0
+ -0.0614566505 1.5709517 -6.61376238 1
+ shader 2 1 NODE
+"boringStandardSG" "topsSG"
+ opaque on
+ matte off
+ id 2580769736
+ nsides 6 1 UINT
+4 4 4 4 4 4
+ vidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:$$-?2$vMr4%<MT0
+ nidxs 24 1 b85UINT
+B$v2N*&9nA:'RU4J(k<'Z*.woj+G^c%
+ uvidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:&UObB$w/J=(3BP?
+ shidxs 6 1 BYTE
+0 1 0 0 0 0
+ vlist 8 1 b85VECTOR
+aDq99aDq9989+]c89+]caDq9989+]caDq99!89+]c$$$$)aDq9989+]caDq9989+]c89+]c!aDq99$$$$(89+]caDq99aDq99
+ nlist 24 1 b85VECTOR
+zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=dzzaRT=dzyzzyzzyzzyzzaRT=dzzaRT=dzzaRT=dzzaRT=dzz
+ uvlist 14 1 b85VECTOR2
+82:0xz8<Nt.z82:0x8+HY88<Nt.8+HY882:0x89+]c8<Nt.89+]c82:0x8?r5N8<Nt.8?r5N82:0xy8<Nt.y8C@Knz8C@Kn8+HY87reTbz7reTb8+HY8
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare crypto_asset_offset UNIFORM INT
+ crypto_asset_offset 6 1 INT
+0 111 222 333 444 555
+ declare crypto_object UNIFORM STRING
+ crypto_object 6 1 STRING
+"face! 0" "face! 111" "face! 222" "face! 333" "face! 444" "face! 555"
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups 2 1 NODE
+"boringStandardSG" "topsSG"
+}
+
+polymesh
+{
+ name backRightCubeShape
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.19962192 0 2.08844709 0
+ 0 3.03314161 0 0
+ -2.08844709 0 2.19962192 0
+ 6.81029224 1.5709517 -6.61376238 1
+ shader 2 1 NODE
+"rightAsset:aiStandardSurface1SG" "topsSG"
+ opaque on
+ matte off
+ id 3306265779
+ nsides 6 1 UINT
+4 4 4 4 4 4
+ vidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:$$-?2$vMr4%<MT0
+ nidxs 24 1 b85UINT
+B$v2N*&9nA:'RU4J(k<'Z*.woj+G^c%
+ uvidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:&UObB$w/J=(3BP?
+ shidxs 6 1 BYTE
+0 1 0 0 0 0
+ vlist 8 1 b85VECTOR
+aDq99aDq9989+]c89+]caDq9989+]caDq99!89+]c$$$$)aDq9989+]caDq9989+]c89+]c!aDq99$$$$(89+]caDq99aDq99
+ nlist 24 1 b85VECTOR
+zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=dzzaRT=dzyzzyzzyzzyzzaRT=dzzaRT=dzzaRT=dzzaRT=dzz
+ uvlist 14 1 b85VECTOR2
+82:0xz8<Nt.z82:0x8+HY88<Nt.8+HY882:0x89+]c8<Nt.89+]c82:0x8?r5N8<Nt.8?r5N82:0xy8<Nt.y8C@Knz8C@Kn8+HY87reTbz7reTb8+HY8
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups 2 1 NODE
+"rightAsset:aiStandardSurface1SG" "topsSG"
+}
+
+polymesh
+{
+ name c4d|Room|deep|skirting_board
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.19962192 0 2.08844709 0
+ 0 3.03314161 0 0
+ -2.08844709 0 2.19962192 0
+ 6.81029224 8.0 -6.61376238 1
+ shader 2 1 NODE
+"c4d|skirting_board|skirting_board_mat" "topsSG"
+ opaque on
+ matte off
+ id 3306265779
+ nsides 6 1 UINT
+4 4 4 4 4 4
+ vidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:$$-?2$vMr4%<MT0
+ nidxs 24 1 b85UINT
+B$v2N*&9nA:'RU4J(k<'Z*.woj+G^c%
+ uvidxs 24 1 b85UINT
+B$ZuK*%<ho2%s\>:&UObB$w/J=(3BP?
+ shidxs 6 1 BYTE
+0 1 0 0 0 0
+ vlist 8 1 b85VECTOR
+aDq99aDq9989+]c89+]caDq9989+]caDq99!89+]c$$$$)aDq9989+]caDq9989+]c89+]c!aDq99$$$$(89+]caDq99aDq99
+ nlist 24 1 b85VECTOR
+zzyzzyzzyzzyzyzzyzzyzzy!$$$$$$$$$'aRT=dzzaRT=dzzaRT=dzzaRT=dzaRT=dzzaRT=dzzaRT=dzzaRT=dzyzzyzzyzzyzzaRT=dzzaRT=dzzaRT=dzzaRT=dzz
+ uvlist 14 1 b85VECTOR2
+82:0xz8<Nt.z82:0x8+HY88<Nt.8+HY882:0x89+]c8<Nt.89+]c82:0x8?r5N8<Nt.8?r5N82:0xy8<Nt.y8C@Knz8C@Kn8+HY87reTbz7reTb8+HY8
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups 2 1 NODE
+"rightAsset:aiStandardSurface1SG" "topsSG"
+}
+
+polymesh
+{
+ name pPlaneShape2
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 22.2747993 0 0 0
+ 0 1 0 0
+ 0 0 8.98249722 0
+ 0 0.428739905 -2.95381904 1
+ shader "transparentGroundSG"
+ opaque off
+ matte off
+ id 648206888
+ nsides 100 1 b85UINT
+B!%<_l4$$$$=
+ vidxs 400 1 b85UINT
+B'Rg(<'n6:@(4ZLD(P)^H(kMpL)1r-P)MA?T)heQX*/4c\*JXu`+,LDh+GpVl+c?hp,)d%t,E37x,`WJ'-'&\+-BJn/-]o+3.$>=7.[1a?.vUsC/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc24l(k2P;:o2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:5cQEB6)uWF6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9=6an9XZsr9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z=<kq)E=2@;I=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@EVEq@a%WuA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@Ct;bHD:_tLDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGMv)tGiE;xH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ nidxs 400 1 b85UINT
+B$v2N*$[2`0%XA8:&:4\B&q(+J'RpOR(4csZ(kWBb)MJfj*/>5r+G^)V+,U5Y+c?Sa,)chg,E3(m,`W=s-'&S$-BJh*-]o(0.$>=6.vCa?.[:jA/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc2P)(k24u1m2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:6)cEB5cZND6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9XHan9=?jp9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z==2.)E<l%2G=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@`hEq@E_NsA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@D:MbHCtDkJDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGi3)tGN*2vH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ uvidxs 400 1 b85UINT
+B'Rg(<'n6:@(4ZLD(P)^H(kMpL)1r-P)MA?T)heQX*/4c\*JXu`+,LDh+GpVl+c?hp,)d%t,E37x,`WJ'-'&\+-BJn/-]o+3.$>=7.[1a?.vUsC/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc24l(k2P;:o2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:5cQEB6)uWF6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9=6an9XZsr9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z=<kq)E=2@;I=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@EVEq@a%WuA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@Ct;bHD:_tLDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGMv)tGiE;xH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ vlist 121 1 b85VECTOR
+aDq99Y&XMt89+]ca?IjJY&XMt89+]ca9wF[Y&XMt89+]ca1fesY&XMt89+]ca$.aHY&XMt89+]czY&XMt89+]c7m>0vY&XMt89+]c8%v5HY&XMt89+]c8.1k0Y&XMt89+]c83Y9uY&XMt89+]c89+]cY&XMt89+]caDq99Xv1*083Y9ta?IjJXv1*083Y9ta9wF[Xv1*083Y9ta1fesXv1*083Y9ta$.aHXv1*083Y9tzXv1*083Y9t7m>0vXv1*083Y9t8%v5HXv1*083Y9t8.1k0Xv1*083Y9t83Y9uXv1*083Y9t89+]cXv1*083Y9taDq99Xp^[A8.1k0a?IjJXp^[A8.1k0a9wF[Xp^[A8.1k0a1fesXp^[A8.1k0a$.aHXp^[A8.1k0zXp^[A8.1k07m>0vXp^[A8.1k08%v5HXp^[A8.1k08.1k0Xp^[A8.1k083Y9uXp^[A8.1k089+]cXp^[A8.1k0aDq99XhN%Y8%v5Ha?IjJXhN%Y8%v5Ha9wF[XhN%Y8%v5Ha1fesXhN%Y8%v5Ha$.aHXhN%Y8%v5HzXhN%Y8%v5H7m>0vXhN%Y8%v5H8%v5HXhN%Y8%v5H8.1k0XhN%Y8%v5H83Y9uXhN%Y8%v5H89+]cXhN%Y8%v5HaDq99XZjv.7m>0ra?IjJXZjv.7m>0ra9wF[XZjv.7m>0ra1fesXZjv.7m>0ra$.aHXZjv.7m>0rzXZjv.7m>0r7m>0vXZjv.7m>0r8%v5HXZjv.7m>0r8.1k0XZjv.7m>0r83Y9uXZjv.7m>0r89+]cXZjv.7m>0raDq99zza?IjJzza9wF[zza1feszza$.aH!$$$$$$$$$)7m>0vzz8%v5Hzz8.1k0zz83Y9uzz89+]czzaDq99/O%E\a$.aLa?IjJ/O%E\a$.aLa9wF[/O%E\a$.aLa1fes/O%E\a$.aLa$.aH/O%E\a$.aLz/O%E\a$.aL7m>0v/O%E\a$.aL8%v5H/O%E\a$.aL8.1k0/O%E\a$.aL83Y9u/O%E\a$.aL89+]c/O%E\a$.aLaDq99/\]J.a1fesa?IjJ/\]J.a1fesa9wF[/\]J.a1fesa1fes/\]J.a1fesa$.aH/\]J.a1fesz/\]J.a1fes7m>0v/\]J.a1fes8%v5H/\]J.a1fes8.1k0/\]J.a1fes83Y9u/\]J.a1fes89+]c/\]J.a1fesaDq99/dn*ka9wF[a?IjJ/dn*ka9wF[a9wF[/dn*ka9wF[a1fes/dn*ka9wF[a$.aH/dn*ka9wF[z/dn*ka9wF[7m>0v/dn*ka9wF[8%v5H/dn*ka9wF[8.1k0/dn*ka9wF[83Y9u/dn*ka9wF[89+]c/dn*ka9wF[aDq99/j@N[a?IjKa?IjJ/j@N[a?IjKa9wF[/j@N[a?IjKa1fes/j@N[a?IjKa$.aH/j@N[a?IjKz/j@N[a?IjK7m>0v/j@N[a?IjK8%v5H/j@N[a?IjK8.1k0/j@N[a?IjK83Y9u/j@N[a?IjK89+]c/j@N[a?IjKaDq99/ogrIaDq99a?IjJ/ogrIaDq99a9wF[/ogrIaDq99a1fes/ogrIaDq99a$.aH/ogrIaDq99z/ogrIaDq997m>0v/ogrIaDq998%v5H/ogrIaDq998.1k0/ogrIaDq9983Y9u/ogrIaDq9989+]c/ogrIaDq99
+ nlist 121 1 b85VECTOR
+zy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvuzy0(Jvqzy0(Jvqzy0(Jvszy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvszy0(Jvszy0(Jvrzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvvzy0(Jvuzy0(Jvvzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvqzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvvzy0(Jvtzy0(Jvuzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvuzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvrzy0(Jvuzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvrzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvpzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvt
+ uvlist 121 1 b85VECTOR2
+zz7m>0sz8%v5Iz8.1k0z83Y9tz89+]cz8;io[z8>S,Rz8A<>Jz8D%PBzyzz!7m>0s$$$$'8%v5I7m>0s8.1k07m>0s83Y9t7m>0s89+]c7m>0s8;io[7m>0s8>S,R7m>0s8A<>J7m>0s8D%PB7m>0sy7m>0sz8%v5I7m>0s!8%v5I$$$$'8.1k08%v5I83Y9t8%v5I89+]c8%v5I8;io[8%v5I8>S,R8%v5I8A<>J8%v5I8D%PB8%v5Iy8%v5Iz8.1k07m>0s8.1k08%v5I!8.1k0$$$$'83Y9t8.1k089+]c8.1k08;io[8.1k08>S,R8.1k08A<>J8.1k08D%PB8.1k0y8.1k0z83Y9t7m>0s83Y9t8%v5I83Y9t8.1k0!83Y9t$$$$'89+]c83Y9t8;io[83Y9t8>S,R83Y9t8A<>J83Y9t8D%PB83Y9ty83Y9tz89+]c7m>0s89+]c8%v5I89+]c8.1k089+]c83Y9t89+]c89+]c89+]c8;io[89+]c8>S,R89+]c8A<>J89+]c8D%PB89+]cy89+]cz8;io[7m>0s8;io[8%v5I8;io[8.1k08;io[83Y9t8;io[89+]c!8;io[$$$$'8>S,R8;io[8A<>J8;io[8D%PB8;io[y8;io[z8>S,R7m>0s8>S,R8%v5I8>S,R8.1k08>S,R83Y9t8>S,R89+]c8>S,R8;io[!8>S,R$$$$'8A<>J8>S,R8D%PB8>S,Ry8>S,Rz8A<>J7m>0s8A<>J8%v5I8A<>J8.1k08A<>J83Y9t8A<>J89+]c8A<>J8;io[8A<>J8>S,R!8A<>J$$$$'8D%PB8A<>Jy8A<>Jz8D%PB7m>0s8D%PB8%v5I8D%PB8.1k08D%PB83Y9t8D%PB89+]c8D%PB8;io[8D%PB8>S,R8D%PB8A<>J!8D%PB$$$$'y8D%PBzy7m>0sy8%v5Iy8.1k0y83Y9ty89+]cy8;io[y8>S,Ry8A<>Jy8D%PB!8Fcb9$$$$'
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups "transparentGroundSG"
+}
+
+polymesh
+{
+ name pPlaneShape3
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 22.2747993 0 0 0
+ 0 1 0 0
+ 0 0 8.98249722 0
+ 0 0.939355552 -2.95381904 1
+ shader "transparentGroundSG"
+ opaque off
+ matte off
+ id 1219104438
+ nsides 100 1 b85UINT
+B!%<_l4$$$$=
+ vidxs 400 1 b85UINT
+B'Rg(<'n6:@(4ZLD(P)^H(kMpL)1r-P)MA?T)heQX*/4c\*JXu`+,LDh+GpVl+c?hp,)d%t,E37x,`WJ'-'&\+-BJn/-]o+3.$>=7.[1a?.vUsC/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc24l(k2P;:o2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:5cQEB6)uWF6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9=6an9XZsr9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z=<kq)E=2@;I=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@EVEq@a%WuA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@Ct;bHD:_tLDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGMv)tGiE;xH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ nidxs 400 1 b85UINT
+B$v2N*$[2`0%XA8:&:4\B&q(+J'RpOR(4csZ(kWBb)MJfj*/>5r+G^)V+,U5Y+c?Sa,)chg,E3(m,`W=s-'&S$-BJh*-]o(0.$>=6.vCa?.[:jA/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc2P)(k24u1m2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:6)cEB5cZND6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9XHan9=?jp9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z==2.)E<l%2G=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@`hEq@E_NsA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@D:MbHCtDkJDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGi3)tGN*2vH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ uvidxs 400 1 b85UINT
+B'Rg(<'n6:@(4ZLD(P)^H(kMpL)1r-P)MA?T)heQX*/4c\*JXu`+,LDh+GpVl+c?hp,)d%t,E37x,`WJ'-'&\+-BJn/-]o+3.$>=7.[1a?.vUsC/=%0G/XIBK/smTO0:<fS0U`xW0q05[17TG_1RxYc24l(k2P;:o2k_Ls32.^w3MRq&3hw.*4/F@.4JjR24f9d65,]v:5cQEB6)uWF6EDiJ6`i&N7'88R7B\JV7^+\Z8$On^8?t+b8[C=f9=6an9XZsr9t*0v::NC%:UrU):qAg-;7f$1;S565;nYH9<5(Z=<kq)E=2@;I=MdMM=i3_Q>/WqU>K'.Y>fK@]?,oRa?H>de?cbvi@EVEq@a%WuA'Ij$ABn'(A^=9,B$aK0B@0]4B[To8Bw$,<C=H>@Ct;bHD:_tLDV/1PDqSCTE7wUXESFg\Enk$`F5:6dFP^HhFl-ZlGMv)tGiE;xH/iN'HK8`+Hf\r/I-,/3IHPA7IctS;J*Ce?JEgwC
+ vlist 121 1 b85VECTOR
+aDq99Y&XMt89+]ca?IjJY&XMt89+]ca9wF[Y&XMt89+]ca1fesY&XMt89+]ca$.aHY&XMt89+]czY&XMt89+]c7m>0vY&XMt89+]c8%v5HY&XMt89+]c8.1k0Y&XMt89+]c83Y9uY&XMt89+]c89+]cY&XMt89+]caDq99Xv1*083Y9ta?IjJXv1*083Y9ta9wF[Xv1*083Y9ta1fesXv1*083Y9ta$.aHXv1*083Y9tzXv1*083Y9t7m>0vXv1*083Y9t8%v5HXv1*083Y9t8.1k0Xv1*083Y9t83Y9uXv1*083Y9t89+]cXv1*083Y9taDq99Xp^[A8.1k0a?IjJXp^[A8.1k0a9wF[Xp^[A8.1k0a1fesXp^[A8.1k0a$.aHXp^[A8.1k0zXp^[A8.1k07m>0vXp^[A8.1k08%v5HXp^[A8.1k08.1k0Xp^[A8.1k083Y9uXp^[A8.1k089+]cXp^[A8.1k0aDq99XhN%Y8%v5Ha?IjJXhN%Y8%v5Ha9wF[XhN%Y8%v5Ha1fesXhN%Y8%v5Ha$.aHXhN%Y8%v5HzXhN%Y8%v5H7m>0vXhN%Y8%v5H8%v5HXhN%Y8%v5H8.1k0XhN%Y8%v5H83Y9uXhN%Y8%v5H89+]cXhN%Y8%v5HaDq99XZjv.7m>0ra?IjJXZjv.7m>0ra9wF[XZjv.7m>0ra1fesXZjv.7m>0ra$.aHXZjv.7m>0rzXZjv.7m>0r7m>0vXZjv.7m>0r8%v5HXZjv.7m>0r8.1k0XZjv.7m>0r83Y9uXZjv.7m>0r89+]cXZjv.7m>0raDq99zza?IjJzza9wF[zza1feszza$.aH!$$$$$$$$$)7m>0vzz8%v5Hzz8.1k0zz83Y9uzz89+]czzaDq99/O%E\a$.aLa?IjJ/O%E\a$.aLa9wF[/O%E\a$.aLa1fes/O%E\a$.aLa$.aH/O%E\a$.aLz/O%E\a$.aL7m>0v/O%E\a$.aL8%v5H/O%E\a$.aL8.1k0/O%E\a$.aL83Y9u/O%E\a$.aL89+]c/O%E\a$.aLaDq99/\]J.a1fesa?IjJ/\]J.a1fesa9wF[/\]J.a1fesa1fes/\]J.a1fesa$.aH/\]J.a1fesz/\]J.a1fes7m>0v/\]J.a1fes8%v5H/\]J.a1fes8.1k0/\]J.a1fes83Y9u/\]J.a1fes89+]c/\]J.a1fesaDq99/dn*ka9wF[a?IjJ/dn*ka9wF[a9wF[/dn*ka9wF[a1fes/dn*ka9wF[a$.aH/dn*ka9wF[z/dn*ka9wF[7m>0v/dn*ka9wF[8%v5H/dn*ka9wF[8.1k0/dn*ka9wF[83Y9u/dn*ka9wF[89+]c/dn*ka9wF[aDq99/j@N[a?IjKa?IjJ/j@N[a?IjKa9wF[/j@N[a?IjKa1fes/j@N[a?IjKa$.aH/j@N[a?IjKz/j@N[a?IjK7m>0v/j@N[a?IjK8%v5H/j@N[a?IjK8.1k0/j@N[a?IjK83Y9u/j@N[a?IjK89+]c/j@N[a?IjKaDq99/ogrIaDq99a?IjJ/ogrIaDq99a9wF[/ogrIaDq99a1fes/ogrIaDq99a$.aH/ogrIaDq99z/ogrIaDq997m>0v/ogrIaDq998%v5H/ogrIaDq998.1k0/ogrIaDq9983Y9u/ogrIaDq9989+]c/ogrIaDq99
+ nlist 121 1 b85VECTOR
+zy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvuzy0(Jvqzy0(Jvqzy0(Jvszy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvszy0(Jvszy0(Jvrzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvvzy0(Jvuzy0(Jvvzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvqzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvvzy0(Jvtzy0(Jvuzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvuzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvrzy0(Jvuzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvrzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvpzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvrzy0(Jvtzy0(Jvtzy0(Jvuzy0(Jvtzy0(Jvtzy0(Jvt
+ uvlist 121 1 b85VECTOR2
+zz7m>0sz8%v5Iz8.1k0z83Y9tz89+]cz8;io[z8>S,Rz8A<>Jz8D%PBzyzz!7m>0s$$$$'8%v5I7m>0s8.1k07m>0s83Y9t7m>0s89+]c7m>0s8;io[7m>0s8>S,R7m>0s8A<>J7m>0s8D%PB7m>0sy7m>0sz8%v5I7m>0s!8%v5I$$$$'8.1k08%v5I83Y9t8%v5I89+]c8%v5I8;io[8%v5I8>S,R8%v5I8A<>J8%v5I8D%PB8%v5Iy8%v5Iz8.1k07m>0s8.1k08%v5I!8.1k0$$$$'83Y9t8.1k089+]c8.1k08;io[8.1k08>S,R8.1k08A<>J8.1k08D%PB8.1k0y8.1k0z83Y9t7m>0s83Y9t8%v5I83Y9t8.1k0!83Y9t$$$$'89+]c83Y9t8;io[83Y9t8>S,R83Y9t8A<>J83Y9t8D%PB83Y9ty83Y9tz89+]c7m>0s89+]c8%v5I89+]c8.1k089+]c83Y9t89+]c89+]c89+]c8;io[89+]c8>S,R89+]c8A<>J89+]c8D%PB89+]cy89+]cz8;io[7m>0s8;io[8%v5I8;io[8.1k08;io[83Y9t8;io[89+]c!8;io[$$$$'8>S,R8;io[8A<>J8;io[8D%PB8;io[y8;io[z8>S,R7m>0s8>S,R8%v5I8>S,R8.1k08>S,R83Y9t8>S,R89+]c8>S,R8;io[!8>S,R$$$$'8A<>J8>S,R8D%PB8>S,Ry8>S,Rz8A<>J7m>0s8A<>J8%v5I8A<>J8.1k08A<>J83Y9t8A<>J89+]c8A<>J8;io[8A<>J8>S,R!8A<>J$$$$'8D%PB8A<>Jy8A<>Jz8D%PB7m>0s8D%PB8%v5I8D%PB8.1k08D%PB83Y9t8D%PB89+]c8D%PB8;io[8D%PB8>S,R8D%PB8A<>J!8D%PB$$$$'y8D%PBzy7m>0sy8%v5Iy8.1k0y83Y9ty89+]cy8;io[y8>S,Ry8A<>Jy8D%PB!8Fcb9$$$$'
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups "transparentGroundSG"
+}
+
+standard_surface
+{
+ name transparentGroundSG
+ opacity 0.538461566 0.538461566 0.538461566
+}
+
+# set to a closure shader to test for a fixed Arnold 5.1 crash (42fa9d7)
+utility
+{
+ name leftAsset:aiStandardSurface1SG
+}
+
+standard_surface
+{
+ name c4d|skirting_board|skirting_board_mat
+}
+
+standard_surface
+{
+ name rightAsset:aiStandardSurface1SG
+}
+
+lambert
+{
+ name initialShadingGroup
+ Kd 0.800000012
+ Kd_color 0.5 0.5 0.5
+ opacity 1 1 1
+}
+
+standard_surface
+{
+ name topsSG
+}
+
+standard_surface
+{
+ name boringStandardSG
+}
+
+curves
+{
+ name minpix_transpShader_curveShape
+ visibility 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 0.988150477 -0.0291187018 -0.150700748 0
+ 0.149855837 0.395365715 0.906216979 0
+ 0.0331940465 -0.91806215 0.395044416 0
+ -3.20267057 4.74005604 5.88770628 1
+ shader "hairshader_transparent"
+ opaque off
+ matte off
+ id 560420098
+ num_points 67
+ points 67 1 b85VECTOR
+aZP-]YFWp18ZjgvaZP-]YFWp18ZjgvaTD;'YBpXm8[3x?aM\_fY>Rj-8[,LeaH0COY:pU)8ZY,=aDk@dY8Lc<8Yi]kaA<hAY6l2I8Xc)Ca?IntY5Z@:8WJ<pa>l-HY4c9f8V%:Ra?9r+Y3v[d8TO+Na@Hb1Y35O68QUu+aB.vsY2jk_8N`[9aD0APY2f8R8L+/HaE\sGY2w?T8IYikaFt'FY3Cv_8G9T'aH@Z-Y3q)p8Br_waIl8gY4EP:8=hQxaKIO&Y4^jA87GvbaLsRgY4p-P8+e$'aN.YGY4pcF7[TV$aNgx6Y4X,Wa.BN[aNcoQY3TS+a=K'4aMiN6Y18GMaEsVwaL%^CY-x1saJ+7maIH9VY)pc=aMZH%aF,xRXxNb$aPX('a?A1GXlwI-aRg01a58=qX9hi9aS`)@`kcRR/^O?paT@[x7t0&M/mD2YaT]OR8/TA^/tvHNaTa5G89;?l0%uNYaTK?'8=l;t0)pHIaSpB*8AwNM0,8.jaS%N58EX]R0.3tiaQ(F%8Gb.70/a%9aMucB8Hw5n00gI&aJ2sS8Iq1G01E,BaE`'[8JOMR01Ouva<Mq68Jg)N014dra,<w$8JbcO00J7@7`pXl8JBEi0/=+:8+`v;8I[wW0-e-a86K3L8H_oq0+t;G8<uiN8GTX_0)rTv8Av3v8ErU[0'0*)8FeMQ8CF;(/wn;B8I+uf8@w&f/sds=8K@HE8>e8-/ota$8MP6C8<oah/i>t,8O^,Z8;KAX/cYk?8Qlm,8:Vt</\Kca8T*:Z8:EbK/Vuun8UD4W8:nI;/Tj6@8VOx<8<'0c/V53_8WXjQ8=nuo/[8RR8X[Y.8@Fva/c-r_8YU<j8CY52/iPlt8ZBM48G/SP/pq8$8Zshb8IGuZ/v8[:8[:Wd8L($<0'`j98[<7Q8O$P50+qv+8Zt%@8R8Hk00;<M8Z6jh8TsFa04aE=8Y;Yx8VBbm07H9o8X=p<8Wvd609b9e8W'_c8Wvd609b9e8W'_c
+ radius 0.03
+ basis "catmull-rom"
+ mode "ribbon"
+ min_pixel_width 2.0
+ declare colors uniform ARRAY RGB
+ colors 1 1 1
+}
+
+curves
+{
+ name minpixelwidth_opq_curveShape
+ visibility 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 0.988150477 -0.0291187018 -0.150700748 0
+ 0.149855837 0.395365715 0.906216979 0
+ 0.0331940465 -0.91806215 0.395044416 0
+ -2.68419194 4.74005604 5.88770628 1
+ shader "hairshader_opaque"
+ opaque off
+ matte off
+ id 2035157360
+ num_points 67
+ points 67 1 b85VECTOR
+aZP-]YI<,o8ZjgvaZP-]YI<,o8ZjgvaTD;'YDi;t8[3x?aM\_fYA?PQ8[,LeaH0COY<x6t8ZY,=aDk@dY:1xM8Yi]kaA<hAY8>eL8Xc)Ca?IntY6x7B8WJ<pa>l-HY6)$w8V%:Ra?9r+Y5KO<8TO+Na@Hb1Y51-78QUu+aB.vsY5*4d8N`[9aD0APY52N*8L+/HaE\sGY5G(C8IYikaFt'FY5e9)8G9T'aH@Z-Y65KU8Br_waIl8gY6_+A8=hQxaKIO&Y74.T87GvbaLsRgY7U.L8+e$'aN.YGY7b:+7[TV$aNgx6Y7P`Fa.BN[aNcoQY6j[Ha=K'4aMiN6Y5RdqaEsVwaL%^CY3.rPaJ+7maIH9VY.Ev[aMZH%aF,xRY(bONaPX('a?A1GXrlB`aRg01a58=qXUQh\aS`)@`kcRR/]/uSaT@[x7t0&M/o84?aT]OR8/TA^/w2ReaTa5G89;?l0(r<UaTK?'8=l;t0,3+^aSpB*8AwNM0/&7eaS%N58EX]R01H=HaQ(F%8Gb.703@n;aMucB8Hw5n04aQpaJ2sS8Iq1G05Rb@aE`'[8JOMR05j=?a<Mq68Jg)N05Ts'a,<w$8JbcO04i?[7`pXl8JBEi03T3A8+`v;8I[wW01mOI86K3L8H_oq0/hWv8<uiN8GTX_0-O,,8Av3v8ErU[0+*U$8FeMQ8CF;(0(Y\n8I+uf8@w&f0$+xx8K@HE8>e8-/tb?b8MP6C8<oah/pnUA8O^,Z8;KAX/kT*f8Qlm,8:Vt</fhb78T*:Z8:EbK/cu?P8UD4W8:nI;/c.V+8VOx<8<'0c/dDq[8WXjQ8=nuo/gi^$8X[Y.8@Fva/mN;p8YU<j8CY52/r[1b8ZBM48G/SP/wls[8Zshb8IGuZ0(od<8[:Wd8L($<0,f%q8[<7Q8O$P501@hf8Zt%@8R8Hk06>+88Z6jh8TsFa08rw98Y;Yx8VBbm0;<R,8X=p<8Wvd60=xI08W'_c8Wvd60=xI08W'_c
+ radius 0.03
+ basis "catmull-rom"
+ mode "ribbon"
+ min_pixel_width 2.0
+ declare colors uniform ARRAY RGB
+ colors 1 1 1
+}
+
+curves
+{
+ name minpixelwidth_transpShader_curveShape
+ visibility 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 0.988150477 -0.0291187018 -0.150700748 0
+ 0.149855837 0.395365715 0.906216979 0
+ 0.0331940465 -0.91806215 0.395044416 0
+ 2.5652287 4.19123983 5.26566601 1
+ shader "hairshader_transparent"
+ opaque off
+ matte off
+ id 3972308866
+ num_points 67
+ points 67 1 b85VECTOR
+aZP-]YCd6:8ZjgvaZP-]YCd6:8ZjgvaTD;'YB+lR8[3x?aM\_fY>f7@8[,LeaH0COY;+5S8ZY,=aDk@dY7+)-8Yi]kaA<hAY1-)68Xc)Ca?IntY'LKf8WJ<pa>l-HXd(%B8V%:Ra?9r+/^Umh8TO+Na@Hb1/r,$Y8QUu+aB.vs0&GWh8N`[9aD0AP0+XS\8L+/HaE\sG0/I9Q8IYikaFt'F03+Dq8G9T'aH@Z-06I$?8Br_waIl8g08CQX8=hQxaKIO&0:L[x87GvbaLsRg0<aVb8+e$'aN.YG0?(Gk7[TV$aNgx60AF5>a.BN[aNcoQ0Ca%1a=K'4aMiN60DmB2aEsVwaL%^C0ErmGaJ+7maIH9V0FsadaMZH%aF,xR0GoVZaPX('a?A1G0Hf.PaRg01a58=q0IVb6aS`)@`kcRR0J?r%aT@[x7t0&M0JttRaT]OR8/TA^0KJ+LaTa5G89;?l0KgWHaTK?'8=l;t0KvrMaSpB*8AwNM0Kw,AaS%N58EX]R0KgA/aQ(F%8Gb.70KFmwaMucB8Hw5n0Jip$aJ2sS8Iq1G0J&>:aE`'[8JOMR0I(bOa<Mq68Jg)N0GtLGa,<w$8JbcO0Fbj]7`pXl8JBEi0EL,v8+`v;8I[wW0D38Z86K3L8H_oq0AwIH8<uiN8GTX_0?ESZ8Av3v8ErU[0<l+>8FeMQ8CF;(0:C@f8I+uf8@w&f07w1@8K@HE8>e8-057mW8MP6C8<oah00g898O^,Z8;KAX0,N908Qlm,8:Vt<0(6OV8T*:Z8:EbK/u4.]8UD4W8:nI;/kOdT8VOx<8<'0c/Yc]Z8WXjQ8=nuoXH2eI8X[Y.8@FvaXhwkZ8YU<j8CY52XqMV@8ZBM48G/SPXsc@$8Zshb8IGuZXqMB98[:Wd8L($<Xeuq58[<7Q8O$P5/H_-L8Zt%@8R8Hk/ksZg8Z6jh8TsFa0$3Fp8Y;Yx8VBbm0+hkb8X=p<8Wvd602TLi8W'_c8Wvd602TLi8W'_c
+ radius 0.03
+ basis "catmull-rom"
+ mode "ribbon"
+ min_pixel_width 0
+ declare colors uniform ARRAY RGB
+ colors 1 1 1
+}
+
+curves
+{
+ name nominpixel_opq_curveShape
+ visibility 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 0.988150477 -0.0291187018 -0.150700748 0
+ 0.149855837 0.395365715 0.906216979 0
+ 0.0331940465 -0.91806215 0.395044416 0
+ 3.10400534 4.19863319 5.31912327 1
+ shader "hairshader_opaque"
+ opaque off
+ matte off
+ id 3354230363
+ num_points 67
+ points 67 1 b85VECTOR
+aZP-]Y+?7F8ZjgvaZP-]Y+?7F8ZjgvaTD;'Y2,CT8[3x?aM\_fY55e.8[,LeaH0COY6,qW8ZY,=aDk@dY6.$=8Yi]kaA<hAY5MZQ8Xc)Ca?IntY4IHI8WJ<pa>l-HY1qC.8V%:Ra?9r+Y.j*h8TO+Na@Hb1Y+RYV8QUu+aB.vsY(<4V8N`[9aD0APXxccO8L+/HaE\sGXreB28IYikaFt'FXkZcG8G9T'aH@Z-X^A*98Br_waIl8g.ef5.8=hQxaKIO&/UEp287GvbaLsRg/c%F^8+e$'aN.YG/j%K_7[TV$aNgx6/p*)<a.BN[aNcoQ/r^+Oa=K'4aMiN6/tT]@aEsVwaL%^C/ubR-aJ+7maIH9V/v5xMaMZH%aF,xR/v'@/aPX('a?A1G/u9l`aRg01a58=q/sqYPaS`)@`kcRR/r+dJaT@[x7t0&M/oo-&aT]OR8/TA^/jv1*aTa5G89;?l/eSqqaTK?'8=l;t/]_@9aSpB*8AwNM/OV(laS%N58EX]RX&i@eaQ(F%8Gb.7X^w;NaMucB8Hw5nXl*0daJ2sS8Iq1GXs;KDaE`'[8JOMRY$H)sa<Mq68Jg)NY(J)1a,<w$8JbcOY+/TZ7`pXl8JBEiY-N*28+`v;8I[wWY/K4c86K3L8H_oqY1++u8<uiN8GTX_Y2I<T8Av3v8ErU[Y3W>B8FeMQ8CF;(Y4KX;8I+uf8@w&fY4vj`8K@HE8>e8-Y5O=78MP6C8<oahY6-iQ8O^,Z8;KAXY6k5B8Qlm,8:Vt<Y7a:H8T*:Z8:EbKY8g\U8UD4W8:nI;Y:'P48VOx<8<'0cY;Ggf8WXjQ8=nuoY<pKk8X[Y.8@FvaY>INo8YU<j8CY52Y@$Vo8ZBM48G/SPYAR@b8Zshb8IGuZYBKiC8[:Wd8L($<YC.g\8[<7Q8O$P5YC^Sr8Zt%@8R8HkYD/=^8Z6jh8TsFaYDK>,8Y;Yx8VBbmYD^F38X=p<8Wvd6YDm1@8W'_c8Wvd6YDm1@8W'_c
+ radius 0.03
+ basis "catmull-rom"
+ mode "ribbon"
+ min_pixel_width 0
+ declare colors uniform ARRAY RGB
+ colors 1 1 1
+}
+
+curves
+{
+ name nominpixel_opaqueshader_opaqueFlagOn_curveShape
+ visibility 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 0.988150477 -0.0291187018 -0.150700748 0
+ 0.149855837 0.395365715 0.906216979 0
+ 0.0331940465 -0.91806215 0.395044416 0
+ 6.10400534 4.19863319 5.41 1
+ shader "hairshader_opaque"
+ opaque on
+ matte off
+ id 3354230363
+ num_points 67
+ points 67 1 b85VECTOR
+aZP-]Y+?7F8ZjgvaZP-]Y+?7F8ZjgvaTD;'Y2,CT8[3x?aM\_fY55e.8[,LeaH0COY6,qW8ZY,=aDk@dY6.$=8Yi]kaA<hAY5MZQ8Xc)Ca?IntY4IHI8WJ<pa>l-HY1qC.8V%:Ra?9r+Y.j*h8TO+Na@Hb1Y+RYV8QUu+aB.vsY(<4V8N`[9aD0APXxccO8L+/HaE\sGXreB28IYikaFt'FXkZcG8G9T'aH@Z-X^A*98Br_waIl8g.ef5.8=hQxaKIO&/UEp287GvbaLsRg/c%F^8+e$'aN.YG/j%K_7[TV$aNgx6/p*)<a.BN[aNcoQ/r^+Oa=K'4aMiN6/tT]@aEsVwaL%^C/ubR-aJ+7maIH9V/v5xMaMZH%aF,xR/v'@/aPX('a?A1G/u9l`aRg01a58=q/sqYPaS`)@`kcRR/r+dJaT@[x7t0&M/oo-&aT]OR8/TA^/jv1*aTa5G89;?l/eSqqaTK?'8=l;t/]_@9aSpB*8AwNM/OV(laS%N58EX]RX&i@eaQ(F%8Gb.7X^w;NaMucB8Hw5nXl*0daJ2sS8Iq1GXs;KDaE`'[8JOMRY$H)sa<Mq68Jg)NY(J)1a,<w$8JbcOY+/TZ7`pXl8JBEiY-N*28+`v;8I[wWY/K4c86K3L8H_oqY1++u8<uiN8GTX_Y2I<T8Av3v8ErU[Y3W>B8FeMQ8CF;(Y4KX;8I+uf8@w&fY4vj`8K@HE8>e8-Y5O=78MP6C8<oahY6-iQ8O^,Z8;KAXY6k5B8Qlm,8:Vt<Y7a:H8T*:Z8:EbKY8g\U8UD4W8:nI;Y:'P48VOx<8<'0cY;Ggf8WXjQ8=nuoY<pKk8X[Y.8@FvaY>INo8YU<j8CY52Y@$Vo8ZBM48G/SPYAR@b8Zshb8IGuZYBKiC8[:Wd8L($<YC.g\8[<7Q8O$P5YC^Sr8Zt%@8R8HkYD/=^8Z6jh8TsFaYDK>,8Y;Yx8VBbmYD^F38X=p<8Wvd6YDm1@8W'_c8Wvd6YDm1@8W'_c
+ radius 0.03
+ basis "catmull-rom"
+ mode "ribbon"
+ min_pixel_width 0
+ declare colors uniform ARRAY RGB
+ colors 1 1 1
+}
+
+##
+## matte objects
+##
+
+polymesh
+{
+ name opaqueMatteShape1
+ visibility 255
+ sidedness 255
+ receive_shadows on
+ self_shadows on
+ matrix
+ 2.98845506 0 0 0
+ 0 3.76124835 0 0
+ 0 0 2.44630432 0
+ -9.46780396 3.33467865 0.386418253 1
+ shader "initialShadingGroup"
+ opaque off
+ matte on
+ id 2444756442
+ nsides 4
+ vidxs 4 1 UINT
+0 1 3 2
+ nidxs 4 1 UINT
+0 1 2 3
+ uvidxs 4 1 UINT
+0 1 3 2
+ vlist 4 1 b85VECTOR
+aDq99Y&XMt89+]c89+]cY&XMt89+]caDq99/ogrIaDq9989+]c/ogrIaDq99
+ nlist 4 1 b85VECTOR
+zy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvt
+ uvlist 4 1 VECTOR2
+0 0 1 0 0 1 1 1
+ smoothing on
+ step_size 0
+ volume_padding 0
+ declare mtoa_shading_groups constant ARRAY NODE
+ mtoa_shading_groups "initialShadingGroup"
+}
+
+standard_hair
+{
+ name hairshader_transparent
+ opacity 0.5 0.5 0.5
+}
+
+standard_hair
+{
+ name hairshader_opaque
+}
+
+driver_jpeg
+{
+ name defaultArnoldDriver@driver_jpeg.RGB
+ filename "000_result/beauty.tif"
+ compression "lzw"
+ format "int8"
+}
+
+driver_jpeg
+{
+ name defaultArnoldDriver@driver_jpeg2.RGB
+ filename "030_result/bad_crypto_object_driver.jpg"
+}

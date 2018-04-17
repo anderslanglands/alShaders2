@@ -115,7 +115,7 @@ using StringVector = std::vector<std::string>;
 #define CRYPTO_STRIPMATNS_DEFAULT true
 #define CRYPTO_ICEPCLOUDVERB_DEFAULT 1
 #define CRYPTO_SIDECARMANIFESTS_DEFAULT false
-#define CRYPTO_PREVIEWINEXR_DEFAULT true
+#define CRYPTO_PREVIEWINEXR_DEFAULT false
 
 // System values
 #define MAX_STRING_LENGTH 2048
@@ -795,10 +795,12 @@ struct CryptomatteData {
     AtArray* aov_array_cryptomaterial = nullptr;
     UserCryptomattes user_cryptomattes;
 
+    bool do_preview_channels = true;
+
     // User options.
     uint8_t option_depth;
     uint8_t option_aov_depth;
-    bool option_preview_channels;
+    bool option_exr_preview_channels;
     bool option_strip_obj_ns;
     bool option_strip_mat_ns;
     uint8_t option_pcloud_ice_verbosity;
@@ -832,10 +834,11 @@ public:
         setup_cryptomatte_nodes();
     }
 
-    void set_option_channels(int depth, bool previewchannels) {
+    void set_option_channels(int depth, bool exr_preview_channels) {
         depth = std::min(std::max(depth, 1), MAX_CRYPTOMATTE_DEPTH);
         option_depth = depth;
-        option_preview_channels = previewchannels;
+        option_exr_preview_channels = exr_preview_channels;
+        do_preview_channels = true;
         if (option_depth % 2 == 0)
             option_aov_depth = option_depth / 2;
         else
@@ -882,7 +885,7 @@ private:
         if (aov_array_cryptomaterial)
             write_array_of_AOVs(sg, aov_array_cryptomaterial, mat_hash_clr.r);
 
-        if (option_preview_channels) {
+        if (do_preview_channels) {
             nsp_hash_clr.r = obj_hash_clr.r = mat_hash_clr.r = 0.0f;
 
             AiAOVSetRGBA(sg, aov_cryptoasset, nsp_hash_clr);
@@ -905,7 +908,7 @@ private:
                     hash = hash_name_rgb(result.c_str());
 
                 write_array_of_AOVs(sg, aovArray, hash.r);
-                if (option_preview_channels) {
+                if (do_preview_channels) {
                     hash.r = 0.0f;
                     AiAOVSetRGBA(sg, aov_name, hash);
                 }
@@ -968,11 +971,9 @@ private:
         // if a driver is set to half, it needs to be set to full,
         // and its non-cryptomatte outputs need to be set to half.
         std::unordered_set<AtNode*> half_modified;
-        std::vector<AtNode*> half_modifiable;
-        half_modifiable.resize(prev_output_num);
+        std::vector<AtNode*> half_modifiable(prev_output_num);
 
-        std::vector<std::vector<AtNode*>> tmp_uc_drivers_vv;
-        tmp_uc_drivers_vv.resize(user_cryptomattes.count);
+        std::vector<std::vector<AtNode*>> tmp_uc_drivers_vv(user_cryptomattes.count);
 
         std::vector<AtNode*> driver_cryptoAsset_v, driver_cryptoObject_v, driver_cryptoMaterial_v;
         StringVector new_outputs;
@@ -1040,7 +1041,10 @@ private:
             }
         }
 
-        if (new_outputs.size() > 0) {
+        if (new_outputs.size())
+            this->do_preview_channels = this->option_exr_preview_channels;
+
+        if (new_outputs.size()) {
             if (option_sidecar_manifests) {
                 AtString manifest_driver_name("cryptomatte_manifest_driver");
                 AtNode* manifest_driver = AiNodeLookUpByName(manifest_driver_name);
@@ -1329,7 +1333,7 @@ private:
         // helper for setup_cryptomatte_nodes. Populates cryptoAOVs and returns
         // the number of new outputs created.
         if (!check_driver(driver)) {
-            AiMsgWarning("Cryptomatte Error: Can only write Cryptomatte to EXR files.");
+            AiMsgWarning("Cryptomatte: Can only write Cryptomatte to EXR files.");
             return;
         }
 
