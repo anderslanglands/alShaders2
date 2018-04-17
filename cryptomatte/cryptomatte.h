@@ -153,7 +153,7 @@ inline void safe_copy_to_buffer(char buffer[MAX_STRING_LENGTH], const char* c) {
         buffer[0] = '\0';
 }
 
-inline bool string_has_content(const char* c) { return c && c[0] != '\0'; }
+inline bool cstr_empty(const char* c) { return !c || c[0] == '\0'; }
 
 ///////////////////////////////////////////////
 //
@@ -631,7 +631,7 @@ inline void metadata_set_unneeded(AtNode* driver, const AtString aov_name) {
 }
 
 inline void add_hash_to_map(const char* c_str, ManifestMap& md_map) {
-    if (!string_has_content(c_str))
+    if (cstr_empty(c_str))
         return;
     std::string name_string = std::string(c_str);
     if (md_map.count(name_string) == 0) {
