@@ -42,7 +42,7 @@ inline void assert_clean_names(const char* msg, const char* obj_name_in, bool st
         null "correct" names mean just check there was no crash and the result is a string
         AiMsgInfo reporting makes sure compiller can't remove this
     */
-    if (obj_correct == NULL || nsp_correct == NULL)
+    if (!obj_correct || !nsp_correct)
         AiMsgDebug("Success (%s did not crash) - %lu %lu", msg, strlen(obj_name_out),
                    strlen(nsp_name_out));
     else if (strncmp(obj_name_out, obj_correct, -1) != 0)
@@ -55,7 +55,7 @@ inline void assert_clean_names(const char* msg, const char* obj_name_in, bool st
 }
 
 inline void assert_name_doesnt_crash(const char* msg, const char* obj_name_in, bool strip_obj_ns) {
-    assert_clean_names(msg, obj_name_in, strip_obj_ns, NULL, NULL);
+    assert_clean_names(msg, obj_name_in, strip_obj_ns, nullptr, nullptr);
 }
 
 inline void assert_sitoa_inst_handling(const char* msg, const char* obj_name_in,
@@ -66,7 +66,7 @@ inline void assert_sitoa_inst_handling(const char* msg, const char* obj_name_in,
     if (handled_correct != handled)
         AiMsgError("Should have been handled, wasn't. (%s)", msg);
 
-    if (obj_correct == NULL)
+    if (!obj_correct)
         AiMsgDebug("Success - %lu", strlen(obj_name_out));
     else if (handled && strncmp(obj_name_out, obj_correct, -1) != 0)
         AiMsgError("sitoa pointcloud handling: ((%s)) Expected %s, was %s", msg, obj_correct,
@@ -78,7 +78,7 @@ inline void assert_mtoa_strip(const char* msg, const char* obj_name_in, const ch
     char obj_name_out[MAX_STRING_LENGTH] = "";
     mtoa_strip_namespaces(obj_name_in, obj_name_out);
 
-    if (obj_correct == NULL)
+    if (!obj_correct)
         AiMsgDebug("Success - %lu", strlen(obj_name_out));
     else if (strncmp(obj_name_out, obj_correct, -1) != 0)
         AiMsgError("MtoA ns stripping: ((%s)) Expected %s, was %s", msg, obj_correct, obj_name_out);
@@ -168,8 +168,10 @@ inline void pathstyle_parsing() {
     assert_clean_names("path-4", "arch/chy", true, "arch/chy", "default");
     assert_clean_names("path-5", "/hi/er/arch/chy|postpipe", true, "postpipe", "/hi/er/arch/chy");
     assert_clean_names("path-6", "/hi/er/arch/chy|pp1|pp2", true, "pp2", "/hi/er/arch/chy|pp1");
-    assert_clean_names("path-7", "/Null/Cloner|Null2/Sphere1", true, "Sphere1", "/Null/Cloner|Null2");
-    assert_clean_names("path-8", "/Null/Cloner|Null2/Sphere1", false, "/Null/Cloner|Null2/Sphere1", "/Null/Cloner|Null2");
+    assert_clean_names("path-7", "/Null/Cloner|Null2/Sphere1", true, "Sphere1",
+                       "/Null/Cloner|Null2");
+    assert_clean_names("path-8", "/Null/Cloner|Null2/Sphere1", false, "/Null/Cloner|Null2/Sphere1",
+                       "/Null/Cloner|Null2");
 }
 
 inline std::string long_string(std::string input, int doublings) {
@@ -192,7 +194,7 @@ inline void crazy_sitoa_parsing() {
     const char* crashed_parsing = "mdl.icecloud.SItoA.Instance.<frame> <id> mstr.SItoA.1001";
     g_pointcloud_instance_verbosity = 2;
     assert_name_doesnt_crash("sitoa-ugly-1", crashed_parsing, false);
-    assert_sitoa_inst_handling("sitoa-ugly-14b", crashed_parsing, NULL, false);
+    assert_sitoa_inst_handling("sitoa-ugly-14b", crashed_parsing, nullptr, false);
 
     std::string looong = long_string("model", 10) + "." + long_string("object", 10) + ".SItoA.1001";
     std::string weird = long_string("mdl.obj", 10);
@@ -201,11 +203,11 @@ inline void crazy_sitoa_parsing() {
                            long_string("masterName", 10) + ".SItoA.1001"; // master name
 
     assert_name_doesnt_crash("sitoa-ugly-2", looong.c_str(), false);
-    assert_sitoa_inst_handling("sitoa-ugly-2b", looong.c_str(), NULL, false);
+    assert_sitoa_inst_handling("sitoa-ugly-2b", looong.c_str(), nullptr, false);
     assert_name_doesnt_crash("sitoa-ugly-3", weird.c_str(), false);
-    assert_sitoa_inst_handling("sitoa-ugly-3b", weird.c_str(), NULL, false);
+    assert_sitoa_inst_handling("sitoa-ugly-3b", weird.c_str(), nullptr, false);
     assert_name_doesnt_crash("sitoa-ugly-4", longInst.c_str(), false);
-    assert_sitoa_inst_handling("sitoa-ugly-4b", longInst.c_str(), NULL, false);
+    assert_sitoa_inst_handling("sitoa-ugly-4b", longInst.c_str(), nullptr, false);
 }
 
 inline void malformed_name_parsing() {
@@ -254,7 +256,7 @@ inline void assert_material_name(const char* msg, const char* mat_full_name, boo
     char mat_name_out[MAX_STRING_LENGTH] = "";
     get_clean_material_name(mat_full_name, mat_name_out, strip_ns);
 
-    if (mat_correct == NULL)
+    if (!mat_correct)
         AiMsgDebug("Success (%s did not crash) - %lu", msg, strlen(mat_name_out));
     else if (strncmp(mat_correct, mat_name_out, -1) != 0)
         AiMsgError("get_clean_material: Mismatch: ((%s)) Expected %s, was %s", msg, mat_correct,
@@ -278,8 +280,8 @@ inline void test_mtoa_names() {
     assert_material_name("mtoa-m-1", "namespace:my_material_sg", true, "my_material_sg");
     assert_material_name("mtoa-m-2", "namespace:my_material_sg", false, "namespace:my_material_sg");
     assert_material_name("mtoa-m-3", "my_material_sg", true, "my_material_sg");
-    assert_material_name("mtoa-m-4", "", true, NULL);
-    assert_material_name("mtoa-m-5", ":", true, NULL);
+    assert_material_name("mtoa-m-4", "", true, nullptr);
+    assert_material_name("mtoa-m-5", ":", true, nullptr);
     assert_material_name("mtoa-m-6", ":my_material_sg", true, "my_material_sg");
 }
 

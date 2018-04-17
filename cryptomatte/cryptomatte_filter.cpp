@@ -34,12 +34,12 @@ enum modeEnum {
     p_mode_double_rgba,
 };
 
-static const char* modeEnumNames[] = {"double_rgba", NULL};
+static const char* modeEnumNames[] = {"double_rgba", nullptr};
 
 node_parameters {
-    AiMetaDataSetStr(nentry, NULL, "maya.attr_prefix", "filter_");
-    AiMetaDataSetStr(nentry, NULL, "maya.translator", "cryptomatteFilter");
-    AiMetaDataSetInt(nentry, NULL, "maya.id", 0x00116420);
+    AiMetaDataSetStr(nentry, nullptr, "maya.attr_prefix", "filter_");
+    AiMetaDataSetStr(nentry, nullptr, "maya.translator", "cryptomatteFilter");
+    AiMetaDataSetInt(nentry, nullptr, "maya.id", 0x00116420);
 
     AiParameterFlt("width", 2.0);
     AiParameterInt("rank", 0);
@@ -57,7 +57,7 @@ void registerCryptomatteFilter(AtNodeLib* node) {
 
 node_initialize {
     // Z is still required despite the values themselves not being used.
-    static const char* necessary_aovs[] = {"FLOAT Z", "RGB opacity", NULL};
+    static const char* necessary_aovs[] = {"FLOAT Z", "RGB opacity", nullptr};
     CryptomatteFilterData* data = new CryptomatteFilterData();
     AiNodeSetLocalData(node, data);
     AiFilterInitialize(node, true, necessary_aovs);
@@ -66,7 +66,7 @@ node_initialize {
 node_finish {
     CryptomatteFilterData* data = (CryptomatteFilterData*)AiNodeGetLocalData(node);
     delete data;
-    AiNodeSetLocalData(node, NULL);
+    AiNodeSetLocalData(node, nullptr);
 }
 
 node_update {

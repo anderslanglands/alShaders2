@@ -6,7 +6,7 @@ AI_DRIVER_NODE_EXPORT_METHODS(CryptomatteManifestDriverMtd);
 node_parameters { AiParameterStr("filename", "dummy.json"); }
 
 node_initialize {
-    static const char* required_aovs[] = {"FLOAT A", NULL};
+    static const char* required_aovs[] = {"FLOAT A", nullptr};
     AiRawDriverInitialize(node, required_aovs, false);
 }
 
@@ -21,7 +21,7 @@ driver_supports_pixel_type { return true; }
 driver_open {}
 
 driver_extension {
-    static const char* extensions[] = {NULL};
+    static const char* extensions[] = {nullptr};
     return extensions;
 }
 
