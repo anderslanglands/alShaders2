@@ -248,28 +248,26 @@ inline void get_clean_object_name(const char* obj_full_name, char obj_name_out[M
     const uint8_t mode_maya = 0;
     const uint8_t mode_c4d_old = 1;
     const uint8_t mode_si = 2;
-    const uint8_t mode_c4d = 3;
+    const uint8_t mode_pathstyle = 3;
     uint8_t mode = mode_maya;
 
+    if (nsp_name[0] == '/') {
+        // Path-style
+        // Used in C4DtoA from 2.3: /obj_hierarchy|obj_cache_hierarchy
+        // where '/' is used as the separator in the object hierarchy
+        // For instance: /Null/Sphere
+        //               /Null/Cloner|Null/Sphere1
+        mode = mode_pathstyle;
+    } else if (strncmp(nsp_name, "c4d|", 4) == 0) {
     // C4DtoA prior 2.3: c4d|obj_hierarchy|...
-    if (strncmp(nsp_name, "c4d|", 4) == 0) {
         mode = mode_c4d_old;
         const char* nsp = nsp_name + 4;
         size_t len = strlen(nsp);
         memmove(nsp_name, nsp, len);
         nsp_name[len] = '\0';
-    }
-
-    // C4DtoA from 2.3: /obj_hierarchy|obj_cache_hierarchy
-    // where '/' is used as the separator in the object hierarchy
-    // For instance: /Null/Sphere
-    //               /Null/Cloner|Null/Sphere1
-    if (nsp_name[0] == '/') {
-        mode = mode_c4d;
-    }
-
-    char* sitoa_suffix = strstr(nsp_name, ".SItoA.");
-    if (sitoa_suffix) { // in Softimage mode
+    } else if (strstr(nsp_name, ".SItoA.")) {
+        // in Softimage mode
+        char* sitoa_suffix = strstr(nsp_name, ".SItoA.");
         mode = mode_si;
         obj_already_done = sitoa_pointcloud_instance_handling(obj_full_name, obj_name_out);
         sitoa_suffix[0] = '\0'; // cut off everything after the start of .SItoA
@@ -278,7 +276,7 @@ inline void get_clean_object_name(const char* obj_full_name, char obj_name_out[M
     char* nsp_separator = NULL;
     if (mode == mode_c4d_old) // find last c4d mode switch {
         nsp_separator = strrchr(nsp_name, '|');
-    else if (mode == mode_c4d) { // find last c4d mode switch
+    else if (mode == mode_pathstyle) { // find last c4d mode switch
         char* lastPipe = strrchr(nsp_name, '|');
         char* lastSlash = strrchr(nsp_name, '/');
         nsp_separator = lastSlash > lastPipe ? lastSlash : lastPipe;
