@@ -161,6 +161,16 @@ inline void c4dtoa_parsing() {
     assert_clean_names("c4d-4", "c4d|hi|er|arch|chy", false, "hi|er|arch|chy", "hi|er|arch");
 }
 
+inline void pathstyle_parsing() {
+    assert_clean_names("path-1", "/hi/er/arch/chy", false, "/hi/er/arch/chy", "/hi/er/arch");
+    assert_clean_names("path-2", "/hi/er/arch/chy", true, "chy", "/hi/er/arch");
+    assert_clean_names("path-3", "/arch/chy", true, "chy", "/arch");
+    assert_clean_names("path-4", "arch/chy", true, "arch/chy", "default");
+    assert_clean_names("path-5", "/hi/er/arch/chy|postpipe", true, "postpipe", "/hi/er/arch/chy");
+    assert_clean_names("path-6", "/hi/er/arch/chy|pp1|pp2", true, "pp2",
+                       "/hi/er/arch/chy|pp1");
+}
+
 inline std::string long_string(std::string input, int doublings) {
     std::string result(input);
     for (uint32_t i = 0; i < 10; i++) // lenght doubles each time
@@ -227,6 +237,7 @@ inline void run() {
     mtoa_strip();
     sitoa_parsing();
     c4dtoa_parsing();
+    pathstyle_parsing();
     crazy_maya_parsing();
     crazy_sitoa_parsing();
     malformed_name_parsing();

@@ -246,17 +246,26 @@ inline void get_clean_object_name(const char* obj_full_name, char obj_name_out[M
     bool obj_already_done = false;
 
     const uint8_t mode_maya = 0;
-    const uint8_t mode_c4d = 1;
+    const uint8_t mode_c4d_old = 1;
     const uint8_t mode_si = 2;
+    const uint8_t mode_c4d = 3;
     uint8_t mode = mode_maya;
 
-    // C4DtoA: c4d|obj_hierarchy|...
+    // C4DtoA prior 2.3: c4d|obj_hierarchy|...
     if (strncmp(nsp_name, "c4d|", 4) == 0) {
-        mode = mode_c4d;
+        mode = mode_c4d_old;
         const char* nsp = nsp_name + 4;
         size_t len = strlen(nsp);
         memmove(nsp_name, nsp, len);
         nsp_name[len] = '\0';
+    }
+
+    // C4DtoA from 2.3: /obj_hierarchy|obj_cache_hierarchy
+    // where '/' is used as the separator in the object hierarchy
+    // For instance: /Null/Sphere
+    //               /Null/Cloner|Null/Sphere1
+    if (nsp_name[0] == '/') {
+        mode = mode_c4d;
     }
 
     char* sitoa_suffix = strstr(nsp_name, ".SItoA.");
@@ -267,9 +276,13 @@ inline void get_clean_object_name(const char* obj_full_name, char obj_name_out[M
     }
 
     char* nsp_separator = NULL;
-    if (mode == mode_c4d) // find last c4d mode switch {
+    if (mode == mode_c4d_old) // find last c4d mode switch {
         nsp_separator = strrchr(nsp_name, '|');
-    else if (mode == mode_si)
+    else if (mode == mode_c4d) { // find last c4d mode switch
+        char* lastPipe = strrchr(nsp_name, '|');
+        char* lastSlash = strrchr(nsp_name, '/');
+        nsp_separator = lastSlash > lastPipe ? lastSlash : lastPipe;
+    } else if (mode == mode_si)
         nsp_separator = strchr(nsp_name, '.');
     else if (mode == mode_maya)
         nsp_separator = strchr(nsp_name, ':');
@@ -297,11 +310,22 @@ inline void get_clean_material_name(const char* mat_full_name, char mat_name_out
                                     bool strip_ns) {
     safe_copy_to_buffer(mat_name_out, mat_full_name);
 
-    // C4DtoA: c4d|mat_name|root_node_name
+    // C4DtoA prior 2.3: c4d|mat_name|root_node_name
     if (strncmp(mat_name_out, "c4d|", 4) == 0) {
         // Chop first element
         char* str_cut = mat_name_out + 4;
         // Snip second element
+        char* mat_name_start = strtok(str_cut, "|");
+        if (mat_name_start != NULL) {
+            memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
+        }
+        return;
+    }
+    // C4DtoA from 2.3: /mat_name|root_node_name
+    if (mat_name_out[0] == '/' && strchr(mat_name_out, '|')) {
+        // Chop the prefix
+        char* str_cut = mat_name_out + 1;
+        // Snip the mat name
         char* mat_name_start = strtok(str_cut, "|");
         if (mat_name_start != NULL) {
             memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
@@ -452,8 +476,8 @@ inline bool get_object_names(const AtShaderGlobals* sg, const AtNode* node, bool
 
     bool need_nsp_name = nsp_user_data.empty();
     bool need_obj_name = obj_user_data.empty();
-    if (need_obj_name || need_nsp_name) 
-        get_clean_object_name(AiNodeGetName(node), obj_name_out, nsp_name_out, strip_obj_ns);    
+    if (need_obj_name || need_nsp_name)
+        get_clean_object_name(AiNodeGetName(node), obj_name_out, nsp_name_out, strip_obj_ns);
 
     offset_name(sg, node, get_offset_user_data(sg, node, CRYPTO_OBJECT_OFFSET_UDATA, &cachable),
                 obj_name_out);
