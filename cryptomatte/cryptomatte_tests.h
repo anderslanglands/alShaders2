@@ -167,8 +167,7 @@ inline void pathstyle_parsing() {
     assert_clean_names("path-3", "/arch/chy", true, "chy", "/arch");
     assert_clean_names("path-4", "arch/chy", true, "arch/chy", "default");
     assert_clean_names("path-5", "/hi/er/arch/chy|postpipe", true, "postpipe", "/hi/er/arch/chy");
-    assert_clean_names("path-6", "/hi/er/arch/chy|pp1|pp2", true, "pp2",
-                       "/hi/er/arch/chy|pp1");
+    assert_clean_names("path-6", "/hi/er/arch/chy|pp1|pp2", true, "pp2", "/hi/er/arch/chy|pp1");
 }
 
 inline std::string long_string(std::string input, int doublings) {
@@ -260,11 +259,19 @@ inline void assert_material_name(const char* msg, const char* mat_full_name, boo
                    mat_name_out);
 }
 
-inline void test_c4d_names() {
+inline void test_c4d_old_names() {
     assert_material_name("c4d-m-1", "c4d|mat_name|root_node_name", true, "mat_name");
-    // todo(jonah): is this correct?
     assert_material_name("c4d-m-2", "c4d|mat_name|root_node_name", false, "mat_name");
 }
+
+inline void test_pathstyle_names() {
+    assert_material_name("pathsyle-m-1", "/hier/arch/y/mymat|surface1", true, "mymat");
+    assert_material_name("pathsyle-m-2", "/hier/arch/y/mymat|compound|shader", true, "mymat");
+    assert_material_name("pathsyle-m-3", "/hier/arch/y/mymat", true, "mymat");
+    assert_material_name("pathsyle-m-4", "/hier/arch/y/mymat|compound|shader", false,
+                         "/hier/arch/y/mymat");
+}
+
 inline void test_mtoa_names() {
     assert_material_name("mtoa-m-1", "namespace:my_material_sg", true, "my_material_sg");
     assert_material_name("mtoa-m-2", "namespace:my_material_sg", false, "namespace:my_material_sg");
@@ -273,6 +280,7 @@ inline void test_mtoa_names() {
     assert_material_name("mtoa-m-5", ":", true, NULL);
     assert_material_name("mtoa-m-6", ":my_material_sg", true, "my_material_sg");
 }
+
 inline void test_sitoa_names() {
     const char sitoa_mat[] = "Sources.Materials.myLibrary_ref_library.myMaterialName."
                              "Standard_Mattes.uBasic.SItoA.25000...";
@@ -281,7 +289,8 @@ inline void test_sitoa_names() {
 }
 
 inline void run() {
-    test_c4d_names();
+    test_c4d_old_names();
+    test_pathstyle_names();
     test_mtoa_names();
     test_sitoa_names();
 }

@@ -316,20 +316,23 @@ inline void get_clean_material_name(const char* mat_full_name, char mat_name_out
         char* str_cut = mat_name_out + 4;
         // Snip second element
         char* mat_name_start = strtok(str_cut, "|");
-        if (mat_name_start != NULL) {
+        if (mat_name_start) 
             memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
-        }
         return;
     }
-    // C4DtoA from 2.3: /mat_name|root_node_name
-    if (mat_name_out[0] == '/' && strchr(mat_name_out, '|')) {
-        // Chop the prefix
-        char* str_cut = mat_name_out + 1;
-        // Snip the mat name
-        char* mat_name_start = strtok(str_cut, "|");
-        if (mat_name_start != NULL) {
-            memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
+    
+    // Path Style Names /mat_name|root_node_name
+    if (mat_name_out[0] == '/') {
+        char* mat_name = mat_name_out;
+        if (strchr(mat_name, '|')) 
+            mat_name = strtok(mat_name, "|");
+        if (strip_ns) {
+            char* ns_separator = strrchr(mat_name, '/');
+            if (ns_separator)
+                mat_name = ns_separator + 1;
         }
+        if (mat_name != mat_name_out)
+            memmove(mat_name_out, mat_name, strlen(mat_name) + 1);
         return;
     }
 
