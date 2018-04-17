@@ -240,56 +240,56 @@ inline void mtoa_strip_namespaces(const char* obj_full_name, char obj_name_out[M
 }
 
 inline void get_clean_object_name(const char* obj_full_name, char obj_name_out[MAX_STRING_LENGTH],
-                                  char nsp_name_out[MAX_STRING_LENGTH], bool strip_obj_ns) {
-    char nsp_name[MAX_STRING_LENGTH] = "";
-    safe_copy_to_buffer(nsp_name, obj_full_name);
+                                  char ns_name_out[MAX_STRING_LENGTH], bool strip_obj_ns) {
+    char ns_name[MAX_STRING_LENGTH] = "";
+    safe_copy_to_buffer(ns_name, obj_full_name);
     bool obj_already_done = false;
 
     const uint8_t mode_maya = 0;
-    const uint8_t mode_c4d_old = 1;
+    const uint8_t mode_pathstyle = 1;
     const uint8_t mode_si = 2;
-    const uint8_t mode_pathstyle = 3;
+    const uint8_t mode_c4d = 3;
     uint8_t mode = mode_maya;
 
-    if (nsp_name[0] == '/') {
-        // Path-style
-        // Used in C4DtoA from 2.3: /obj_hierarchy|obj_cache_hierarchy
-        // where '/' is used as the separator in the object hierarchy
+    if (ns_name[0] == '/') {
+        // Path-style: /obj/hierarchy|obj_cache_hierarchy
         // For instance: /Null/Sphere
         //               /Null/Cloner|Null/Sphere1
         mode = mode_pathstyle;
-    } else if (strncmp(nsp_name, "c4d|", 4) == 0) {
-    // C4DtoA prior 2.3: c4d|obj_hierarchy|...
-        mode = mode_c4d_old;
-        const char* nsp = nsp_name + 4;
+    } else if (strncmp(ns_name, "c4d|", 4) == 0) {
+        // C4DtoA prior 2.3: c4d|obj_hierarchy|...
+        mode = mode_c4d;
+        const char* nsp = ns_name + 4;
         size_t len = strlen(nsp);
-        memmove(nsp_name, nsp, len);
-        nsp_name[len] = '\0';
-    } else if (strstr(nsp_name, ".SItoA.")) {
+        memmove(ns_name, nsp, len);
+        ns_name[len] = '\0';
+    } else if (strstr(ns_name, ".SItoA.")) {
         // in Softimage mode
-        char* sitoa_suffix = strstr(nsp_name, ".SItoA.");
+        char* sitoa_suffix = strstr(ns_name, ".SItoA.");
         mode = mode_si;
         obj_already_done = sitoa_pointcloud_instance_handling(obj_full_name, obj_name_out);
         sitoa_suffix[0] = '\0'; // cut off everything after the start of .SItoA
+    } else {
+        mode = mode_maya;
     }
 
     char* nsp_separator = NULL;
-    if (mode == mode_c4d_old) // find last c4d mode switch {
-        nsp_separator = strrchr(nsp_name, '|');
+    if (mode == mode_c4d) // find last c4d mode switch {
+        nsp_separator = strrchr(ns_name, '|');
     else if (mode == mode_pathstyle) { // find last c4d mode switch
-        char* lastPipe = strrchr(nsp_name, '|');
-        char* lastSlash = strrchr(nsp_name, '/');
+        char* lastPipe = strrchr(ns_name, '|');
+        char* lastSlash = strrchr(ns_name, '/');
         nsp_separator = lastSlash > lastPipe ? lastSlash : lastPipe;
     } else if (mode == mode_si)
-        nsp_separator = strchr(nsp_name, '.');
+        nsp_separator = strchr(ns_name, '.');
     else if (mode == mode_maya)
-        nsp_separator = strchr(nsp_name, ':');
+        nsp_separator = strchr(ns_name, ':');
 
     if (!obj_already_done) {
         if (!nsp_separator || !strip_obj_ns) { // use whole name
-            memmove(obj_name_out, nsp_name, strlen(nsp_name));
+            memmove(obj_name_out, ns_name, strlen(ns_name));
         } else if (mode == mode_maya) { // maya
-            mtoa_strip_namespaces(nsp_name, obj_name_out);
+            mtoa_strip_namespaces(ns_name, obj_name_out);
         } else { // take everything right of sep
             char* obj_name_start = nsp_separator + 1;
             memmove(obj_name_out, obj_name_start, strlen(obj_name_start));
@@ -298,9 +298,9 @@ inline void get_clean_object_name(const char* obj_full_name, char obj_name_out[M
 
     if (nsp_separator) {
         nsp_separator[0] = '\0';
-        strcpy(nsp_name_out, nsp_name); // copy namespace
+        strcpy(ns_name_out, ns_name); // copy namespace
     } else {
-        strncpy(nsp_name_out, "default\0", 8); // default namespace
+        strncpy(ns_name_out, "default\0", 8); // default namespace
     }
 }
 

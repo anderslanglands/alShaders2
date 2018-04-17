@@ -168,6 +168,8 @@ inline void pathstyle_parsing() {
     assert_clean_names("path-4", "arch/chy", true, "arch/chy", "default");
     assert_clean_names("path-5", "/hi/er/arch/chy|postpipe", true, "postpipe", "/hi/er/arch/chy");
     assert_clean_names("path-6", "/hi/er/arch/chy|pp1|pp2", true, "pp2", "/hi/er/arch/chy|pp1");
+    assert_clean_names("path-7", "/Null/Cloner|Null2/Sphere1", true, "Sphere1", "/Null/Cloner|Null2");
+    assert_clean_names("path-8", "/Null/Cloner|Null2/Sphere1", false, "/Null/Cloner|Null2/Sphere1", "/Null/Cloner|Null2");
 }
 
 inline std::string long_string(std::string input, int doublings) {
@@ -265,10 +267,10 @@ inline void test_c4d_old_names() {
 }
 
 inline void test_pathstyle_names() {
-    assert_material_name("pathsyle-m-1", "/hier/arch/y/mymat|surface1", true, "mymat");
-    assert_material_name("pathsyle-m-2", "/hier/arch/y/mymat|compound|shader", true, "mymat");
-    assert_material_name("pathsyle-m-3", "/hier/arch/y/mymat", true, "mymat");
-    assert_material_name("pathsyle-m-4", "/hier/arch/y/mymat|compound|shader", false,
+    assert_material_name("path-m-1", "/hier/arch/y/mymat|surface1", true, "mymat");
+    assert_material_name("path-m-2", "/hier/arch/y/mymat|compound|shader", true, "mymat");
+    assert_material_name("path-m-3", "/hier/arch/y/mymat", true, "mymat");
+    assert_material_name("path-m-4", "/hier/arch/y/mymat|compound|shader", false,
                          "/hier/arch/y/mymat");
 }
 
