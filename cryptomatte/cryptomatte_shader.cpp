@@ -77,8 +77,6 @@ node_update {
 }
 
 shader_evaluate {
-    sg->out.CLOSURE() = AtClosureList();
-
     if (sg->Rt & AI_RAY_CAMERA && sg->sc == AI_CONTEXT_SURFACE) {
         CryptomatteData* data = reinterpret_cast<CryptomatteData*>(AiNodeGetLocalData(node));
         data->do_cryptomattes(sg);
@@ -87,7 +85,7 @@ shader_evaluate {
 
 void registerCryptomatte(AtNodeLib* node) {
     node->methods = cryptomatteMtd;
-    node->output_type = AI_TYPE_CLOSURE;
+    node->output_type = AI_TYPE_RGBA;
     node->name = "cryptomatte";
     node->node_type = AI_NODE_SHADER;
     strcpy(node->version, AI_VERSION);
