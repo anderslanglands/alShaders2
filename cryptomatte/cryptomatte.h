@@ -310,22 +310,10 @@ inline void get_clean_material_name(const char* mat_full_name, char mat_name_out
                                     bool strip_ns) {
     safe_copy_to_buffer(mat_name_out, mat_full_name);
 
-    // C4DtoA prior 2.3: c4d|mat_name|root_node_name
-    if (strncmp(mat_name_out, "c4d|", 4) == 0) {
-        // Chop first element
-        char* str_cut = mat_name_out + 4;
-        // Snip second element
-        char* mat_name_start = strtok(str_cut, "|");
-        if (mat_name_start) 
-            memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
-        return;
-    }
-    
-    // Path Style Names /mat_name|root_node_name
+    // Path Style Names /my/mat/name|root_node_name
     if (mat_name_out[0] == '/') {
-        char* mat_name = mat_name_out;
-        if (strchr(mat_name, '|')) 
-            mat_name = strtok(mat_name, "|");
+        char* mat_name = strtok(mat_name_out, "|");
+        mat_name = mat_name ? mat_name : mat_name_out;
         if (strip_ns) {
             char* ns_separator = strrchr(mat_name, '/');
             if (ns_separator)
@@ -336,55 +324,50 @@ inline void get_clean_material_name(const char* mat_full_name, char mat_name_out
         return;
     }
 
-    // Example:
-    //      Softimage:
-    //      Sources.Materials.myLibrary_ref_library.myMaterialName.Standard_Mattes.uBasic.SITOA.25000....
-    //      Maya: namespace:my_material_sg
-    char* mat_postfix = strstr(mat_name_out, ".SItoA.");
-    if (mat_postfix != NULL) {
-        //   Sources.Materials.myLibrary_ref_library.myMaterialName.Standard_Mattes.uBasic
-        //   <<chop>> .SITOA.25000....
-        mat_postfix[0] = '\0';
-
-        char* mat_shader_name = strrchr(mat_name_out, '.');
-        if (mat_shader_name != NULL) {
-            //   Sources.Materials.myLibrary_ref_library.myMaterialName.Standard_Mattes
-            //   <<chop>> .uBasic
-            mat_shader_name[0] = '\0';
-        }
-
-        char* Standard_Mattes = strstr(mat_name_out, ".Standard_Mattes");
-        if (Standard_Mattes != NULL)
-            //   Sources.Materials.myLibrary_ref_library.myMaterialName <<chop>>
-            //   .Standard_Mattes
-            Standard_Mattes[0] = '\0';
-
-        const char* prefix = "Sources.Materials.";
-        const char* mat_prefix_seperator = strstr(mat_name_out, prefix);
-        if (mat_prefix_seperator != NULL) {
-            //   Sources.Materials. <<SNIP>>
-            //   myLibrary_ref_library.myMaterialName
-            const char* mat_name_start = mat_prefix_seperator + strlen(prefix);
-            memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
-        }
-
-        char* nsp_separator = strchr(mat_name_out, '.');
-        if (strip_ns && nsp_separator != NULL) {
-            //   myLibrary_ref_library. <<SNIP>> myMaterialName
-            nsp_separator[0] = '\0';
-            char* mat_name_start = nsp_separator + 1;
-            memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
-        }
-        // Leaving us with just the material name.
+    // C4DtoA prior 2.3: c4d|mat_name|root_node_name
+    if (strncmp(mat_name_out, "c4d|", 4) == 0) {
+        char* mat_name = strtok(mat_name_out + 4, "|");
+        if (mat_name)
+            memmove(mat_name_out, mat_name, strlen(mat_name) + 1);
+        return;
     }
 
     // For maya, you get something simpler, like namespace:my_material_sg.
     char* ns_separator = strchr(mat_name_out, ':');
-    if (strip_ns && ns_separator != NULL) {
-        //    namespace: <<SNIP>> my_material_sg
+    if (strip_ns && ns_separator) {
         ns_separator[0] = '\0';
-        char* mat_name_start = ns_separator + 1;
-        memmove(mat_name_out, mat_name_start, strlen(mat_name_start) + 1);
+        char* mat_name = ns_separator + 1;
+        memmove(mat_name_out, mat_name, strlen(mat_name) + 1);
+        return;
+    }
+
+    // Softimage: Sources.Materials.myLibraryName.myMatName.Standard_Mattes.uBasic.SITOA.25000....
+    char* mat_postfix = strstr(mat_name_out, ".SItoA.");
+    if (mat_postfix) {
+        char* mat_name = mat_name_out;
+        mat_postfix[0] = '\0';
+
+        char* mat_shader_name = strrchr(mat_name, '.');
+        if (mat_shader_name)
+            mat_shader_name[0] = '\0';
+
+        char* standard_mattes = strstr(mat_name, ".Standard_Mattes");
+        if (standard_mattes)
+            standard_mattes[0] = '\0';
+
+        const char* prefix = "Sources.Materials.";
+        char* mat_prefix_separator = strstr(mat_name, prefix);
+        if (mat_prefix_separator)
+            mat_name = mat_prefix_separator + strlen(prefix);
+
+        char* nsp_separator = strchr(mat_name, '.');
+        if (strip_ns && nsp_separator) {
+            nsp_separator[0] = '\0';
+            mat_name = nsp_separator + 1;
+        }
+        if (mat_name != mat_name_out)
+            memmove(mat_name_out, mat_name, strlen(mat_name) + 1);
+        return;
     }
 }
 
