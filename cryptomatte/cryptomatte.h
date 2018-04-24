@@ -141,8 +141,9 @@ const AtString aStr_shader("shader");
 const AtString aStr_list_aggregate("list_aggregate");
 
 // Name processing flags
+using CryptoNameFlag = uint8_t;
+
 // clang-format off
-typedef uint8_t CryptoNameFlag;
 #define CRYPTO_NAME_NONE          0x00
 #define CRYPTO_NAME_STRIP_NS      0x01 /* remove "namespace" */
 #define CRYPTO_NAME_MAYA          0x02 /* mtoa style */
