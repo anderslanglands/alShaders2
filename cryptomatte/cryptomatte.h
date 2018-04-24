@@ -36,10 +36,8 @@ getting global
         data->set_option_channels(AiNodeGetInt(node, "cryptomatte_depth"),
                                 CRYPTO_PREVIEWINEXR_DEFAULT);
 
-        // set namespace options (optional)
-        data->set_option_namespace_stripping(
-            AiNodeGetBool(node, "strip_obj_namespaces"),
-            AiNodeGetBool(node, "strip_mat_namespaces"));
+        // set namespace options (optional - see CRYPTO_NAME_* flags)
+        data->set_option_namespace_stripping(obj_flags, mat_flags);
 
         // set option for sidecar manifest (optional)
         data->set_manifest_sidecar(sidecar);
