@@ -344,7 +344,7 @@ inline void get_clean_material_name(const char* mat_full_name, char mat_name_out
 
     // Path Style Names /my/mat/name|root_node_name
     if (do_paths && mat_name_out[0] == '/') {
-        char* mat_name = do_strip_pipes ? strtok(mat_name_out, "|") : mat_name_out;
+        char* mat_name = do_strip_pipes ? strtok(mat_name_out, "|") : nullptr;
         mat_name = mat_name ? mat_name : mat_name_out;
         if (do_strip_ns) {
             char* ns_separator = strrchr(mat_name, '/');
