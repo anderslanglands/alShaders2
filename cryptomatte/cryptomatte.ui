@@ -45,20 +45,20 @@ with uigen.group(ui, 'Advanced', collapse=True):
       description='When off, skips rendering legacy Cryptomatte preview channels in EXR drivers.')
    with uigen.group(ui, 'Name processing options', collapse=False ):
       ui.parameter('process_maya', 'bool', True, 
-         label="Process Maya Names", 
-         description="Example: namespace:objName");
+         label="Maya Names", 
+         description="Example: namespace:obj");
       ui.parameter('process_paths', 'bool', True, 
-         label="Process Path-style names", 
+         label="Path-Style names", 
          description="Example: /obj/path/name");
       ui.parameter('process_obj_path_pipes', 'bool', True, 
-         label="Process Object paths pipes", 
+         label="Obj Path Pipes", 
          description="Consider pipes (|) part of the object path. (For C4D)");
       ui.parameter('process_mat_path_pipes', 'bool', True, 
-         label="Process Materian name pipes", 
+         label="Strip Material Pipes", 
          description="In paths, cut material names after pipes (|). (For C4D). Example: /a/b/c|standard_surface -> /a/b/c");
       ui.parameter('process_legacy', 'bool', True, 
-         label="Process Legacy Styles", 
-         description="Includes Old C4D style, as well as Softimage.");
+         label="Legacy Styles", 
+         description="Includes old C4D style, as well as Softimage.");
 
    with uigen.group(ui, 'User Cryptomatte 0', collapse=False ):
       ui.parameter('user_crypto_aov_0', 'string', '', label='AOV name', 
