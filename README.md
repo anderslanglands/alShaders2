@@ -9,8 +9,8 @@ Features
 * Support for mixed bit-depth EXR files
 * Support long object names (up to 2048 characters)
 * Added preview_in_exr control
-** False (default): Omit preview channels when EXR drivers are being used
-** True: Keep behavior as usual
+  * False (default): Omit preview channels when EXR drivers are being used
+  * True: Keep behavior as usual
 * Support C4DtoA Arnold 5.1 naming changes
 * Add controls to disable various kinds of name processing
 * Switched to Daniel Schmidt's faster hash to float code
