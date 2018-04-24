@@ -15,6 +15,11 @@ enum cryptomatteParams {
     p_aov_crypto_object,
     p_aov_crypto_material,
     p_preview_in_exr,
+    p_process_maya,
+    p_process_paths,
+    p_process_obj_path_pipes,
+    p_process_mat_path_pipes,
+    p_process_legacy,
     p_user_crypto_aov_0,
     p_user_crypto_src_0,
     p_user_crypto_aov_1,
@@ -34,6 +39,11 @@ node_parameters {
     AiParameterStr("aov_crypto_object", "crypto_object");
     AiParameterStr("aov_crypto_material", "crypto_material");
     AiParameterBool("preview_in_exr", CRYPTO_PREVIEWINEXR_DEFAULT);
+    AiParameterBool("process_maya", true);
+    AiParameterBool("process_paths", true);
+    AiParameterBool("process_obj_path_pipes", true);
+    AiParameterBool("process_mat_path_pipes", true);
+    AiParameterBool("process_legacy", true);
     AiParameterStr("user_crypto_aov_0", "");
     AiParameterStr("user_crypto_src_0", "");
     AiParameterStr("user_crypto_aov_1", "");
@@ -60,8 +70,26 @@ node_update {
 
     data->set_option_sidecar_manifests(AiNodeGetBool(node, "sidecar_manifests"));
     data->set_option_channels(AiNodeGetInt(node, "cryptomatte_depth"), AiNodeGetBool(node, "preview_in_exr"));
-    data->set_option_namespace_stripping(AiNodeGetBool(node, "strip_obj_namespaces"),
-                                         AiNodeGetBool(node, "strip_mat_namespaces"));
+
+    CryptoNameFlag flags = CRYPTO_NAME_ALL;
+    if (!AiNodeGetBool(node, "process_maya"))
+        flags ^= CRYPTO_NAME_MAYA;
+    if (!AiNodeGetBool(node, "process_paths"))
+        flags ^= CRYPTO_NAME_PATHS;
+    if (!AiNodeGetBool(node, "process_obj_path_pipes"))
+        flags ^= CRYPTO_NAME_OBJPATHPIPES;
+    if (!AiNodeGetBool(node, "process_mat_path_pipes"))
+        flags ^= CRYPTO_NAME_MATPATHPIPES;
+    if (!AiNodeGetBool(node, "process_legacy"))
+        flags ^= CRYPTO_NAME_LEGACY;
+
+    CryptoNameFlag obj_flags = flags, mat_flags = flags;
+    if (!AiNodeGetBool(node, "strip_obj_namespaces"))
+        obj_flags ^= CRYPTO_NAME_STRIP_NS;
+    if (!AiNodeGetBool(node, "strip_mat_namespaces"))
+        mat_flags ^= CRYPTO_NAME_STRIP_NS;
+
+    data->set_option_namespace_stripping(obj_flags, mat_flags);
 
     AtArray* uc_aov_array = AiArray(4, 1, AI_TYPE_STRING, //
                                     AiNodeGetStr(node, "user_crypto_aov_0").c_str(),

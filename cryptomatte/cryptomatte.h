@@ -140,6 +140,19 @@ extern const AtString CRYPTO_MATERIAL_OFFSET_UDATA;
 const AtString aStr_shader("shader");
 const AtString aStr_list_aggregate("list_aggregate");
 
+// Name processing flags
+// clang-format off
+typedef uint8_t CryptoNameFlag;
+#define CRYPTO_NAME_NONE          0x00
+#define CRYPTO_NAME_STRIP_NS      0x01 /* remove "namespace" */
+#define CRYPTO_NAME_MAYA          0x02 /* mtoa style */
+#define CRYPTO_NAME_PATHS         0x04 /* path based (starting with "/") */
+#define CRYPTO_NAME_OBJPATHPIPES  0x08 /* pipes are considered in paths (c4d) */
+#define CRYPTO_NAME_MATPATHPIPES  0x10 /* sitoa, old-c4d style */
+#define CRYPTO_NAME_LEGACY        0x20 /* sitoa, old-c4d style */
+#define CRYPTO_NAME_ALL           CryptoNameFlag(-1)
+// clang-format on
+
 ///////////////////////////////////////////////
 //
 //      String processing
@@ -240,33 +253,45 @@ inline void mtoa_strip_namespaces(const char* obj_full_name, char obj_name_out[M
 }
 
 inline void get_clean_object_name(const char* obj_full_name, char obj_name_out[MAX_STRING_LENGTH],
-                                  char ns_name_out[MAX_STRING_LENGTH], bool strip_obj_ns) {
+                                  char ns_name_out[MAX_STRING_LENGTH], CryptoNameFlag flags) {
+    if (flags == CRYPTO_NAME_NONE) {
+        memmove(obj_name_out, obj_full_name, strlen(obj_full_name));
+        strcpy(ns_name_out, "default");
+        return;
+    }
+
     char ns_name[MAX_STRING_LENGTH] = "";
     safe_copy_to_buffer(ns_name, obj_full_name);
     bool obj_already_done = false;
+
+    const bool do_strip_ns = (flags & CRYPTO_NAME_STRIP_NS) != 0;
+    const bool do_maya = (flags & CRYPTO_NAME_MAYA) != 0;
+    const bool do_paths = (flags & CRYPTO_NAME_PATHS) != 0;
+    const bool do_path_pipe = (flags & CRYPTO_NAME_OBJPATHPIPES) != 0;
+    const bool do_legacy = (flags & CRYPTO_NAME_LEGACY) != 0;
 
     const uint8_t mode_maya = 0;
     const uint8_t mode_pathstyle = 1;
     const uint8_t mode_si = 2;
     const uint8_t mode_c4d = 3;
-    uint8_t mode = mode_maya;
 
+    uint8_t mode = mode_maya;
     if (ns_name[0] == '/') {
         // Path-style: /obj/hierarchy|obj_cache_hierarchy
         // For instance: /Null/Sphere
         //               /Null/Cloner|Null/Sphere1
         mode = mode_pathstyle;
-    } else if (strncmp(ns_name, "c4d|", 4) == 0) {
+    } else if (do_legacy && strncmp(ns_name, "c4d|", 4) == 0) {
         // C4DtoA prior 2.3: c4d|obj_hierarchy|...
         mode = mode_c4d;
         const char* nsp = ns_name + 4;
         size_t len = strlen(nsp);
         memmove(ns_name, nsp, len);
         ns_name[len] = '\0';
-    } else if (strstr(ns_name, ".SItoA.")) {
+    } else if (do_legacy && strstr(ns_name, ".SItoA.")) {
         // in Softimage mode
-        char* sitoa_suffix = strstr(ns_name, ".SItoA.");
         mode = mode_si;
+        char* sitoa_suffix = strstr(ns_name, ".SItoA.");
         obj_already_done = sitoa_pointcloud_instance_handling(obj_full_name, obj_name_out);
         sitoa_suffix[0] = '\0'; // cut off everything after the start of .SItoA
     } else {
@@ -274,19 +299,19 @@ inline void get_clean_object_name(const char* obj_full_name, char obj_name_out[M
     }
 
     char* nsp_separator = nullptr;
-    if (mode == mode_c4d) // find last c4d mode switch {
+    if (mode == mode_c4d && do_legacy) {
         nsp_separator = strrchr(ns_name, '|');
-    else if (mode == mode_pathstyle) { // find last c4d mode switch
-        char* lastPipe = strrchr(ns_name, '|');
+    } else if (mode == mode_pathstyle && do_paths) {
+        char* lastPipe = do_path_pipe ? strrchr(ns_name, '|') : nullptr;
         char* lastSlash = strrchr(ns_name, '/');
         nsp_separator = lastSlash > lastPipe ? lastSlash : lastPipe;
-    } else if (mode == mode_si)
+    } else if (mode == mode_si && do_legacy) {
         nsp_separator = strchr(ns_name, '.');
-    else if (mode == mode_maya)
+    } else if (mode == mode_maya && do_maya)
         nsp_separator = strchr(ns_name, ':');
 
     if (!obj_already_done) {
-        if (!nsp_separator || !strip_obj_ns) { // use whole name
+        if (!nsp_separator || !do_strip_ns) { // use whole name
             memmove(obj_name_out, ns_name, strlen(ns_name));
         } else if (mode == mode_maya) { // maya
             mtoa_strip_namespaces(ns_name, obj_name_out);
@@ -300,19 +325,27 @@ inline void get_clean_object_name(const char* obj_full_name, char obj_name_out[M
         nsp_separator[0] = '\0';
         strcpy(ns_name_out, ns_name); // copy namespace
     } else {
-        strncpy(ns_name_out, "default\0", 8); // default namespace
+        strcpy(ns_name_out, "default");
     }
 }
 
 inline void get_clean_material_name(const char* mat_full_name, char mat_name_out[MAX_STRING_LENGTH],
-                                    bool strip_ns) {
+                                    CryptoNameFlag flags) {
     safe_copy_to_buffer(mat_name_out, mat_full_name);
+    if (flags == CRYPTO_NAME_NONE)
+        return;
+
+    const bool do_strip_ns = (flags & CRYPTO_NAME_STRIP_NS) != 0;
+    const bool do_maya = (flags & CRYPTO_NAME_MAYA) != 0;
+    const bool do_paths = (flags & CRYPTO_NAME_PATHS) != 0;
+    const bool do_strip_pipes = (flags & CRYPTO_NAME_MATPATHPIPES) != 0;
+    const bool do_legacy = (flags & CRYPTO_NAME_LEGACY) != 0;
 
     // Path Style Names /my/mat/name|root_node_name
-    if (mat_name_out[0] == '/') {
-        char* mat_name = strtok(mat_name_out, "|");
+    if (do_paths && mat_name_out[0] == '/') {
+        char* mat_name = do_strip_pipes ? strtok(mat_name_out, "|") : mat_name_out;
         mat_name = mat_name ? mat_name : mat_name_out;
-        if (strip_ns) {
+        if (do_strip_ns) {
             char* ns_separator = strrchr(mat_name, '/');
             if (ns_separator)
                 mat_name = ns_separator + 1;
@@ -323,49 +356,55 @@ inline void get_clean_material_name(const char* mat_full_name, char mat_name_out
     }
 
     // C4DtoA prior 2.3: c4d|mat_name|root_node_name
-    if (strncmp(mat_name_out, "c4d|", 4) == 0) {
-        char* mat_name = strtok(mat_name_out + 4, "|");
-        if (mat_name)
-            memmove(mat_name_out, mat_name, strlen(mat_name) + 1);
-        return;
+    if (do_legacy) {
+        if (strncmp(mat_name_out, "c4d|", 4) == 0) {
+            char* mat_name = strtok(mat_name_out + 4, "|");
+            if (mat_name)
+                memmove(mat_name_out, mat_name, strlen(mat_name) + 1);
+            return;
+        }
     }
 
     // For maya, you get something simpler, like namespace:my_material_sg.
-    char* ns_separator = strchr(mat_name_out, ':');
-    if (strip_ns && ns_separator) {
-        ns_separator[0] = '\0';
-        char* mat_name = ns_separator + 1;
-        memmove(mat_name_out, mat_name, strlen(mat_name) + 1);
-        return;
+    if (do_maya) {
+        char* ns_separator = strchr(mat_name_out, ':');
+        if (do_strip_ns && ns_separator) {
+            ns_separator[0] = '\0';
+            char* mat_name = ns_separator + 1;
+            memmove(mat_name_out, mat_name, strlen(mat_name) + 1);
+            return;
+        }
     }
 
     // Softimage: Sources.Materials.myLibraryName.myMatName.Standard_Mattes.uBasic.SITOA.25000....
-    char* mat_postfix = strstr(mat_name_out, ".SItoA.");
-    if (mat_postfix) {
-        char* mat_name = mat_name_out;
-        mat_postfix[0] = '\0';
+    if (do_legacy) {
+        char* mat_postfix = strstr(mat_name_out, ".SItoA.");
+        if (mat_postfix) {
+            char* mat_name = mat_name_out;
+            mat_postfix[0] = '\0';
 
-        char* mat_shader_name = strrchr(mat_name, '.');
-        if (mat_shader_name)
-            mat_shader_name[0] = '\0';
+            char* mat_shader_name = strrchr(mat_name, '.');
+            if (mat_shader_name)
+                mat_shader_name[0] = '\0';
 
-        char* standard_mattes = strstr(mat_name, ".Standard_Mattes");
-        if (standard_mattes)
-            standard_mattes[0] = '\0';
+            char* standard_mattes = strstr(mat_name, ".Standard_Mattes");
+            if (standard_mattes)
+                standard_mattes[0] = '\0';
 
-        const char* prefix = "Sources.Materials.";
-        char* mat_prefix_separator = strstr(mat_name, prefix);
-        if (mat_prefix_separator)
-            mat_name = mat_prefix_separator + strlen(prefix);
+            const char* prefix = "Sources.Materials.";
+            char* mat_prefix_separator = strstr(mat_name, prefix);
+            if (mat_prefix_separator)
+                mat_name = mat_prefix_separator + strlen(prefix);
 
-        char* nsp_separator = strchr(mat_name, '.');
-        if (strip_ns && nsp_separator) {
-            nsp_separator[0] = '\0';
-            mat_name = nsp_separator + 1;
+            char* nsp_separator = strchr(mat_name, '.');
+            if (do_strip_ns && nsp_separator) {
+                nsp_separator[0] = '\0';
+                mat_name = nsp_separator + 1;
+            }
+            if (mat_name != mat_name_out)
+                memmove(mat_name_out, mat_name, strlen(mat_name) + 1);
+            return;
         }
-        if (mat_name != mat_name_out)
-            memmove(mat_name_out, mat_name, strlen(mat_name) + 1);
-        return;
     }
 }
 
@@ -450,7 +489,7 @@ inline void offset_name(const AtShaderGlobals* sg, const AtNode* node, const int
     }
 }
 
-inline bool get_object_names(const AtShaderGlobals* sg, const AtNode* node, bool strip_obj_ns,
+inline bool get_object_names(const AtShaderGlobals* sg, const AtNode* node, CryptoNameFlag flags,
                              char nsp_name_out[MAX_STRING_LENGTH],
                              char obj_name_out[MAX_STRING_LENGTH]) {
     bool cachable = true;
@@ -461,7 +500,7 @@ inline bool get_object_names(const AtShaderGlobals* sg, const AtNode* node, bool
     bool need_nsp_name = nsp_user_data.empty();
     bool need_obj_name = obj_user_data.empty();
     if (need_obj_name || need_nsp_name)
-        get_clean_object_name(AiNodeGetName(node), obj_name_out, nsp_name_out, strip_obj_ns);
+        get_clean_object_name(AiNodeGetName(node), obj_name_out, nsp_name_out, flags);
 
     offset_name(sg, node, get_offset_user_data(sg, node, CRYPTO_OBJECT_OFFSET_UDATA, &cachable),
                 obj_name_out);
@@ -479,11 +518,11 @@ inline bool get_object_names(const AtShaderGlobals* sg, const AtNode* node, bool
 }
 
 inline bool get_material_name(const AtShaderGlobals* sg, const AtNode* node, const AtNode* shader,
-                              bool strip_mat_ns, char mat_name_out[MAX_STRING_LENGTH]) {
+                              CryptoNameFlag flags, char mat_name_out[MAX_STRING_LENGTH]) {
     bool cachable = true;
     AtString mat_user_data = get_user_data(sg, node, CRYPTO_MATERIAL_UDATA, &cachable);
 
-    get_clean_material_name(AiNodeGetName(shader), mat_name_out, strip_mat_ns);
+    get_clean_material_name(AiNodeGetName(shader), mat_name_out, flags);
     offset_name(sg, node, get_offset_user_data(sg, node, CRYPTO_MATERIAL_OFFSET_UDATA, &cachable),
                 mat_name_out);
 
@@ -801,8 +840,8 @@ struct CryptomatteData {
     uint8_t option_depth;
     uint8_t option_aov_depth;
     bool option_exr_preview_channels;
-    bool option_strip_obj_ns;
-    bool option_strip_mat_ns;
+    CryptoNameFlag option_obj_flags;
+    CryptoNameFlag option_mat_flags;
     uint8_t option_pcloud_ice_verbosity;
     bool option_sidecar_manifests;
 
@@ -817,7 +856,7 @@ struct CryptomatteData {
 public:
     CryptomatteData() {
         set_option_channels(CRYPTO_DEPTH_DEFAULT, CRYPTO_PREVIEWINEXR_DEFAULT);
-        set_option_namespace_stripping(CRYPTO_STRIPOBJNS_DEFAULT, CRYPTO_STRIPMATNS_DEFAULT);
+        set_option_namespace_stripping(CRYPTO_NAME_ALL, CRYPTO_NAME_ALL);
         set_option_ice_pcloud_verbosity(CRYPTO_ICEPCLOUDVERB_DEFAULT);
     }
 
@@ -845,9 +884,9 @@ public:
             option_aov_depth = (option_depth + 1) / 2;
     }
 
-    void set_option_namespace_stripping(bool strip_obj, bool strip_mat) {
-        option_strip_obj_ns = strip_obj;
-        option_strip_mat_ns = strip_mat;
+    void set_option_namespace_stripping(CryptoNameFlag obj_flags, CryptoNameFlag mat_flags) {
+        option_obj_flags = obj_flags;
+        option_mat_flags = mat_flags;
     }
 
     void set_option_ice_pcloud_verbosity(int verbosity) {
@@ -924,7 +963,7 @@ private:
         } else {
             char nsp_name[MAX_STRING_LENGTH] = "";
             char obj_name[MAX_STRING_LENGTH] = "";
-            bool cachable = get_object_names(sg, sg->Op, option_strip_obj_ns, nsp_name, obj_name);
+            bool cachable = get_object_names(sg, sg->Op, option_obj_flags, nsp_name, obj_name);
             nsp_hash_clr = hash_name_rgb(nsp_name);
             obj_hash_clr = hash_name_rgb(obj_name);
             if (cachable) {
@@ -947,7 +986,7 @@ private:
 
             char mat_name[MAX_STRING_LENGTH] = "";
             cachable =
-                get_material_name(sg, sg->Op, shader, option_strip_mat_ns, mat_name) && cachable;
+                get_material_name(sg, sg->Op, shader, option_mat_flags, mat_name) && cachable;
             mat_hash_clr = hash_name_rgb(mat_name);
 
             if (cachable) {
@@ -1137,7 +1176,7 @@ private:
             char nsp_name[MAX_STRING_LENGTH] = "";
             char obj_name[MAX_STRING_LENGTH] = "";
 
-            get_object_names(nullptr, node, option_strip_obj_ns, nsp_name, obj_name);
+            get_object_names(nullptr, node, option_obj_flags, nsp_name, obj_name);
 
             if (do_md_asset || do_md_object) {
                 add_obj_to_manifest(node, nsp_name, CRYPTO_ASSET_UDATA, CRYPTO_ASSET_OFFSET_UDATA,
@@ -1156,7 +1195,7 @@ private:
                     AtNode* shader = static_cast<AtNode*>(AiArrayGetPtr(shaders, i));
                     if (!shader)
                         continue;
-                    get_material_name(nullptr, node, shader, option_strip_mat_ns, mat_name);
+                    get_material_name(nullptr, node, shader, option_mat_flags, mat_name);
                     add_obj_to_manifest(node, mat_name, CRYPTO_MATERIAL_UDATA,
                                         CRYPTO_MATERIAL_OFFSET_UDATA, map_md_material);
                 }

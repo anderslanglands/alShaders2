@@ -37,7 +37,11 @@ namespace NameParsingTests {
 inline void assert_clean_names(const char* msg, const char* obj_name_in, bool strip_obj_ns,
                                const char* obj_correct, const char* nsp_correct) {
     char obj_name_out[MAX_STRING_LENGTH] = "", nsp_name_out[MAX_STRING_LENGTH] = "";
-    get_clean_object_name(obj_name_in, obj_name_out, nsp_name_out, strip_obj_ns);
+    CryptoNameFlag flags = CRYPTO_NAME_ALL;
+    if (!strip_obj_ns)
+        flags = flags ^ CRYPTO_NAME_STRIP_NS;
+
+    get_clean_object_name(obj_name_in, obj_name_out, nsp_name_out, flags);
     /*
         null "correct" names mean just check there was no crash and the result is a string
         AiMsgInfo reporting makes sure compiller can't remove this
@@ -254,7 +258,12 @@ namespace MaterialNameTests {
 inline void assert_material_name(const char* msg, const char* mat_full_name, bool strip_ns,
                                  const char* mat_correct) {
     char mat_name_out[MAX_STRING_LENGTH] = "";
-    get_clean_material_name(mat_full_name, mat_name_out, strip_ns);
+    
+    CryptoNameFlag flags = CRYPTO_NAME_ALL;
+    if (!strip_ns)
+        flags = flags ^ CRYPTO_NAME_STRIP_NS;
+
+    get_clean_material_name(mat_full_name, mat_name_out, flags);
 
     if (!mat_correct)
         AiMsgDebug("Success (%s did not crash) - %lu", msg, strlen(mat_name_out));
