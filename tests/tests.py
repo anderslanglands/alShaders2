@@ -27,23 +27,28 @@ def get_all_cryptomatte_tests():
 # KickAndCompare base class
 #############################################
 
-
 class KickAndCompareTestCase(unittest.TestCase):
     ass = ""
-    arnold_v = 2
+    arnold_v = 1
+    arnold_t = 4
 
     @classmethod
     def setUpClass(self):
         assert self.ass, "No test name specified on test."
 
         file_dir = os.path.abspath(os.path.dirname(__file__))
+
+        build_dir = os.path.normpath(os.path.join(file_dir, "..", "build")).replace("\\", "/")
+        print build_dir
+        if not os.path.exists(build_dir):
+            raise RuntimeError("could not find %s ", build_dir)
         self.ass_file = os.path.join(file_dir, self.ass)
         ass_file_name = os.path.basename(self.ass_file)
         test_dir = os.path.abspath(os.path.dirname(self.ass_file))
 
-        self.result_dir = os.path.join(test_dir, "%s_result" % ass_file_name[:3])
-        self.correct_result_dir = os.path.join(test_dir, "%s_correct" % ass_file_name[:3])
-        self.result_log = os.path.join(self.result_dir, "log.txt")
+        self.result_dir = os.path.join(test_dir, "%s_result" % ass_file_name[:3]).replace("\\", "/")
+        self.correct_result_dir = os.path.join(test_dir, "%s_correct" % ass_file_name[:3]).replace("\\", "/")
+        self.result_log = os.path.join(self.result_dir, "log.txt").replace("\\", "/")
         self.correct_file_names = [
             x for x in os.listdir(self.correct_result_dir)
             if os.path.isfile(os.path.join(self.correct_result_dir, x))
@@ -72,13 +77,15 @@ class KickAndCompareTestCase(unittest.TestCase):
         ]
         assert not remaining_files, "Files were not cleaned up: %s " % remaining_files
 
-        cmd = 'kick -v %s -t 2 -dp -dw -sl -logfile %s %s' % (self.arnold_v, self.result_log,
-                                                              ass_file_name)
+        cmd = 'kick -v {v} -t {t} -dp -dw -sl -nostdin -logfile {log} -i {ass}'.format(
+            v=self.arnold_v, t=self.arnold_t, log=self.result_log, ass=ass_file_name)
         cwd = test_dir.replace("\\", "/")
         print cmd, cwd
-        proc = subprocess.Popen(cmd, cwd=cwd, shell=True, stderr=subprocess.PIPE)
+        env = os.environ.copy()
+        env["ARNOLD_PLUGIN_PATH"] = "%s;%s" % (build_dir, env.get("ARNOLD_PLUGIN_PATH", ""))
+        proc = subprocess.Popen(cmd, cwd=cwd, env=env, shell=True, stderr=subprocess.PIPE)
         rc = proc.wait()
-        assert rc == 0, "Render return code indicates failure: %s " % rc
+        assert rc == 0, "Render return code indicates a failure: %s " % rc
 
     #
     # Helpers
@@ -150,8 +157,8 @@ class KickAndCompareTestCase(unittest.TestCase):
 
         self.assertEqual(compresults.nfail, 0,
                          "%s. Did not match within threshold %s. %s" % (msg, file_name, result_msg))
-        if print_results:
-            print("Passed: (within tolerance) - ", result_msg)
+        # if print_results:
+        #     print("Passed: (within tolerance) - ", result_msg)
 
     def assertAllResultImagesEqual(self, tolerance):
         """ Checks all correct images match results """

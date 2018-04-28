@@ -6,15 +6,13 @@
 
 options
 {
- AA_samples 6
+ AA_samples 4
  AA_sample_clamp 1
  AA_sample_clamp_affects_aovs 1
  error_color_bad_pixel 0 0 0
- outputs 4 1 STRING
-  "RGBA RGBA defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_tiff.RGBA"
-  "crypto_asset RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_asset"
-  "crypto_material RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_material HALF"
-  "crypto_object RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_exr.crypto_object"
+ outputs 2 1 STRING
+  "RGB RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_jpeg.RGB"
+  "crypto_object RGB defaultArnoldFilter@gaussian_filter defaultArnoldDriver@driver_jpeg2.RGB"
  xres 128
  yres 128
  texture_max_memory_MB 8096
@@ -38,9 +36,7 @@ options
 cryptomatte
 {
  name cryptomatte1
-
- declare run_unit_tests constant BOOL
- run_unit_tests true
+ preview_in_exr off
 }
 
 gaussian_filter
@@ -720,79 +716,6 @@ zy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvt
  mtoa_shading_groups "initialShadingGroup"
 }
 
-# polymesh
-# {
-#  name transpMatteShape1
-#  visibility 255
-#  sidedness 255
-#  receive_shadows on
-#  self_shadows on
-#  matrix
-#  2.98845506 0 0 0
-#  0 3.76124835 0 0
-#  0 0 2.44630432 0
-#  -10.7062206 0.70521456 -0.42309618 1
-#  shader "transparentGroundSG"
-#  opaque off
-#  matte on
-#  id 3750199654
-#  nsides 4
-#  vidxs 4 1 UINT
-# 0 1 3 2
-#  nidxs 4 1 UINT
-# 0 1 2 3
-#  uvidxs 4 1 UINT
-# 0 1 3 2
-#  vlist 4 1 b85VECTOR
-# aDq99Y&XMt89+]c89+]cY&XMt89+]caDq99/ogrIaDq9989+]c/ogrIaDq99
-#  nlist 4 1 b85VECTOR
-# zy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvt
-#  uvlist 4 1 VECTOR2
-# 0 0 1 0 0 1 1 1
-#  smoothing on
-#  step_size 0
-#  volume_padding 0
-#  declare mtoa_shading_groups constant ARRAY NODE
-#  mtoa_shading_groups "transparentGroundSG"
-# }
-
-# polymesh
-# {
-#  name transpMatteShape2
-#  visibility 255
-#  sidedness 255
-#  receive_shadows on
-#  self_shadows on
-#  matrix
-#  2.98845506 0 0 0
-#  0 3.76124835 0 0
-#  0 0 2.44630432 0
-#  -9.6849823 3.63946629 -0.42309618 1
-#  shader "transparentGroundSG"
-#  opaque off
-#  matte on
-#  id 3889989027
-#  nsides 4
-#  vidxs 4 1 UINT
-# 0 1 3 2
-#  nidxs 4 1 UINT
-# 0 1 2 3
-#  uvidxs 4 1 UINT
-# 0 1 3 2
-#  vlist 4 1 b85VECTOR
-# aDq99Y&XMt89+]c89+]cY&XMt89+]caDq99/ogrIaDq9989+]c/ogrIaDq99
-#  nlist 4 1 b85VECTOR
-# zy0(Jvtzy0(Jvtzy0(Jvtzy0(Jvt
-#  uvlist 4 1 VECTOR2
-# 0 0 1 0 0 1 1 1
-#  smoothing on
-#  step_size 0
-#  volume_padding 0
-#  declare mtoa_shading_groups constant ARRAY NODE
-#  mtoa_shading_groups "transparentGroundSG"
-# }
-
-
 standard_hair
 {
  name hairshader_transparent
@@ -804,49 +727,16 @@ standard_hair
  name hairshader_opaque
 }
 
-driver_exr
+driver_jpeg
 {
- name defaultArnoldDriver@driver_exr.crypto_asset
- filename "000_result/crypto_asset.exr"
- compression "rle"
- half_precision on
- tiled off
- color_space ""
- preserve_layer_name off
- autocrop on
- append off
-}
-
-driver_exr
-{
- name defaultArnoldDriver@driver_exr.crypto_material
- filename "000_result/crypto_material.exr"
- compression "rle"
- half_precision on
- tiled off
- color_space ""
- preserve_layer_name off
- autocrop on
- append off
-}
-
-driver_exr
-{
- name defaultArnoldDriver@driver_exr.crypto_object
- filename "000_result/crypto_object.exr"
- compression "rle"
- half_precision on
- tiled off
- color_space ""
- preserve_layer_name off
- autocrop on
- append off
-}
-
-driver_tiff
-{
- name defaultArnoldDriver@driver_tiff.RGBA
+ name defaultArnoldDriver@driver_jpeg.RGB
  filename "000_result/beauty.tif"
  compression "lzw"
  format "int8"
+}
+
+driver_jpeg
+{
+ name defaultArnoldDriver@driver_jpeg2.RGB
+ filename "030_result/bad_crypto_object_driver.jpg"
 }

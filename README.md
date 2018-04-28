@@ -2,6 +2,23 @@
 
 For Cryptomatte documentation, see this repo's wiki. 
 
+### Beta 3 release notes:
+
+Features
+* Support Arnold 5.1 adaptive sampling
+* Support for mixed bit-depth EXR files
+* Support long object names (up to 2048 characters)
+* Added preview_in_exr control
+  * False (default): Omit preview channels when EXR drivers are being used
+  * True: Keep behavior as usual
+* Support C4DtoA Arnold 5.1 naming changes
+* Add controls to disable various kinds of name processing
+* Switched to Daniel Schmidt's faster hash to float code
+
+Bug fixes
+* Crash when rendering with non-aov shaders in Arnold 5.1
+* Skip disabled nodes in manifest
+
 ### Beta 2 release notes:
 
 Features
@@ -10,7 +27,7 @@ Features
 * aov_shader metadata for KtoA and MtoA
 * Unicode and special characters in names are now tested and supported
 
-Bugs
+Bug fixes
 * Restored Maya name in special cases (ns1:obj1|ns2:obj2)
 * Fixed some crashes with malformed names, added tests for this
 * Fixed metadata when rendering multiple Cryptomattes into one EXR file (Sen Haerens)
