@@ -2,6 +2,8 @@
 #include "MurmurHash3.h"
 #include <ai.h>
 
+AtCritSec g_critsec;
+
 // User data names
 const AtString CRYPTO_ASSET_UDATA("crypto_asset");
 const AtString CRYPTO_OBJECT_UDATA("crypto_object");

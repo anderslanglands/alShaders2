@@ -370,6 +370,7 @@ class Cryptomatte002(CryptomatteTestBase):
         Multicamera renders with embedded manifests
     """
     ass = "cryptomatte/002_multicam.ass"
+    arnold_t = 0
 
     def test_compression_and_manifests(self):
         self.assertAllManifestsValidAndMatch()
