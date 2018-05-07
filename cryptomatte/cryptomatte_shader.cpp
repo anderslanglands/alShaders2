@@ -111,6 +111,7 @@ shader_evaluate {
         CryptomatteData* data = reinterpret_cast<CryptomatteData*>(AiNodeGetLocalData(node));
         data->do_cryptomattes(sg);
     }
+    sg->out.RGBA() = AI_RGBA_ZERO;
 }
 
 void registerCryptomatte(AtNodeLib* node) {
