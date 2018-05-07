@@ -320,6 +320,7 @@ class Cryptomatte000(CryptomatteTestBase):
     """
     ass = "cryptomatte/000_mtoa_basic.ass"
     arnold_v = 6
+    arnold_t = 0
 
     def test_compression_and_manifests(self):
         self.assertAllManifestsValidAndMatch()
