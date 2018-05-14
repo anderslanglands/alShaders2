@@ -2,6 +2,11 @@
 
 For Cryptomatte documentation, see this repo's wiki. 
 
+### Beta 4 release notes: 
+
+Bug fixes:
+* Fixed crash with multiple Cryptomatte shaders in scene. 
+
 ### Beta 3 release notes:
 
 Features
