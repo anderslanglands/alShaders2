@@ -20,7 +20,6 @@ enum cryptomatte_filterParams {
     p_width,
     p_rank,
     p_filter,
-    p_mode,
 };
 
 struct CryptomatteFilterData {
@@ -30,12 +29,6 @@ struct CryptomatteFilterData {
     int filter;
 };
 
-enum modeEnum {
-    p_mode_double_rgba,
-};
-
-static const char* modeEnumNames[] = {"double_rgba", nullptr};
-
 node_parameters {
     AiMetaDataSetStr(nentry, nullptr, "maya.attr_prefix", "filter_");
     AiMetaDataSetStr(nentry, nullptr, "maya.translator", "cryptomatteFilter");
@@ -44,7 +37,6 @@ node_parameters {
     AiParameterFlt("width", 2.0);
     AiParameterInt("rank", -1);
     AiParameterEnum("filter", p_filter_gaussian, filterEnumNames);
-    AiParameterEnum("mode", p_mode_double_rgba, modeEnumNames);
 }
 
 void registerCryptomatteFilter(AtNodeLib* node) {
@@ -73,7 +65,7 @@ node_update {
     const int rank = AiNodeGetInt(node, "rank");
     if (rank < 0) 
         AiMsgError("Cryptomatte not set up correctly, %s rank not set.", AiNodeGetName(node));
-    
+
     CryptomatteFilterData* data = (CryptomatteFilterData*)AiNodeGetLocalData(node);
     data->width = AiNodeGetFlt(node, "width");
     data->rank = rank;
