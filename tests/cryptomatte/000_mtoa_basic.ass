@@ -43,6 +43,11 @@ cryptomatte
  run_unit_tests true
 }
 
+cryptomatte
+{
+ name ADDITIONAL_CRYPTOMATTE_TO_TEST_PARALLEL_ISSUES
+}
+
 gaussian_filter
 {
  name defaultArnoldFilter@gaussian_filter

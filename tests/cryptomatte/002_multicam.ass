@@ -171,6 +171,14 @@ cryptomatte
  user_crypto_src_0 "special_chars_udata"
 }
 
+cryptomatte
+{
+ name ADDITIONAL_CRYPTOMATTE_TO_TEST_PARALLEL_ISSUES
+ user_crypto_aov_0 "other_aov"
+ user_crypto_src_0 "other_aov_udata"
+}
+
+
 gaussian_filter
 {
  name defaultArnoldFilter@gaussian_filter
