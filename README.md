@@ -2,6 +2,12 @@
 
 For Cryptomatte documentation, see this repo's wiki. 
 
+### Beta 4 release notes: 
+
+Bug fixes:
+* Fixed crash with multiple Cryptomatte shaders in scene. 
+* Added error detection for issue where Cryptomatte filters do not get set up correctly, (reported by one user by not reproducible). 
+
 ### Beta 3 release notes:
 
 Features
