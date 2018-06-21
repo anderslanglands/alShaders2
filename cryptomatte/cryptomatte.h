@@ -1459,7 +1459,6 @@ private:
                 AiNodeSetInt(filter, "rank", i * 2);
                 AiNodeSetStr(filter, "filter", aFilter_filter);
                 AiNodeSetFlt(filter, "width", aFilter_width);
-                AiNodeSetStr(filter, "mode", "double_rgba");
             }
 
             std::string new_output_str;
