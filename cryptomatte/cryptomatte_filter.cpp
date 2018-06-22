@@ -62,9 +62,29 @@ node_finish {
 }
 
 node_update {
-    const int rank = AiNodeGetInt(node, "rank");
-    if (rank < 0) 
-        AiMsgError("Cryptomatte not set up correctly, %s rank not set.", AiNodeGetName(node));
+    int rank = AiNodeGetInt(node, "rank");
+    if (rank < 0) {
+        /*
+            Rank was not properly set. This happens intermittently on render farms, and is not
+            easily reproducible. We can infer the rank from the last two characters of the name
+            instead, as a workaround.
+        */
+        std::string node_name(AiNodeGetName(node));
+        if (node_name.length()) {
+            try {
+                int rank_from_name = std::stoi(node_name.substr(node_name.length() - 2, 2)) * 2;
+                rank = rank_from_name;
+                AiMsgWarning("Cryptomatte Filter: Rank not set, inferred from name instead. %d",
+                             rank);
+            } catch (std::invalid_argument) {
+                AiMsgWarning("Cryptomatte Filter: Could not infer rank from filter name. %s",
+                             AiNodeGetName(node));
+            }
+        }
+    }
+    if (rank < 0)
+        AiMsgError("Cryptomatte Filter: %s rank not set, and could not be inferred from name.",
+                   AiNodeGetName(node));
 
     CryptomatteFilterData* data = (CryptomatteFilterData*)AiNodeGetLocalData(node);
     data->width = AiNodeGetFlt(node, "width");
