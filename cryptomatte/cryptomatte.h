@@ -1383,22 +1383,7 @@ private:
         ///////////////////////////////////////////////
         //      Compile info about original filter
 
-        float aFilter_width = 2.0;
-        char aFilter_filter[128];
         AtNode* orig_filter = AiNodeLookUpByName(filter_name);
-        const AtNodeEntry* orig_filter_nodeEntry = AiNodeGetNodeEntry(orig_filter);
-        const char* orig_filter_type_name = AiNodeEntryGetName(orig_filter_nodeEntry);
-        if (AiNodeEntryLookUpParameter(orig_filter_nodeEntry, "width")) {
-            aFilter_width = AiNodeGetFlt(orig_filter, "width");
-        }
-
-        memset(aFilter_filter, 0, sizeof(aFilter_filter));
-        size_t filter_name_len = strlen(orig_filter_type_name);
-        strncpy(aFilter_filter, orig_filter_type_name, filter_name_len);
-        char* filter_strip_point = strstr(aFilter_filter, "_filter");
-        if (filter_strip_point) {
-            filter_strip_point[0] = '\0';
-        }
 
         ///////////////////////////////////////////////
         //      Set CryptoAOV driver to full precision and outlaw RLE
@@ -1452,14 +1437,8 @@ private:
             strcat(filter_rank_name, rank_number_string);
             strcat(aov_rank_name, rank_number_string);
 
-            const bool nofilter = AiNodeLookUpByName(filter_rank_name) == nullptr;
-            if (nofilter) {
-                AtNode* filter = AiNode("cryptomatte_filter");
-                AiNodeSetStr(filter, "name", filter_rank_name);
-                AiNodeSetInt(filter, "rank", i * 2);
-                AiNodeSetStr(filter, "filter", aFilter_filter);
-                AiNodeSetFlt(filter, "width", aFilter_width);
-            }
+            if (AiNodeLookUpByName(filter_rank_name) == nullptr)
+                AtNode* filter = create_filter(orig_filter, filter_rank_name, i);
 
             std::string new_output_str;
             if (camera_name)
@@ -1478,6 +1457,28 @@ private:
             }
             AiArraySetStr(cryptoAOVs, i, aov_rank_name);
         }
+    }
+
+    AtNode* create_filter(const AtNode* orig_filter, const char* filter_rank_name,
+                          int aovindex) const {
+        float aFilter_width = 2.0;
+        const AtNodeEntry* orig_filter_nentry = AiNodeGetNodeEntry(orig_filter);
+        const char* orig_filter_type_name = AiNodeEntryGetName(orig_filter_nentry);
+        if (AiNodeEntryLookUpParameter(orig_filter_nentry, "width"))
+            aFilter_width = AiNodeGetFlt(orig_filter, "width");
+
+        char aFilter_filter[MAX_STRING_LENGTH];
+        safe_copy_to_buffer(aFilter_filter, orig_filter_type_name);
+        char* filter_strip_point = strstr(aFilter_filter, "_filter");
+        if (filter_strip_point)
+            filter_strip_point[0] = '\0';
+
+        AtNode* filter = AiNode("cryptomatte_filter");
+        AiNodeSetStr(filter, "filter", aFilter_filter);
+        AiNodeSetInt(filter, "rank", aovindex * 2);
+        AiNodeSetFlt(filter, "width", aFilter_width);
+        AiNodeSetStr(filter, "name", filter_rank_name);
+        return filter;
     }
 
     ///////////////////////////////////////////////
