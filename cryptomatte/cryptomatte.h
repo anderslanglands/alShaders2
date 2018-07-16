@@ -1499,5 +1499,8 @@ private:
     }
 
 public:
-    ~CryptomatteData() { destroy_arrays(); }
+    ~CryptomatteData() { 
+        destroy_arrays(); 
+        AiCritSecClose(&g_critsec);
+    }
 };
