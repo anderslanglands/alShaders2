@@ -12,7 +12,7 @@ Version 1.0.0. See [changelog](CHANGELOG.md) for version history.
 * On Windows, the Visual Studio 2015 redistributable is required. 
 * TODO: Add Linux and OS X requirements. 
 
-## User documentation
+## Documentation for Users
 
 * [Main Cryptomatte for Arnold 5 shader documentation](/docs/cryptomatte.md)
 * Usage in *toA plugins (Helpfully provided by Solid Angle):
@@ -22,7 +22,7 @@ Version 1.0.0. See [changelog](CHANGELOG.md) for version history.
   * [3DSMaxToA (3D Studio Max)](https://support.solidangle.com/display/A5AF3DSUG/Cryptomatte)
 * Nuke and Fusion documentation found in the [Main Cryptomatte repo](https://github.com/Psyop/Cryptomatte), as are links to Fnordware ProEXR builds and others. 
 
-## Developer documentation
+## Documentation for Developers
 
 ### Building from source
 
