@@ -17,7 +17,6 @@ ui.shader({
    'soft_name': 'Cryptomatte',
    'soft_classification': 'texture',
    'soft_version': 1,
-   'help_url': 'http://www.anderslanglands.com/alshaders/cryptomatte.html',
    'houdini_icon':'VOP_shadinglayer',
    'houdini_category':'AOV'
 })
