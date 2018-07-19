@@ -1,51 +1,29 @@
-# alShaders2
+# Cryptomatte for Arnold 5
 
-For Cryptomatte documentation, see this repo's wiki. 
+![Cryptomatte Logo](/docs/header.png)
 
-### Beta 4 release notes: 
+This is the Arnold 5 implementation of [Cryptomatte](https://github.com/Psyop/Cryptomatte). 
 
-Bug fixes:
-* Fixed crash with multiple Cryptomatte shaders in scene. 
-* Added error detection for issue where Cryptomatte filters do not get set up correctly, (reported by one user by not reproducible). 
+Version 1.0
 
-### Beta 3 release notes:
+## User documentation
 
-Features
-* Support Arnold 5.1 adaptive sampling
-* Support for mixed bit-depth EXR files
-* Support long object names (up to 2048 characters)
-* Added preview_in_exr control
-  * False (default): Omit preview channels when EXR drivers are being used
-  * True: Keep behavior as usual
-* Support C4DtoA Arnold 5.1 naming changes
-* Add controls to disable various kinds of name processing
-* Switched to Daniel Schmidt's faster hash to float code
+Arnold [Cryptomatte Shader documentation](/docs/cryptomatte.md). 
 
-Bug fixes
-* Crash when rendering with non-aov shaders in Arnold 5.1
-* Skip disabled nodes in manifest
+Solid Angle has helpfully provided documentation for Cryptomatte usage in the various *toA plugins. 
+* [MtoA (Maya)](link_to_docs)
+* [C4DtoA (Cinema 4D)](link_to_docs)
+* [HtoA (Houdini)](link_to_docs)
+* [KtoA (Katana)](link_to_docs)
+* [3DSMaxToA (3D Studio Max)](link_to_docs)
 
-### Beta 2 release notes:
+Information about compositor implementations is best found at the main [https://github.com/Psyop/Cryptomatte](Cryptomatte repo). 
 
-Features
-* Test suite for developers
-* Added Cinema 4D name parsing (Sen Haerens)
-* aov_shader metadata for KtoA and MtoA
-* Unicode and special characters in names are now tested and supported
+## Change Log / Release Notes
 
-Bug fixes
-* Restored Maya name in special cases (ns1:obj1|ns2:obj2)
-* Fixed some crashes with malformed names, added tests for this
-* Fixed metadata when rendering multiple Cryptomattes into one EXR file (Sen Haerens)
-* Fixed metadata with multiple drivers if one driver did not support metadata (Sen Haerens)
-* Fixed manifests in custom Cryptomattes
-* Fixed manifests for standard cryptomattes with array (per poly) overrides 
-* Fixed special characters (quotes, slashes) in manifests
-* Manifests no longer include list aggregate nodes (Sen Haerens)
-* Fixed issue passing AtStrings to variadic arguments in gcc older than 4.8.x (Sachin Shrestha)
-* Statically link the stdc++ lib (Sachin Shrestha)
+See [changelog.](CHANGELOG.md)
 
-### Developer info
+## Developer info
 
 This repo now contains a test suite. In addition to being useful during development, when submitting pull requests for new features, add tests for those features is encouraged as well. 
 
