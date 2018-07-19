@@ -1,9 +1,6 @@
 ## Cryptomatte
 Cryptomatte in Arnold 5 sees significant changes. 
 
-## Requirements
-Cryptomatte requires Arnold 5.0.1. 
-
 ### Arnold 5 compared with Arnold 4 implementations. 
 Cryptomatte is now an AOV shader, named simply "Cryptomatte". This allows Cryptomatte to support all shaders in your scene, without those shaders needing to be built for Cryptomatte, or using a passthrough. 
 

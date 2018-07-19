@@ -6,6 +6,12 @@ This is the Arnold 5 implementation of [Cryptomatte](https://github.com/Psyop/Cr
 
 Version 1.0.0. See [changelog](CHANGELOG.md) for version history. 
 
+## Requirements
+
+* Arnold 5.0.1 or later
+* On Windows, the Visual Studio 2015 redistributable is required. 
+* TODO: Add Linux and OS X requirements. 
+
 ## User documentation
 
 * [Main Cryptomatte for Arnold 5 shader documentation](/docs/cryptomatte.md)
@@ -20,19 +26,18 @@ Version 1.0.0. See [changelog](CHANGELOG.md) for version history.
 
 ### Building from source
 
-This project uses CMake >= 2.8 to build. It has been tested on Mac OS X >=10.7, Windows 7 with MSVC++2015 and Centos6.5 with gcc4.2.1. On Windows, cmake-gui is recommended. 
+This project uses CMake >= 2.8 to build. It has been tested on Mac OS X >=10.7, Windows 7 with MSVC++2015 and Centos6 with gcc4.4. On Windows, cmake-gui is recommended. 
 
 #### Set ARNOLD_ROOT and (optionally) install directories
 
-In order to set it up to build in your environment you need to tell CMake where Arnold is installed. Specify ARNOLD_ROOT in one of the following ways:
-1. Set ARNOLD_ROOT in your environment before running CMake
-2. Pass ARNOLD_ROOT to cmake directly as in:
-> cmake -DARNOLD_ROOT=<path> ..
-3. Create a local.cmake file and set it in there
+In order to set it up to build in your environment you need to tell CMake where Arnold API is installed. Specify ARNOLD_ROOT in one of the following ways:
+* Set ARNOLD_ROOT in your environment before running CMake
+* Pass ARNOLD_ROOT to cmake directly as in:
+  * `> cmake -DARNOLD_ROOT=<path> ..`
+* Create a local.cmake file and set it in there
+* On Windows, set in cmake-gui (see below)
 
 By default, the shaders will be installed to build/dist. From there you can copy the files to the appropriate paths on your system. If you would like to install directly to a specific path you can set INSTALL_DIR as described for ARNOLD_ROOT above to install to ${INSTALL_DIR}/bin etc. Alternatively setting INSTALL_ROOT instead will install to ${INSTALL_ROOT}/${CM_VERSION}/ai${ARNOLD_VERSION}
-
-On Windows, in cmake-gui, ARNOLD_ROOT and INSTALL_DIR can be set in the UI. 
 
 #### Build (Linux and Mac OS X)
 
@@ -49,11 +54,12 @@ Once those variables are set, cd to the top-level CryptomatteArnold directory:
 On Windows use CMakeGUI. 
 1. Set the source directory to where you unpacked the source files
 2. Set the build directory to be the same but with "\build" on the end. 
-3. Click "Configure" and select "Yes" when it asks if you want to create the build directory.
-4. Click "Generate". This will create a Visual Studio project file in the build directory which you can use to build the library
-5. Open a "Developer Command Prompt for VS2015"
-6. cd to the top-level CryptomatteArnold directory
-7. `> msbuild build\INSTALL.vcxproj /p:Configuration=Release`
+3. Use "Add Entry" to add `ARNOLD_ROOT`, set to point to the root directory of the Arnold API. 
+4. Click "Configure", Select "Yes" when it asks if you want to create the build directory, and choose a Win64 compiller option, e.g. `Visual Studio 14 2015 Win64`. 
+5. Click "Generate". This will create a Visual Studio project files in the build directory
+6. Open a "Developer Command Prompt for VS2015"
+7. cd to the top-level CryptomatteArnold directory
+8. `> msbuild build\INSTALL.vcxproj /p:Configuration=Release`
 
 ### Tests
 
