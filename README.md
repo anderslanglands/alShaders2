@@ -22,12 +22,50 @@ See [changelog.](CHANGELOG.md)
 
 ## Developer info
 
+### Building from source
+
+This project uses CMake >= 2.8 to build. It has been tested on Mac OS X >=10.7, Windows 7 with MSVC++2015 and Centos6.5 with gcc4.2.1. On Windows, cmake-gui is recommended. 
+
+#### Set ARNOLD_ROOT and (optionally) install directories
+
+In order to set it up to build in your environment you need to tell CMake where Arnold is installed. Specify ARNOLD_ROOT in one of the following ways:
+1. Set ARNOLD_ROOT in your environment before running CMake
+2. Pass ARNOLD_ROOT to cmake directly as in:
+> cmake -DARNOLD_ROOT=<path> ..
+3. Create a local.cmake file and set it in there
+
+By default, the shaders will be installed to build/dist. From there you can copy the files to the appropriate paths on your system. If you would like to install directly to a specific path you can set INSTALL_DIR as described for ARNOLD_ROOT above to install to ${INSTALL_DIR}/bin etc. Alternatively setting INSTALL_ROOT instead will install to ${INSTALL_ROOT}/${CM_VERSION}/ai${ARNOLD_VERSION}
+
+On Windows, in cmake-gui, ARNOLD_ROOT and INSTALL_DIR can be set in the UI. 
+
+#### Build (Linux and Mac OS X)
+
+Once those variables are set, cd to the top-level CryptomatteArnold directory:
+> mkdir build
+> cd build
+> cmake ..
+> make
+> make install
+
+#### Build (Windows)
+
+On Windows use CMakeGUI. 
+1. Set the source directory to where you unpacked the source files
+2. Set the build directory to be the same but with "\build" on the end. 
+3. Click "Configure" and select "Yes" when it asks if you want to create the build directory.
+4. Click "Generate". This will create a Visual Studio project file in the build directory which you can use to build the library
+5. Open a `Developer Command Prompt for VS2015` 
+6. cd to the top-level CryptomatteArnold directory
+> msbuild build\INSTALL.vcxproj /p:Configuration=Release
+
+### Tests
+
 This repo contains a test suite. Running it requires:
 
 * Python 2.7
 * Arnold 5.0.1+
 * OpenImageIO (Python) 
-* Build of AlShaders2 in ARNOLD_PLUGIN_PATH
+* Build of CryptomatteArnold in ARNOLD_PLUGIN_PATH
 
 To run the unit and integration tests, cd to the root directory of this repo, and run: 
 

@@ -1,1 +1,41 @@
-Placeholder
+BINARY DISTRIBUTION
+-------------------
+Simply copy the files from the subdirectories to the relevant subdirectories of your MtoA installation (or somewhere in
+the appropriate paths):
+
+For MtoA (in-place install)
+- Libraries and MTD files found in the 'bin' directory go somewhere in your ARNOLD_PLUGIN_PATH or in 'shaders' under your MtoA installation directory
+- *.py interface templates found in the 'ae' directory go somwhere in your MTOA_TEMPLATES_PATH or in 'scripts/mtoa/ui/ae' under your MtoA installation directory
+
+For MtoA (custom install)
+- Extract the package to an CryptomatteArnold folder somewhere on your filesystem.
+- Set the ARNOLD_PLUGIN_PATH variable to include {CryptomatteArnold_INSTALL}/bin
+- Set the MTOA_TEMPLATES_PATH variable to include {CryptomatteArnold_INSTALL}/ae
+- Set the MAYA_CUSTOM_TEMPLATE_PATH variable to include {CryptomatteArnold_INSTALL}/aexml
+
+For C4DtoA
+- Libraries and MTD files found in the 'bin' directory go somewhere in your ARNOLD_PLUGIN_PATH or in 'shaders' under your C4DtoA installation directory
+- Copy content of C4DtoA directory to your C4DtoA installation directory
+
+For SitoA
+- Copy the content of the bin folder to  ...\Addons\SItoA\Application\Plugins\bin\nt-x86-64 in windows or ...\Addons\SItoA\Application\Plugins\bin\linux in linux
+- That should be enough to at least get the shaders on the Arnold > DLL Shaders menu.
+- Copy the SPDLs to ...\Addons\SItoA\Application\spdl
+- In Softimage, before you try to use the shaders, generate presets (in the Plug-in Tree, right-click the spdl and click Regenerate Presets)
+- In the render tree, you may need to refresh the preset manager to see the shaders.
+- If you've already created some instances of the shader and they didn't have the PPGLayout, delete the spdl xsiindex in your $XSI_USERHOME\Application folder and start Softimage again.
+
+For Katana
+- Libraries and MTD files found in the 'bin' directory go somewhere in your ARNOLD_PLUGIN_PATH
+- Copy the Args directory to the same place as you copy the binaries
+
+For HtoA
+- Copy the libraries and .mtd files in the 'bin' directory to HtoA/arnold/plugins or anywhere else in your ARNOLD_PLUGIN_PATH
+
+SOURCE DISTRIBUTION
+-------------------
+See README.md in the CryptomatteArnold repo.
+
+TEST SUITE
+----------
+See README.md in the CryptomatteArnold repo. 
