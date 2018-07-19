@@ -26,15 +26,15 @@ ARNOLD_VERSION = '@ARNOLD_VERSION@'
 subdirs = [] 
 
 # pattern for files to include in the source distribution
-name_src = 'alShaders-src-%s.%s.%s' % (MAJOR_VERSION,MINOR_VERSION,PATCH_VERSION)
+name_src = 'CryptomatteArnold-src-%s.%s.%s' % (MAJOR_VERSION,MINOR_VERSION,PATCH_VERSION)
 ptrn_src = ['*.cpp', '*.h', '*.txt', '*.py', '*.ui', '*.cmake']
 
 # Binary distribution
 files_src = ['INSTALL', 'CMakeLists.txt', 'package.in.py', 'README', 'uigen.py']
 
-name_osx = 'alShaders-osx-%s-ai%s' % (CM_VERSION, ARNOLD_VERSION)
-name_win = 'alShaders-win-%s-ai%s' % (CM_VERSION, ARNOLD_VERSION)
-name_linux = 'alShaders-linux-%s-ai%s' % (CM_VERSION, ARNOLD_VERSION)
+name_osx = 'CryptomatteArnold-osx-%s-ai%s' % (CM_VERSION, ARNOLD_VERSION)
+name_win = 'CryptomatteArnold-win-%s-ai%s' % (CM_VERSION, ARNOLD_VERSION)
+name_linux = 'CryptomatteArnold-linux-%s-ai%s' % (CM_VERSION, ARNOLD_VERSION)
 
 
 def copyPatternsToDistDir(subDirs, subDirPrefix, filePatterns, distDir):

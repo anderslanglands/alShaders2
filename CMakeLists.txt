@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-project(alShaders2)
+project(CryptomatteArnold)
 
 set(CM_MAJOR_VERSION 1)
 set(CM_MINOR_VERSION 0)
