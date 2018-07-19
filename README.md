@@ -1,22 +1,20 @@
-# Cryptomatte for Arnold 5
-
 ![Cryptomatte Logo](/docs/header.png)
 
-This is the Arnold 5 implementation of [Cryptomatte](https://github.com/Psyop/Cryptomatte). 
+# Cryptomatte for Arnold 5
 
 Version 1.0
 
+This is the Arnold 5 implementation of [Cryptomatte](https://github.com/Psyop/Cryptomatte). 
+
 ## User documentation
 
-[Main Cryptomatte for Arnold 5 shader documentation](/docs/cryptomatte.md). 
-
-Solid Angle has helpfully provided documentation for Cryptomatte usage in the various *toA plugins. 
-* [MtoA (Maya)](https://support.solidangle.com/display/A5AFMUG/Cryptomatte)
-* [HtoA (Houdini)](https://support.solidangle.com/display/A5AFHUG/Cryptomatte)
-* [C4DtoA (Cinema 4D)](https://support.solidangle.com/display/A5AFCUG/Cryptomatte)
-* [3DSMaxToA (3D Studio Max)](https://support.solidangle.com/display/A5AF3DSUG/Cryptomatte)
-
-Nuke, Fusion, and links to After Effects compositor implementations are found in the. [Cryptomatte repo](main Cryptomatte repo). 
+* [Main Cryptomatte for Arnold 5 shader documentation](/docs/cryptomatte.md)
+* Solid Angle has helpfully provided documentation for usage in the *toA plugins
+  * [MtoA (Maya)](https://support.solidangle.com/display/A5AFMUG/Cryptomatte)
+  * [HtoA (Houdini)](https://support.solidangle.com/display/A5AFHUG/Cryptomatte)
+  * [C4DtoA (Cinema 4D)](https://support.solidangle.com/display/A5AFCUG/Cryptomatte)
+  * [3DSMaxToA (3D Studio Max)](https://support.solidangle.com/display/A5AF3DSUG/Cryptomatte)
+* Nuke, Fusion, and links to After Effects compositor implementations are found in the [Main Cryptomatte repo](https://github.com/Psyop/Cryptomatte). 
 
 ## Change Log / Release Notes
 
