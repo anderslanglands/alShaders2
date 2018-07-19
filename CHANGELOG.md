@@ -47,3 +47,21 @@ Bug fixes
 * Manifests no longer include list aggregate nodes (Sen Haerens)
 * Fixed issue passing AtStrings to variadic arguments in gcc older than 4.8.x (Sachin Shrestha)
 * Statically link the stdc++ lib (Sachin Shrestha)
+
+### (AlShaders2) Beta 1 release notes:
+
+* New AOV shader named simply "Cryptomatte" with all global Cryptomatte options
+  * Removed Arnold Render Options user data
+* Added sidecar manifests, which are deferred-written and work with deferred-loaded standins
+* Support Integer Overrides
+* Internal changes
+  * Uses float AOVs for less overhead
+  * Opacity now uses built in opacity AOV rather than storing on own samples
+  * cryptomatte, cryptomatte_filter, and cryptomatte_manifest_driver are all packaged into one executable
+
+Bug Fixes
+* Fixed Multiple cameras
+* Per-face shader assignments now work regardless of what shader is applied first (thanks to new AiShaderGlobalsGetShader() API from Solid Angle)
+* Matte objects work properly (omitted from Cryptomattes)
+* fixed issue with user cryptomattes behind transparency
+
