@@ -2,25 +2,21 @@
 
 # Cryptomatte for Arnold 5
 
-Version 1.0.0
-
 This is the Arnold 5 implementation of [Cryptomatte](https://github.com/Psyop/Cryptomatte). 
+
+Version 1.0.0. See [changelog](CHANGELOG.md) for version history. 
 
 ## User documentation
 
 * [Main Cryptomatte for Arnold 5 shader documentation](/docs/cryptomatte.md)
-* Solid Angle has helpfully provided documentation for usage in the *toA plugins
+* Usage in *toA plugins (Helpfully provided by Solid Angle):
   * [MtoA (Maya)](https://support.solidangle.com/display/A5AFMUG/Cryptomatte)
   * [HtoA (Houdini)](https://support.solidangle.com/display/A5AFHUG/Cryptomatte)
   * [C4DtoA (Cinema 4D)](https://support.solidangle.com/display/A5AFCUG/Cryptomatte)
   * [3DSMaxToA (3D Studio Max)](https://support.solidangle.com/display/A5AF3DSUG/Cryptomatte)
-* Nuke, Fusion, and links to After Effects compositor implementations are found in the [Main Cryptomatte repo](https://github.com/Psyop/Cryptomatte). 
+* Nuke and Fusion documentation found in the [Main Cryptomatte repo](https://github.com/Psyop/Cryptomatte), as are links to Fnordware ProEXR builds and others. 
 
-## Change Log / Release Notes
-
-See [changelog.](CHANGELOG.md)
-
-## Developer info
+## Developer documentation
 
 ### Building from source
 
@@ -41,11 +37,12 @@ On Windows, in cmake-gui, ARNOLD_ROOT and INSTALL_DIR can be set in the UI.
 #### Build (Linux and Mac OS X)
 
 Once those variables are set, cd to the top-level CryptomatteArnold directory:
-> mkdir build
-> cd build
-> cmake ..
-> make
-> make install
+
+`> mkdir build`
+`> cd build`
+`> cmake ..`
+`> make`
+`> make install`
 
 #### Build (Windows)
 
@@ -54,9 +51,9 @@ On Windows use CMakeGUI.
 2. Set the build directory to be the same but with "\build" on the end. 
 3. Click "Configure" and select "Yes" when it asks if you want to create the build directory.
 4. Click "Generate". This will create a Visual Studio project file in the build directory which you can use to build the library
-5. Open a `Developer Command Prompt for VS2015` 
+5. Open a "Developer Command Prompt for VS2015"
 6. cd to the top-level CryptomatteArnold directory
-> msbuild build\INSTALL.vcxproj /p:Configuration=Release
+7. `> msbuild build\INSTALL.vcxproj /p:Configuration=Release`
 
 ### Tests
 

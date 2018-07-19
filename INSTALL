@@ -4,6 +4,7 @@ Simply copy the files from the subdirectories to the relevant subdirectories of 
 the appropriate paths):
 
 For MtoA (in-place install)
+- See also: [MtoA (Maya)](https://support.solidangle.com/display/A5AFMUG/Cryptomatte)
 - Libraries and MTD files found in the 'bin' directory go somewhere in your ARNOLD_PLUGIN_PATH or in 'shaders' under your MtoA installation directory
 - *.py interface templates found in the 'ae' directory go somwhere in your MTOA_TEMPLATES_PATH or in 'scripts/mtoa/ui/ae' under your MtoA installation directory
 
@@ -14,6 +15,7 @@ For MtoA (custom install)
 - Set the MAYA_CUSTOM_TEMPLATE_PATH variable to include {CryptomatteArnold_INSTALL}/aexml
 
 For C4DtoA
+- See also: [C4DtoA (Cinema 4D)](https://support.solidangle.com/display/A5AFCUG/Cryptomatte)
 - Libraries and MTD files found in the 'bin' directory go somewhere in your ARNOLD_PLUGIN_PATH or in 'shaders' under your C4DtoA installation directory
 - Copy content of C4DtoA directory to your C4DtoA installation directory
 
@@ -25,11 +27,16 @@ For SitoA
 - In the render tree, you may need to refresh the preset manager to see the shaders.
 - If you've already created some instances of the shader and they didn't have the PPGLayout, delete the spdl xsiindex in your $XSI_USERHOME\Application folder and start Softimage again.
 
+For 3D Studio Max
+- See also: [3DSMaxToA (3D Studio Max)](https://support.solidangle.com/display/A5AF3DSUG/Cryptomatte)
+- Libraries and MTD files found in the 'bin' directory go somewhere in your ARNOLD_PLUGIN_PATH or in the shaders folder of the MAXtoA plugin
+
 For Katana
 - Libraries and MTD files found in the 'bin' directory go somewhere in your ARNOLD_PLUGIN_PATH
 - Copy the Args directory to the same place as you copy the binaries
 
 For HtoA
+- See also: [HtoA (Houdini)](https://support.solidangle.com/display/A5AFHUG/Cryptomatte)
 - Copy the libraries and .mtd files in the 'bin' directory to HtoA/arnold/plugins or anywhere else in your ARNOLD_PLUGIN_PATH
 
 SOURCE DISTRIBUTION
