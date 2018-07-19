@@ -2,7 +2,7 @@
 
 # Cryptomatte for Arnold 5
 
-Version 1.0
+Version 1.0.0
 
 This is the Arnold 5 implementation of [Cryptomatte](https://github.com/Psyop/Cryptomatte). 
 
