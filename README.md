@@ -8,16 +8,15 @@ Version 1.0
 
 ## User documentation
 
-Arnold [Cryptomatte Shader documentation](/docs/cryptomatte.md). 
+[Main Cryptomatte for Arnold 5 shader documentation](/docs/cryptomatte.md). 
 
 Solid Angle has helpfully provided documentation for Cryptomatte usage in the various *toA plugins. 
-* [MtoA (Maya)](link_to_docs)
-* [C4DtoA (Cinema 4D)](link_to_docs)
-* [HtoA (Houdini)](link_to_docs)
-* [KtoA (Katana)](link_to_docs)
-* [3DSMaxToA (3D Studio Max)](link_to_docs)
+* [MtoA (Maya)](https://support.solidangle.com/display/A5AFMUG/Cryptomatte)
+* [HtoA (Houdini)](https://support.solidangle.com/display/A5AFHUG/Cryptomatte)
+* [C4DtoA (Cinema 4D)](https://support.solidangle.com/display/A5AFCUG/Cryptomatte)
+* [3DSMaxToA (3D Studio Max)](https://support.solidangle.com/display/A5AF3DSUG/Cryptomatte)
 
-Information about compositor implementations is best found at the main [https://github.com/Psyop/Cryptomatte](Cryptomatte repo). 
+Nuke, Fusion, and links to After Effects compositor implementations are found in the. [Cryptomatte repo](main Cryptomatte repo). 
 
 ## Change Log / Release Notes
 
@@ -25,9 +24,7 @@ See [changelog.](CHANGELOG.md)
 
 ## Developer info
 
-This repo now contains a test suite. In addition to being useful during development, when submitting pull requests for new features, add tests for those features is encouraged as well. 
-
-Running it requires:
+This repo contains a test suite. Running it requires:
 
 * Python 2.7
 * Arnold 5.0.1+
