@@ -17,10 +17,10 @@ def mkdir_p(path):
             pass
         else: raise
 
-MAJOR_VERSION = '@ALS_MAJOR_VERSION@'
-MINOR_VERSION = '@ALS_MINOR_VERSION@'
-PATCH_VERSION = '@ALS_PATCH_VERSION@'
-ALS_VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
+MAJOR_VERSION = '@CM_MAJOR_VERSION@'
+MINOR_VERSION = '@CM_MINOR_VERSION@'
+PATCH_VERSION = '@CM_PATCH_VERSION@'
+CM_VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 ARNOLD_VERSION = '@ARNOLD_VERSION@'
 
 subdirs = [
@@ -54,9 +54,9 @@ ptrn_src = ['*.cpp', '*.h', '*.txt', '*.py', '*.ui', '*.cmake']
 # Binary distribution
 files_src = ['INSTALL', 'CMakeLists.txt', 'package.in.py', 'README', 'uigen.py']
 
-name_osx = 'alShaders-osx-%s-ai%s' % (ALS_VERSION, ARNOLD_VERSION)
-name_win = 'alShaders-win-%s-ai%s' % (ALS_VERSION, ARNOLD_VERSION)
-name_linux = 'alShaders-linux-%s-ai%s' % (ALS_VERSION, ARNOLD_VERSION)
+name_osx = 'alShaders-osx-%s-ai%s' % (CM_VERSION, ARNOLD_VERSION)
+name_win = 'alShaders-win-%s-ai%s' % (CM_VERSION, ARNOLD_VERSION)
+name_linux = 'alShaders-linux-%s-ai%s' % (CM_VERSION, ARNOLD_VERSION)
 
 
 def copyPatternsToDistDir(subDirs, subDirPrefix, filePatterns, distDir):
@@ -109,7 +109,7 @@ def createBinaryDistribution(name, droot):
 createSourceDistribution(name_src, ptrn_src, files_src)
 
 # Binary distribution
-droot = 'build/dist/%s/ai%s' % (ALS_VERSION, ARNOLD_VERSION)
+droot = 'build/dist/%s/ai%s' % (CM_VERSION, ARNOLD_VERSION)
 
 if platform.system() == "Darwin":
     # OS X distribution
