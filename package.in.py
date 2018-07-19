@@ -23,29 +23,7 @@ PATCH_VERSION = '@CM_PATCH_VERSION@'
 CM_VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 ARNOLD_VERSION = '@ARNOLD_VERSION@'
 
-subdirs = [
-    'alBlackbody',
-    'alCache',
-    'alColorSpace',
-    'alCombine',
-    'alCurvature',
-    'alFlake',
-    'alHair',
-    'alInputVector',
-    'alJitterColor',
-    'alLayer',
-    'alMeasured',
-    'alNoise',
-    'alPattern',
-    'alRemap',
-    'alSurface',
-    'alSwitch',
-    'alTriplanar',
-    'alFresnel',
-    'alCel',
-    'common',
-    'share'
-] 
+subdirs = [] 
 
 # pattern for files to include in the source distribution
 name_src = 'alShaders-src-%s.%s.%s' % (MAJOR_VERSION,MINOR_VERSION,PATCH_VERSION)
