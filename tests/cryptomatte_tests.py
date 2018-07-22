@@ -25,14 +25,29 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
     ass = ""
 
     def setUp(self):
-        self.result_images = []
-        self.exr_result_images = []
+        self._result_images = []
+        self._exr_result_images = []
+
+    def load_results(self):
         for file_name in self.correct_file_names:
             img, correct_img = self.load_images(file_name)
             if img and correct_img:
-                self.result_images.append((img, correct_img))
+                self._result_images.append((img, correct_img))
                 if file_name.lower().endswith(".exr"):
-                    self.exr_result_images.append((img, correct_img))
+                    self._exr_result_images.append((img, correct_img))
+
+    @property
+    def result_images(self):
+        if not self._result_images:
+            self.load_results()
+        return self._result_images
+
+    @property
+    def exr_result_images(self):
+        if not self._exr_result_images:
+            self.load_results()
+        return self._exr_result_images
+
 
     def crypto_metadata(self, ibuf):
         """Returns dictionary of key, value of cryptomatte metadata"""
