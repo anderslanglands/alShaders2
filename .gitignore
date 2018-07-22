@@ -3,6 +3,7 @@ CMakeFiles
 CMakeScripts
 Makefile
 cmake_install.cmake
+local.cmake
 install_manifest.txt
 CTestTestfile.cmake
 build
