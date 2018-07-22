@@ -8,6 +8,7 @@ install_manifest.txt
 CTestTestfile.cmake
 build
 **/*.pyc
+*.pyc
 .ycm_extra_conf.py
 package.py
 tests/*/*_result/*
