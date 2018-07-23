@@ -9,24 +9,28 @@ Version 1.0.0. See [changelog](CHANGELOG.md) for version history.
 ## Requirements
 
 * Arnold 5.0.1 or later
-* On Windows, the Visual Studio 2015 redistributable is required. 
-* TODO: Add Linux and OS X requirements. 
+* (Windows) Visual Studio 2015 Redistributable. 
 
 ## Documentation for Users
 
 * [Main Cryptomatte for Arnold 5 shader documentation](/docs/cryptomatte.md)
-* Usage in *toA plugins (Helpfully provided by Solid Angle):
+* Usage in \*toA plugins (Helpfully provided by Solid Angle):
   * [MtoA (Maya)](https://support.solidangle.com/display/A5AFMUG/Cryptomatte)
   * [HtoA (Houdini)](https://support.solidangle.com/display/A5AFHUG/Cryptomatte)
   * [C4DtoA (Cinema 4D)](https://support.solidangle.com/display/A5AFCUG/Cryptomatte)
   * [3DSMaxToA (3D Studio Max)](https://support.solidangle.com/display/A5AF3DSUG/Cryptomatte)
-* Nuke and Fusion documentation found in the [Main Cryptomatte repo](https://github.com/Psyop/Cryptomatte), as are links to Fnordware ProEXR builds and others. 
+* Nuke and Fusion documentation found in the [Main Cryptomatte repo](https://github.com/Psyop/Cryptomatte), as are links to Fnordware ProEXR builds and others.
 
 ## Documentation for Developers
 
 ### Building from source
 
 This project uses CMake >= 2.8 to build. It has been tested on Mac OS X >=10.7, Windows 7 with MSVC++2015 and Centos6 with gcc4.4. On Windows, cmake-gui is recommended. 
+
+Distributed builds are built with the following:
+* (Linux): Centos6.9 GCC 7.3.1 + Developer Toolset 7
+* (Windows): MSVC 14 (2015) Win64
+* (OS X): OS X 10.9
 
 #### Set ARNOLD_ROOT and (optionally) install directories
 
@@ -43,11 +47,13 @@ By default, the shaders will be installed to build/dist. From there you can copy
 
 Once those variables are set, cd to the top-level CryptomatteArnold directory:
 
-`> mkdir build`
-`> cd build`
-`> cmake ..`
-`> make`
-`> make install`
+```
+> mkdir build
+> cd build
+> cmake ..
+> make
+> make install
+```
 
 #### Build (Windows)
 

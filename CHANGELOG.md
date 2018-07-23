@@ -4,6 +4,7 @@
 * Code changes
   * Removed html doc generation
   * Moved documentation to this /docs
+  * Tests for which OIIO is not required run without OIIO Python module present
 
 ### (AlShaders2) Beta 4 release notes: 
 
