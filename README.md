@@ -28,9 +28,9 @@ Version 1.0.0. See [changelog](CHANGELOG.md) for version history.
 This project uses CMake >= 2.8 to build. It has been tested on Mac OS X >=10.7, Windows 7 with MSVC++2015 and Centos6 with gcc4.4. On Windows, cmake-gui is recommended. 
 
 Distributed builds are built with the following:
-* (Linux): Centos6.9 GCC 7.3.1 + Developer Toolset 7
 * (Windows): MSVC 14 (2015) Win64
-* (OS X): OS X 10.9
+* (Linux): Centos6.9 + Developer Toolset 7
+* (OS X): OS X 10.9 
 
 #### Set ARNOLD_ROOT and (optionally) install directories
 
