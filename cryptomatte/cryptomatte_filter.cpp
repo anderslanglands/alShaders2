@@ -102,9 +102,9 @@ void node_update_content(AtNode *node) {
 }
 
 node_update {
-    AiCritSecEnter(&g_critsec);
+    crypto_crit_sec_enter();
     node_update_content(node);
-    AiCritSecLeave(&g_critsec);
+    crypto_crit_sec_leave();
 }
 
 filter_output_type {
