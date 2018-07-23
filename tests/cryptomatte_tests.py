@@ -355,6 +355,12 @@ class Cryptomatte000(CryptomatteTestBase):
             self.assertIn("Cryptomatte unit tests: Complete", log_contents,
                           "C++ unit test did not complete. ")
 
+    def test_build_against_correct_version(self):
+        with open(self.result_log) as f:
+            log_contents = f.read()
+            self.assertIn("cryptomatte uses Arnold 5.0.1.0", log_contents,
+                          "Cryptomatte not built against Arnold 5.0.1.0 (for maximum compatibility). ")
+
 
 class Cryptomatte001(CryptomatteTestBase):
     """
