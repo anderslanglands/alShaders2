@@ -72,16 +72,20 @@ message("AETemplates will be installed to: \n\t${AE_INSTALL_DIR}")
 message("SPDL will be installed to: \n\t${SPDL_INSTALL_DIR}")
 message("Katana Args will be installed to: \n\t${ARGS_INSTALL_DIR}")
 
+# Include common files
+include_directories(common)
 include_directories(${CMAKE_SOURCE_DIR})
 
 # Set the list of subdirectories to recurse into to find stuff to build
 set(SUBDIRECTORIES 
     cryptomatte
+    common
 )
 
 # define shader build function
 function(build_shader)
     foreach(SHADER ${ARGV})
+        set(SRC ${SHADER}.cpp ../common/alUtil.cpp ../common/Color.cpp)
         set(UI ${CMAKE_CURRENT_SOURCE_DIR}/${SHADER}.ui)
         set(MTD ${CMAKE_CURRENT_BINARY_DIR}/${SHADER}.mtd)
         set(AE ${CMAKE_CURRENT_BINARY_DIR}/${SHADER}Template.py)
