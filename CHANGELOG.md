@@ -3,10 +3,9 @@
 * Renamed repo from AlShaders2 to CryptomatteArnold
 * Fixed parallel node init issue where rarely Cryptomatte filter would not be properly set up
 * Changed Windows requirement to Visual Studio 2015 redistributable
-* Code changes
-  * Removed html doc generation
-  * Moved documentation to this /docs
-  * Tests for which OIIO is not required run without OIIO Python module present
+* Reorganized and cleaned up repo
+* Moved documentation from wiki to /docs
+* Tests for which OIIO is not required run without OIIO Python module present
 
 ### (AlShaders2) Beta 4 release notes: 
 
