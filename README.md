@@ -2,7 +2,7 @@
 
 # Cryptomatte for Arnold 5
 
-This is the Arnold 5 implementation of [Cryptomatte](https://github.com/Psyop/Cryptomatte). 
+This is the Arnold 5 implementation of [Cryptomatte](https://github.com/Psyop/Cryptomatte), by Jonah Friedman, Andy Jones, and Anders Langlands. Cryptomatte creates ID mattes automatically with support for motion blur, transparency, and depth of field, using names available in the Arnold scene at render time. 
 
 Version 1.0.0. See [changelog](CHANGELOG.md) for version history. 
 
@@ -95,3 +95,30 @@ To run a subset of tests, wildcard filters can be used:
 ```
 python tests -f Cryptomatte01*
 ```
+
+## Thanks to
+
+Many people have contributed to Cryptomatte for Arnold with code contributions, bug reports, reproductions, and technical advice. This list is certain to be incomplete. 
+
+* Tony Barbieri
+* Kevin Beason
+* Benoit Leveau
+* Alon Gibli
+* Gaetan Guidet
+* Sen Haerens
+* Michael Heberlein
+* Martin Kindl
+* Martin Ögren
+* Jean-Francois Panisset
+* Sachin Shrestha
+* Vahan Sosoyan
+* Solid Angle
+  * Stephen Blair
+  * Marcos Fajardo
+  * Mike Farnsworth
+  * Angel Jimenez
+  * Peter Horvath
+  * Brecht Van Lommel
+  * Frederic Servant
+  * Ramon Montoya Vozmediano
+* The Cryptomatte Committee
