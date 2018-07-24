@@ -1,6 +1,8 @@
 ### CryptomatteArnold 1.0 release notes: 
 
 * Renamed repo from AlShaders2 to CryptomatteArnold
+* Fixed parallel node init issue where rarely Cryptomatte filter would not be properly set up
+* Changed Windows requirement to Visual Studio 2015 redistributable
 * Code changes
   * Removed html doc generation
   * Moved documentation to this /docs

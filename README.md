@@ -9,7 +9,7 @@ Version 1.0.0. See [changelog](CHANGELOG.md) for version history.
 ## Requirements
 
 * Arnold 5.0.1 or later
-* (Windows) Visual Studio 2015 Redistributable. 
+* (Windows) Visual Studio 2015 Redistributable
 
 ## Documentation for Users
 
