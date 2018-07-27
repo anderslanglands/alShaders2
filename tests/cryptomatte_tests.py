@@ -25,14 +25,29 @@ class CryptomatteTestBase(tests.KickAndCompareTestCase):
     ass = ""
 
     def setUp(self):
-        self.result_images = []
-        self.exr_result_images = []
+        self._result_images = []
+        self._exr_result_images = []
+
+    def load_results(self):
         for file_name in self.correct_file_names:
             img, correct_img = self.load_images(file_name)
             if img and correct_img:
-                self.result_images.append((img, correct_img))
+                self._result_images.append((img, correct_img))
                 if file_name.lower().endswith(".exr"):
-                    self.exr_result_images.append((img, correct_img))
+                    self._exr_result_images.append((img, correct_img))
+
+    @property
+    def result_images(self):
+        if not self._result_images:
+            self.load_results()
+        return self._result_images
+
+    @property
+    def exr_result_images(self):
+        if not self._exr_result_images:
+            self.load_results()
+        return self._exr_result_images
+
 
     def crypto_metadata(self, ibuf):
         """Returns dictionary of key, value of cryptomatte metadata"""
@@ -339,6 +354,12 @@ class Cryptomatte000(CryptomatteTestBase):
                           "C++ unit test did not run. ")
             self.assertIn("Cryptomatte unit tests: Complete", log_contents,
                           "C++ unit test did not complete. ")
+
+    def test_build_against_correct_version(self):
+        with open(self.result_log) as f:
+            log_contents = f.read()
+            self.assertIn("cryptomatte uses Arnold 5.0.1.0", log_contents,
+                          "Cryptomatte not built against Arnold 5.0.1.0 (for maximum compatibility). ")
 
 
 class Cryptomatte001(CryptomatteTestBase):

@@ -334,7 +334,18 @@ inline void run() {
     hash_ascii_names();
     hash_utf8_names();
 }
+
 } // namespace HashingTests
+namespace SystemTests {
+inline void critical_section() {
+    if (!g_critsec_active)
+        AiMsgError("Crit section was not initialized in plugin init.");
+}
+
+inline void run() {
+    critical_section();
+}
+} // namespace SystemTests
 
 inline void run_all_unit_tests(AtNode* node) {
     if (node && AiNodeLookUpUserParameter(node, CRYPTO_TEST_FLAG) &&
@@ -343,6 +354,7 @@ inline void run_all_unit_tests(AtNode* node) {
         NameParsingTests::run();
         HashingTests::run();
         MaterialNameTests::run();
+        SystemTests::run();
         AiMsgWarning("Cryptomatte unit tests: Complete");
     }
 }

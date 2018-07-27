@@ -135,6 +135,7 @@ extern const AtString CRYPTO_OBJECT_OFFSET_UDATA;
 extern const AtString CRYPTO_MATERIAL_OFFSET_UDATA;
 
 extern AtCritSec g_critsec;
+extern bool g_critsec_active;
 
 // Some static AtStrings to cache
 const AtString aStr_shader("shader");
@@ -153,6 +154,39 @@ using CryptoNameFlag = uint8_t;
 #define CRYPTO_NAME_LEGACY        0x20 /* sitoa, old-c4d style */
 #define CRYPTO_NAME_ALL           CryptoNameFlag(-1)
 // clang-format on
+
+///////////////////////////////////////////////
+//
+//      Crit sec utilities
+//
+///////////////////////////////////////////////
+
+inline bool crypto_crit_sec_init() {
+    // Called in node_plugin_initialize. Returns true as a convenience. 
+    g_critsec_active = true;
+    AiCritSecInit(&g_critsec);
+    return true;
+}
+
+inline void crypto_crit_sec_close() {
+    // Called in node_plugin_cleanup
+    g_critsec_active = false;
+    AiCritSecClose(&g_critsec);
+}
+
+inline void crypto_crit_sec_enter() {
+    // If the crit sec has not been inited since last close, we simply do not enter. 
+    // (Used by Cryptomatte filter.)
+    if (g_critsec_active)
+        AiCritSecEnter(&g_critsec);
+}
+
+inline void crypto_crit_sec_leave() {
+    // If the crit sec has not been inited since last close, we simply do not enter. 
+    // (Used by Cryptomatte filter.)
+    if (g_critsec_active)
+        AiCritSecLeave(&g_critsec);
+}
 
 ///////////////////////////////////////////////
 //
@@ -859,7 +893,8 @@ public:
         set_option_channels(CRYPTO_DEPTH_DEFAULT, CRYPTO_PREVIEWINEXR_DEFAULT);
         set_option_namespace_stripping(CRYPTO_NAME_ALL, CRYPTO_NAME_ALL);
         set_option_ice_pcloud_verbosity(CRYPTO_ICEPCLOUDVERB_DEFAULT);
-        AiCritSecInit(&g_critsec);
+        if (!g_critsec_active)
+            AiMsgError("[Cryptomatte] Critical section was not initialized. ");
     }
 
     void setup_all(const AtString aov_cryptoasset_, const AtString aov_cryptoobject_,
@@ -873,9 +908,9 @@ public:
 
         user_cryptomattes = UserCryptomattes(uc_aov_array, uc_src_array);
 
-        AiCritSecEnter(&g_critsec);
+        crypto_crit_sec_enter();
         setup_cryptomatte_nodes();
-        AiCritSecLeave(&g_critsec);
+        crypto_crit_sec_leave();
     }
 
     void set_option_channels(int depth, bool exr_preview_channels) {
@@ -1383,22 +1418,7 @@ private:
         ///////////////////////////////////////////////
         //      Compile info about original filter
 
-        float aFilter_width = 2.0;
-        char aFilter_filter[128];
         AtNode* orig_filter = AiNodeLookUpByName(filter_name);
-        const AtNodeEntry* orig_filter_nodeEntry = AiNodeGetNodeEntry(orig_filter);
-        const char* orig_filter_type_name = AiNodeEntryGetName(orig_filter_nodeEntry);
-        if (AiNodeEntryLookUpParameter(orig_filter_nodeEntry, "width")) {
-            aFilter_width = AiNodeGetFlt(orig_filter, "width");
-        }
-
-        memset(aFilter_filter, 0, sizeof(aFilter_filter));
-        size_t filter_name_len = strlen(orig_filter_type_name);
-        strncpy(aFilter_filter, orig_filter_type_name, filter_name_len);
-        char* filter_strip_point = strstr(aFilter_filter, "_filter");
-        if (filter_strip_point) {
-            filter_strip_point[0] = '\0';
-        }
 
         ///////////////////////////////////////////////
         //      Set CryptoAOV driver to full precision and outlaw RLE
@@ -1452,14 +1472,8 @@ private:
             strcat(filter_rank_name, rank_number_string);
             strcat(aov_rank_name, rank_number_string);
 
-            const bool nofilter = AiNodeLookUpByName(filter_rank_name) == nullptr;
-            if (nofilter) {
-                AtNode* filter = AiNode("cryptomatte_filter");
-                AiNodeSetStr(filter, "name", filter_rank_name);
-                AiNodeSetInt(filter, "rank", i * 2);
-                AiNodeSetStr(filter, "filter", aFilter_filter);
-                AiNodeSetFlt(filter, "width", aFilter_width);
-            }
+            if (AiNodeLookUpByName(filter_rank_name) == nullptr)
+                AtNode* filter = create_filter(orig_filter, filter_rank_name, i);
 
             std::string new_output_str;
             if (camera_name)
@@ -1480,6 +1494,28 @@ private:
         }
     }
 
+    AtNode* create_filter(const AtNode* orig_filter, const char* filter_rank_name,
+                          int aovindex) const {
+        float aFilter_width = 2.0;
+        const AtNodeEntry* orig_filter_nentry = AiNodeGetNodeEntry(orig_filter);
+        const char* orig_filter_type_name = AiNodeEntryGetName(orig_filter_nentry);
+        if (AiNodeEntryLookUpParameter(orig_filter_nentry, "width"))
+            aFilter_width = AiNodeGetFlt(orig_filter, "width");
+
+        char aFilter_filter[MAX_STRING_LENGTH];
+        safe_copy_to_buffer(aFilter_filter, orig_filter_type_name);
+        char* filter_strip_point = strstr(aFilter_filter, "_filter");
+        if (filter_strip_point)
+            filter_strip_point[0] = '\0';
+
+        AtNode* filter = AiNode("cryptomatte_filter");
+        AiNodeSetStr(filter, "filter", aFilter_filter);
+        AiNodeSetInt(filter, "rank", aovindex * 2);
+        AiNodeSetFlt(filter, "width", aFilter_width);
+        AiNodeSetStr(filter, "name", filter_rank_name);
+        return filter;
+    }
+
     ///////////////////////////////////////////////
     //      Cleanup
     ///////////////////////////////////////////////
@@ -1498,5 +1534,7 @@ private:
     }
 
 public:
-    ~CryptomatteData() { destroy_arrays(); }
+    ~CryptomatteData() { 
+        destroy_arrays(); 
+    }
 };

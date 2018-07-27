@@ -1,4 +1,5 @@
 #include "filters.h"
+#include "cryptomatte.h"
 #include <ai.h>
 #include <algorithm>
 #include <cstring>
@@ -61,10 +62,10 @@ node_finish {
     AiNodeSetLocalData(node, nullptr);
 }
 
-node_update {
+void node_update_content(AtNode *node) {
     const int rank = AiNodeGetInt(node, "rank");
-    if (rank < 0) 
-        AiMsgError("Cryptomatte not set up correctly, %s rank not set.", AiNodeGetName(node));
+    if (rank < 0)
+        AiMsgError("Cryptomatte Filter: %s rank not set", AiNodeGetName(node));
 
     CryptomatteFilterData* data = (CryptomatteFilterData*)AiNodeGetLocalData(node);
     data->width = AiNodeGetFlt(node, "width");
@@ -98,6 +99,12 @@ node_update {
     } else {
         AiFilterUpdate(node, data->width);
     }
+}
+
+node_update {
+    crypto_crit_sec_enter();
+    node_update_content(node);
+    crypto_crit_sec_leave();
 }
 
 filter_output_type {
